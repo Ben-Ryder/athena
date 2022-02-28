@@ -1,0 +1,27 @@
+{
+  "name": "athena",
+  "version": "0.1.0",
+  "description": "A place for notes, lists and reminders.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ben-Ryder/athena.git"
+  },
+  "author": "Ben-Ryder",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Ben-Ryder/athena/issues"
+  },
+  "homepage": "https://github.com/Ben-Ryder/athena#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^16.2.1",
+    "@commitlint/config-conventional": "^16.2.1",
+    "husky": "^7.0.4"
+  }
+}
