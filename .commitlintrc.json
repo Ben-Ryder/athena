@@ -14,7 +14,8 @@
       "revert",
       "style",
       "test",
-      "release"
+      "release",
+      "wip"
     ]]
   }
 }
