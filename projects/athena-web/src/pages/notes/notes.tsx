@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { AthenaAPIClient, INote } from '@ben-ryder/athena-js-sdk';
 
+import { Page } from '../../patterns/layout/page';
+
 
 export function NotesPage() {
   let [notes, setNotes] = React.useState<INote[]>();
@@ -15,18 +17,20 @@ export function NotesPage() {
   }, [])
 
   return (
-    <div>
-      <h1>Notes</h1>
+    <Page>
       <div>
-        {notes &&
-          <ul>
-            {notes.map(note =>
-              <li key={ note.id }><a href={`/notes/${note.id}`}>{ note.title }</a></li>
-            )}
-          </ul>
-        }
+        <h1>Notes</h1>
+        <div>
+          {notes &&
+              <ul>
+                {notes.map(note =>
+                  <li key={ note.id }><a href={`/notes/${note.id}`}>{ note.title }</a></li>
+                )}
+              </ul>
+          }
+        </div>
       </div>
-    </div>
+    </Page>
   );
 }
 

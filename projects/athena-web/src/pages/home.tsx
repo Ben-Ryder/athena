@@ -1,14 +1,13 @@
 import React from 'react';
 
-import { Link } from 'react-router-dom';
+import { Page } from '../patterns/layout/page';
 
 
 export function HomePage() {
   return (
-    <div>
-      <Link to="/add-notes">Add Note</Link>
-      <Link to="/notes">Notes</Link>
-    </div>
+    <Page>
+      <h1>Homepage</h1>
+    </Page>
   );
 }
 

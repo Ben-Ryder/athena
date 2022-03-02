@@ -14,7 +14,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/add-notes" element={<AddNotePage />} />
+        <Route path="/notes/new" element={<AddNotePage />} />
         <Route path="/notes" element={<NotesPage />} />
           <Route path="/notes/:noteId" element={<NotePage />} />
       </Routes>
