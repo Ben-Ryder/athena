@@ -1,47 +1,79 @@
 import aes from "crypto-js/aes";
 import utf8 from "crypto-js/enc-utf8";
-import { INewNote, INote } from './types/note';
+import {INote, INoteContent} from './types/note';
+
+
+class AthenaEncryptionError extends Error {}
+class AthenaEncryptError extends AthenaEncryptionError {}
+class AthenaDecryptError extends AthenaEncryptionError {}
 
 
 export class AthenaEncryption {
     static encryptText(key: string, text: string): string {
-        return aes.encrypt(text, key).toString();
-    }
-
-    static decryptText(key: string, cipherText: string): string {
-        return aes.decrypt(cipherText, key).toString(utf8);
-    }
-
-    static encryptData<Type>(key: string, data: Type): string {
-        return aes.encrypt(JSON.stringify(data), key).toString();
-    }
-
-    static decryptData<Type>(key: string, cipherText: string): Type {
-        return JSON.parse(
-            aes.decrypt(cipherText, key).toString(utf8)
-        );
-    }
-
-    static decryptNote(key: string, note: INote): INote {
-        return {
-            id: note.id,
-            title: AthenaEncryption.decryptText(key, note.title),
-            body: AthenaEncryption.decryptText(key, note.body)
+        try {
+            return aes.encrypt(text, key).toString();
+        }
+        catch (e) {
+            throw new AthenaEncryptError();
         }
     }
 
-    static encryptNewNote(key: string, note: INewNote): INewNote {
-        return {
-            title: AthenaEncryption.decryptText(key, note.title),
-            body: AthenaEncryption.decryptText(key, note.body)
+    static decryptText(key: string, cipherText: string): string {
+        try {
+            return aes.decrypt(cipherText, key).toString(utf8);
+        }
+        catch (e) {
+            throw new AthenaDecryptError();
+        }
+    }
+
+    static encryptData<Type>(key: string, data: Type): string {
+        try {
+            return aes.encrypt(JSON.stringify(data), key).toString();
+        }
+        catch (e) {
+            throw new AthenaEncryptError();
+        }
+    }
+
+    static decryptData<Type>(key: string, cipherText: string): Type {
+        try {
+            return JSON.parse(
+                aes.decrypt(cipherText, key).toString(utf8)
+            );
+        }
+        catch (e) {
+            throw new AthenaDecryptError();
         }
     }
 
     static encryptNote(key: string, note: INote): INote {
         return {
             id: note.id,
+            title: AthenaEncryption.encryptText(key, note.title),
+            body: typeof note.body === 'string' ? AthenaEncryption.encryptText(key, note.body) : null
+        }
+    }
+
+    static decryptNote(key: string, note: INote): INote {
+        return {
+            id: note.id,
             title: AthenaEncryption.decryptText(key, note.title),
-            body: AthenaEncryption.decryptText(key, note.body)
+            body: typeof note.body === 'string' ? AthenaEncryption.decryptText(key, note.body) : null
+        }
+    }
+
+    static encryptNoteContent(key: string, note: INoteContent): INoteContent {
+        return {
+            title: AthenaEncryption.encryptText(key, note.title),
+            body: typeof note.body === 'string' ? AthenaEncryption.encryptText(key, note.body) : null
+        }
+    }
+
+    static decryptNoteContent(key: string, note: INoteContent): INoteContent {
+        return {
+            title: AthenaEncryption.decryptText(key, note.title),
+            body: typeof note.body === 'string' ? AthenaEncryption.decryptText(key, note.body) : null
         }
     }
 }

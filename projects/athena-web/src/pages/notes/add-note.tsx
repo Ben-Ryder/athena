@@ -7,6 +7,7 @@ import {
 } from 'formik';
 
 import { AthenaAPIClient } from "@ben-ryder/athena-js-sdk";
+import {useNavigate} from "react-router-dom";
 
 interface AddNoteFormValues {
   title: string,
@@ -15,7 +16,8 @@ interface AddNoteFormValues {
 
 
 export function AddNotePage() {
-  const initialValues: AddNoteFormValues = {title: "", body: ""}
+  const initialValues: AddNoteFormValues = {title: "", body: ""};
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -24,9 +26,10 @@ export function AddNotePage() {
         <Formik
           initialValues={initialValues}
           onSubmit={async (values: AddNoteFormValues, { setSubmitting }) => {
-            const apiClient = new AthenaAPIClient(process.env.REACT_APP_API_ENDPOINT || "http://localhost:3001/api", process.env.REACT_APP_ENCRYPTION_KEY || "TODO")
-            await apiClient.addNote(values);
-            setSubmitting(false);
+              const apiClient = new AthenaAPIClient(process.env.REACT_APP_API_ENDPOINT || "http://localhost:3001/api", process.env.REACT_APP_ENCRYPTION_KEY || "TODO")
+              await apiClient.addNote(values);
+              setSubmitting(false);
+              await navigate("/notes")
           }}
         >
           {({values, handleChange}) => (
