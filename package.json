@@ -13,12 +13,12 @@
     "setup": "npm run install-all && npm run build-all",
     "install-all": "concurrently 'npm:install:*'",
     "build-all": "concurrently 'npm:build:*'",
-    "develop-web": "concurrently develop:server develop:web",
+    "dev-web": "concurrently 'npm run dev:server' 'npm run dev:web'",
     "test-all": "concurrently 'npm:test:*'",
 
     "install:server": "cd ./projects/athena-server && npm i",
     "build:server": "cd ./projects/athena-server && npm run build",
-    "develop:server": "cd ./projects/athena-server && npm run develop",
+    "dev:server": "cd ./projects/athena-server && npm run dev",
     "test:server": "cd ./projects/athena-server && npm run test",
     "run:server": "cd ./projects/athena-server && npm start",
 
@@ -28,7 +28,7 @@
 
     "install:web": "cd ./projects/athena-web && npm i",
     "build:web": "cd ./projects/athena-web && npm run build",
-    "develop:web": "cd ./projects/athena-web && npm start",
+    "dev:web": "cd ./projects/athena-web && npm start",
     "test:web": "cd ./projects/athena-web && npm run test",
     "run:web": "cd ./projects/athena-web && npm run serve"
   },
