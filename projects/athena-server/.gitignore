@@ -6,3 +6,6 @@ dist
 
 # Env Variables
 .env
+
+# Custom
+/notes
