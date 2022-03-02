@@ -1,6 +1,7 @@
 {
-  "name": "athena-server",
+  "name": "@ben-ryder/athena-server",
   "version": "0.1.0",
+  "private": true,
   "description": "The server backend for Athena.",
   "main": "dist/src/server.js",
   "repository": {

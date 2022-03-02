@@ -1,13 +1,36 @@
 {
-  "name": "athena",
+  "name": "@ben-ryder/athena",
   "version": "0.1.0",
+  "private": true,
   "description": "A place for notes, lists and reminders.",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+
+    "setup": "npm run install-all && npm run build-all",
+    "install-all": "concurrently 'npm:install:*'",
+    "build-all": "concurrently 'npm:build:*'",
+    "develop-web": "concurrently develop:server develop:web",
+    "test-all": "concurrently 'npm:test:*'",
+
+    "install:server": "cd ./projects/athena-server && npm i",
+    "build:server": "cd ./projects/athena-server && npm run build",
+    "develop:server": "cd ./projects/athena-server && npm run develop",
+    "test:server": "cd ./projects/athena-server && npm run test",
+    "run:server": "cd ./projects/athena-server && npm start",
+
+    "install:js-sdk": "cd ./projects/athena-js-sdk && npm i",
+    "build:js-sdk": "cd ./projects/athena-js-sdk && npm run build",
+    "test:js-sdk": "cd ./projects/athena-js-sdk && npm run test",
+
+    "install:web": "cd ./projects/athena-web && npm i",
+    "build:web": "cd ./projects/athena-web && npm run build",
+    "develop:web": "cd ./projects/athena-web && npm start",
+    "test:web": "cd ./projects/athena-web && npm run test",
+    "run:web": "cd ./projects/athena-web && npm run serve"
   },
   "repository": {
     "type": "git",
@@ -22,6 +45,7 @@
   "devDependencies": {
     "@commitlint/cli": "^16.2.1",
     "@commitlint/config-conventional": "^16.2.1",
+    "concurrently": "^7.0.0",
     "husky": "^7.0.4"
   }
 }
