@@ -1,4 +1,4 @@
-import { DeepPartial, EntityTarget, FindOneOptions, Repository } from 'typeorm';
+import {DeepPartial, EntityTarget, FindConditions, FindOneOptions, Repository} from 'typeorm';
 
 import { databaseServiceInstance, DatabaseService } from 'src/services/database/database.service';
 
@@ -71,13 +71,17 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         return this.mapDatabaseEntityToEntityDto(savedEntity);
     }
 
-    async get(entityId: string): Promise<EntityDto|null> {
+    async getById(entityId: string): Promise<EntityDto|null> {
+        return this.get(<FindOneOptions<DatabaseEntity>>{id: entityId});
+    }
+
+    async get(options: Object): Promise<EntityDto> {
         const repo = await this.getRepository();
 
         let result: DatabaseEntity | undefined;
 
         try {
-            result = await repo.findOne(entityId);
+            result = await repo.findOne(options);
         }
         catch(e: any) {
             throw new DatabaseError({

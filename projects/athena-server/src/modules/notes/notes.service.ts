@@ -15,7 +15,7 @@ export class NotesService {
     }
 
     async get(noteId: string) {
-        return this.notesDatabaseRepository.get(noteId);
+        return this.notesDatabaseRepository.getById(noteId);
     }
 
     async add(createNoteDto: CreateNoteDto) {

@@ -15,7 +15,13 @@ export class UsersService {
     }
 
     async get(userId: string) {
-        return this.userDatabaseRepository.get(userId);
+        return this.userDatabaseRepository.getById(userId);
+    }
+
+    async getByUsername(username: string) {
+        return this.userDatabaseRepository.get({
+            username
+        })
     }
 
     async add(createUserDto: CreateUserDto) {
