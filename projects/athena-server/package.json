@@ -26,6 +26,7 @@
   "dependencies": {
     "@kangojs/class-validation": "^1.0.3",
     "@kangojs/common-middleware": "^1.2.0",
+    "@kangojs/error-handler": "^0.1.0",
     "@kangojs/http-status-codes": "^1.0.1",
     "@kangojs/kangojs": "^1.1.1",
     "@kangojs/serve-spa": "^1.0.0",

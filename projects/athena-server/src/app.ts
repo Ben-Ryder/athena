@@ -6,7 +6,7 @@ import { createBodyValidator, createQueryValidator } from '@kangojs/class-valida
 import { useCommonMiddleware, useNotFoundMiddleware } from '@kangojs/common-middleware';
 import { useServeSPA } from '@kangojs/serve-spa';
 
-import { errorMiddleware } from "./services/errors/error.middleware";
+import { useErrorHandlerMiddleware } from "@kangojs/error-handler";
 
 
 export default async function App() {
@@ -34,7 +34,8 @@ export default async function App() {
     })
 
     // Global Error Handling
-    app.use(errorMiddleware);
+    // todo: add custom logger from services
+    app.use(useErrorHandlerMiddleware);
 
     return app;
 };

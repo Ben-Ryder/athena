@@ -1,14 +1,12 @@
 import {DeepPartial, EntityTarget, FindConditions, FindOneOptions, Repository} from 'typeorm';
 
 import { databaseServiceInstance, DatabaseService } from 'src/services/database/database.service';
-
-import { DatabaseError } from '../errors/error-types/database.error';
-import {
-    ContentNotFoundError
-} from '../errors/error-types/content-not-found.error';
 import { DatabaseErrorCodes } from './database-error-codes';
-import { DatabaseRelationshipError } from '../errors/error-types/database-relationship.error';
-import { ContentUniquenessError } from '../errors/error-types/content-uniqueness.error';
+
+import { SystemError } from "@kangojs/error-handler";
+import { ResourceNotFoundError } from "@kangojs/error-handler";
+import { ResourceRelationshipError } from "@kangojs/error-handler";
+import { ResourceNotUniqueError } from "@kangojs/error-handler";
 
 
 /**
@@ -47,21 +45,21 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         }
         catch (e: any) {
             if (e.errno === DatabaseErrorCodes.FOREIGN_KEY_INVALID) {
-                throw new DatabaseRelationshipError({
+                throw new ResourceRelationshipError({
                     message: e.message,
                     applicationMessage: 'You have tried to add a relationship with an entity that doesn\'t exist',
                     originalError: e,
                 });
             }
             else if (e.message && e.message.includes("Duplicate entry")) {
-                throw new ContentUniquenessError({
+                throw new ResourceNotUniqueError({
                     message: e.message,
                     applicationMessage: 'You have tried to add an entity that is not unique.',
                     originalError: e,
                 })
             }
 
-            throw new DatabaseError({
+            throw new SystemError({
                 message: e.message,
                 applicationMessage: 'There was an error while attempting to save the entity.',
                 originalError: e,
@@ -84,7 +82,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
             result = await repo.findOne(options);
         }
         catch(e: any) {
-            throw new DatabaseError({
+            throw new SystemError({
                 message: e.message,
                 applicationMessage: 'There was an error while attempting to fetch the results.',
                 originalError: e,
@@ -92,7 +90,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         }
 
         if (!result) {
-            throw new ContentNotFoundError({
+            throw new ResourceNotFoundError({
                 message: 'The requested entity could not be found.',
                 applicationMessage: 'The requested entity could not be found.',
             });
@@ -110,7 +108,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
             result = await repo.find();
         }
         catch(e: any) {
-            throw new DatabaseError({
+            throw new SystemError({
                 message: e.message,
                 applicationMessage: 'There was an error while attempting to fetch the results.',
                 originalError: e,
@@ -128,7 +126,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
             entity = await repo.findOne(entityId);
         }
         catch (e: any) {
-            throw new DatabaseError({
+            throw new SystemError({
                 message: e.message,
                 applicationMessage: 'There was an error while attempting to get the entity to update.',
                 originalError: e,
@@ -136,7 +134,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         }
 
         if(!entity) {
-            throw new ContentNotFoundError({
+            throw new ResourceNotFoundError({
                 message: 'The requested entity to update could not be found.',
                 applicationMessage: 'The requested entity to update could not be found.',
             });
@@ -149,21 +147,21 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         }
         catch (e: any) {
             if (e.errno === DatabaseErrorCodes.FOREIGN_KEY_INVALID) {
-                throw new DatabaseRelationshipError({
+                throw new ResourceRelationshipError({
                     message: e.message,
                     applicationMessage: 'You have tried to add a relationship with an entity that doesn\'t exist',
                     originalError: e,
                 });
             }
             else if (e.message && e.message.includes("Duplicate entry")) {
-                throw new ContentUniquenessError({
+                throw new ResourceNotUniqueError({
                     message: e.message,
                     applicationMessage: 'You have tried to make an update that would cause the entity to stop being unique.',
                     originalError: e,
                 })
             }
 
-            throw new DatabaseError({
+            throw new SystemError({
                 message: e.message,
                 applicationMessage: 'There was an error while attempting to save the updated entity.',
                 originalError: e,
@@ -179,7 +177,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
             entity = await repo.findOne(entityId);
         }
         catch (e: any) {
-            throw new DatabaseError({
+            throw new SystemError({
                 message: e.message,
                 applicationMessage: 'There was an error while attempting to get the entity to delete.',
                 originalError: e,
@@ -187,7 +185,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         }
 
         if(!entity) {
-            throw new ContentNotFoundError({
+            throw new ResourceNotFoundError({
                 message: 'The requested entity to delete could not be found.',
                 applicationMessage: 'The requested entity to delete could not be found.',
             });
@@ -197,7 +195,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
             await repo.remove(entity);
         }
         catch (e: any) {
-            throw new DatabaseError({
+            throw new SystemError({
                 message: e.message,
                 applicationMessage: 'There was an error while attempting to delete the entity.',
                 originalError: e,
