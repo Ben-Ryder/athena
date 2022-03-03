@@ -20,9 +20,10 @@ export class NoteEntity {
     title!: string;
 
     @Column({
+        type: 'varchar',
         nullable: true,
     })
-    body!: string;
+    body!: string | null;
 
     @CreateDateColumn({type: 'timestamp'})
     createdAt!: Date;

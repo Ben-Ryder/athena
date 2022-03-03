@@ -17,7 +17,6 @@ export default async function App() {
 
     // Load all controllers and setup KangoJS.
     const kangoJS = new KangoJS({
-        globalPrefix: "/api",
         controllerFilesGlob: path.join(__dirname, 'modules/**/*.controller.{ts,js}'),
         bodyValidator: createBodyValidator(),
         queryValidator: createQueryValidator()

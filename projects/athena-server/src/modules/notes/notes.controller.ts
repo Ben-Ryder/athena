@@ -1,13 +1,12 @@
-import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
 import { Request, Response, NextFunction } from 'express';
 
+import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
 import { RequestWithDto } from "@kangojs/class-validation";
 
-import NotesService from "./notes.service";
+import { NotesService } from "./notes.service";
+import { NoteDto } from "./dtos/notes.dto";
 import { CreateNoteShape } from "./shapes/create.notes.shape";
 import { UpdateNoteShape } from "./shapes/update.notes.shape";
-import {NoteDto} from "./dtos/notes.dto";
-
 
 
 @Controller('/v1/notes')

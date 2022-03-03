@@ -1,11 +1,13 @@
 import { NotesDatabaseRepository } from "./database/notes.database.repository";
+import { NoteEntity } from './database/notes.database.entity';
+
 import { CreateNoteDto } from "./dtos/create.notes.dto";
 import { UpdateNoteDto } from "./dtos/update.notes.dto";
 
 
-class NotesService {
+export class NotesService {
     constructor(
-       private notesDatabaseRepository: NotesDatabaseRepository = new NotesDatabaseRepository()
+       private notesDatabaseRepository: NotesDatabaseRepository = new NotesDatabaseRepository(NoteEntity)
     ) {}
 
     async getAll() {
@@ -28,5 +30,3 @@ class NotesService {
         return this.notesDatabaseRepository.delete(noteId);
     }
 }
-
-export default NotesService;
