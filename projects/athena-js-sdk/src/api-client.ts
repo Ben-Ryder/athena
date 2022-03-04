@@ -3,6 +3,22 @@ import axios from 'axios';
 import {INote, INoteContent, INoteDecryptionResult} from './types/note';
 import { AthenaEncryption } from './encryption';
 
+export interface QueryOptions {
+    url: string,
+    method: 'GET'|'POST'|'PATCH'|'DELETE',
+    data?: object,
+    params?: object
+}
+
+export class AthenaRequestError extends Error {
+    originalError: any;
+
+    constructor(message: string, originalError?: any) {
+        super(message);
+        this.originalError = originalError;
+    }
+}
+
 
 export class AthenaAPIClient {
     apiEndpoint: string;
@@ -13,8 +29,26 @@ export class AthenaAPIClient {
         this.encryptionKey = encryptionKey;
     }
 
+    private static async query<ResponseType>(options: QueryOptions): Promise<ResponseType> {
+        let data: ResponseType;
+
+        try {
+            data = <ResponseType> await axios(options).then(response => {return response.data});
+        }
+        catch (e) {
+            throw new AthenaRequestError(
+                `There was an error with the request '${options.url} [${options.method}]'`, e
+            );
+        }
+
+        return data;
+    }
+
     async getEncryptedNotes(): Promise<INote[]> {
-        return axios.get(`${this.apiEndpoint}/v1/notes`).then(res => {return res.data});
+        return AthenaAPIClient.query<INote[]>({
+            method: 'GET',
+            url: `${this.apiEndpoint}/v1/notes`,
+        });
     }
 
     async getNotes(): Promise<INoteDecryptionResult> {
@@ -40,11 +74,18 @@ export class AthenaAPIClient {
 
     async addNote(newNote: INoteContent) {
         const encryptedNote = AthenaEncryption.encryptNoteContent(this.encryptionKey, newNote);
-        return axios.post(`${this.apiEndpoint}/v1/notes`, encryptedNote).then(res => {return res.data});
+        return AthenaAPIClient.query<INoteContent>({
+            method: 'POST',
+            url: `${this.apiEndpoint}/v1/notes`,
+            data: encryptedNote
+        })
     }
 
     async getEncryptedNote(noteId: string): Promise<INote> {
-        return axios.get(`${this.apiEndpoint}/v1/notes/${noteId}`).then(res => {return res.data});
+        return AthenaAPIClient.query<INote>({
+            method: 'GET',
+            url: `${this.apiEndpoint}/v1/notes/${noteId}`,
+        })
     }
 
     async getNote(noteId: string): Promise<INote> {
@@ -54,10 +95,17 @@ export class AthenaAPIClient {
 
     async updateNote(noteId: string, note: INoteContent) {
         const encryptedNoteUpdate = await AthenaEncryption.encryptNoteContent(this.encryptionKey, note);
-        return axios.patch(`${this.apiEndpoint}/v1/notes/${noteId}`, encryptedNoteUpdate).then(res => {return res.data});
+        return AthenaAPIClient.query<INote>({
+            method: 'PATCH',
+            url: `${this.apiEndpoint}/v1/notes/${noteId}`,
+            data: encryptedNoteUpdate
+        })
     }
 
     async deleteNote(noteId: string) {
-        return axios.delete(`${this.apiEndpoint}/v1/notes/${noteId}`).then(res => {return res.data});
+        return AthenaAPIClient.query<INote>({
+            method: 'DELETE',
+            url: `${this.apiEndpoint}/v1/notes/${noteId}`,
+        })
     }
 }
