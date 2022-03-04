@@ -8,6 +8,8 @@ import {
 
 import { AthenaAPIClient } from "@ben-ryder/athena-js-sdk";
 import {useNavigate} from "react-router-dom";
+import {Page} from "../../patterns/layout/page";
+import {Button} from "../../patterns/elements/button/button";
 
 interface AddNoteFormValues {
   title: string,
@@ -20,9 +22,7 @@ export function AddNotePage() {
   const navigate = useNavigate();
 
   return (
-    <div>
-      <h1>Add Note</h1>
-      <div>
+    <Page>
         <Formik
           initialValues={initialValues}
           onSubmit={async (values: AddNoteFormValues, { setSubmitting }) => {
@@ -33,25 +33,32 @@ export function AddNotePage() {
           }}
         >
           {({values, handleChange}) => (
-            <Form>
-              <div>
-                <label htmlFor="note-title">Title</label>
-                <Field id="note-title" name="title" type="text" value={values.title} onChange={handleChange} />
-              </div>
+            <Form className="absolute h-full w-full flex flex-col">
+                <div className="border-b">
+                    <label htmlFor="note-title" className="sr-only">Title</label>
+                    <Field
+                        id="note-title" name="title" type="text" placeholder="enter title..."
+                        className="block w-full px-4 min-h-[40px] text-center"
+                        value={values.title} onChange={handleChange}
+                    />
+                </div>
 
-              <div>
-                <label htmlFor="note-body">Body</label>
-                <Field as="textarea" id="note-body" name="body" type="text" value={values.body} onChange={handleChange} />
-              </div>
+                <div className="h-full">
+                    <label htmlFor="note-body" className="sr-only">Body</label>
+                    <Field
+                        as="textarea" id="note-body" name="body" type="text" placeholder="an awesome note..."
+                        className="block w-full p-4 resize-none min-h-full"
+                        value={values.body} onChange={handleChange}
+                    />
+                </div>
 
-              <div>
-                <button type="submit">Add Note</button>
-              </div>
+                <div className="absolute right-0 bottom-0 p-4">
+                    <Button type="submit">Save</Button>
+                </div>
             </Form>
           )}
         </Formik>
-      </div>
-    </div>
+    </Page>
   );
 }
 

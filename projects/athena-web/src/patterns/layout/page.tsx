@@ -10,9 +10,9 @@ export interface PageProps {
 
 export function Page(props: PageProps) {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <div>
+      <div className="grow relative">
         {props.children}
       </div>
     </div>
