@@ -1,12 +1,13 @@
 import {ComponentProps} from "react";
 import classNames from "classnames";
 
-export interface ButtonProps extends ComponentProps<'button'> {
+export interface ButtonLinkProps extends ComponentProps<'a'> {
     variant?: 'primary' | 'danger';
 }
 
-export function Button(props: ButtonProps) {
+export function ButtonLink(props: ButtonLinkProps) {
     const className = classNames(
+        "inline-block",
         "px-3 py-2 rounded-md transition-colors",
         {
             'bg-teal-600 text-white hover:bg-teal-700': !props.variant || props.variant === 'primary',
@@ -16,6 +17,6 @@ export function Button(props: ButtonProps) {
     );
 
     return (
-        <button {...props} className={className} />
+        <a {...props} className={className} />
     )
 }
