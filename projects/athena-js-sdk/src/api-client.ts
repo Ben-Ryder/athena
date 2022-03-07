@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import {INote, INoteContent, INoteDecryptionResult} from './types/note';
 import { AthenaEncryption } from './encryption';
+import {AthenaNoEncryptionKeyError, AthenaRequestError} from "./types/errors";
 
 export interface QueryOptions {
     url: string,
@@ -10,22 +11,21 @@ export interface QueryOptions {
     params?: object
 }
 
-export class AthenaRequestError extends Error {
-    originalError: any;
-
-    constructor(message: string, originalError?: any) {
-        super(message);
-        this.originalError = originalError;
-    }
+export interface AthenaAPIClientOptions {
+    apiEndpoint: string;
+    encryptionKey?: string | null;
 }
-
 
 export class AthenaAPIClient {
     apiEndpoint: string;
-    encryptionKey: string;
+    encryptionKey?: string | null;
 
-    constructor(apiEndpoint: string, encryptionKey: string) {
-        this.apiEndpoint = apiEndpoint;
+    constructor(options: AthenaAPIClientOptions) {
+        this.apiEndpoint = options.apiEndpoint;
+        this.encryptionKey = options.encryptionKey || null;
+    }
+
+    setEncryptionKey(encryptionKey: string | null) {
         this.encryptionKey = encryptionKey;
     }
 
@@ -37,11 +37,20 @@ export class AthenaAPIClient {
         }
         catch (e) {
             throw new AthenaRequestError(
-                `There was an error with the request '${options.url} [${options.method}]'`, e
+                {
+                    message: `There was an error with the request '${options.url} [${options.method}]'`,
+                    originalError: e
+                }
             );
         }
 
         return data;
+    }
+
+    private checkEncryptionKey() {
+        if (!this.encryptionKey) {
+            throw new AthenaNoEncryptionKeyError();
+        }
     }
 
     async getEncryptedNotes(): Promise<INote[]> {
@@ -52,13 +61,17 @@ export class AthenaAPIClient {
     }
 
     async getNotes(): Promise<INoteDecryptionResult> {
+        this.checkEncryptionKey();
+
+        console.log(this.encryptionKey);
+
         const encryptedNotes = await this.getEncryptedNotes();
         let notes: INote[] = [];
         let invalidNotes: INote[] = [];
         for (let note of encryptedNotes) {
             try {
                 notes.push(
-                    AthenaEncryption.decryptNote(this.encryptionKey, note)
+                    AthenaEncryption.decryptNote(<string> this.encryptionKey, note)
                 )
             }
             catch (e) {
@@ -73,7 +86,9 @@ export class AthenaAPIClient {
     }
 
     async addNote(newNote: INoteContent) {
-        const encryptedNote = AthenaEncryption.encryptNoteContent(this.encryptionKey, newNote);
+        this.checkEncryptionKey();
+
+        const encryptedNote = AthenaEncryption.encryptNoteContent(<string> this.encryptionKey, newNote);
         return AthenaAPIClient.query<INoteContent>({
             method: 'POST',
             url: `${this.apiEndpoint}/v1/notes`,
@@ -89,12 +104,16 @@ export class AthenaAPIClient {
     }
 
     async getNote(noteId: string): Promise<INote> {
+        this.checkEncryptionKey();
+
         const encryptedNote = await this.getEncryptedNote(noteId);
-        return AthenaEncryption.decryptNote(this.encryptionKey, encryptedNote);
+        return AthenaEncryption.decryptNote(<string> this.encryptionKey, encryptedNote);
     }
 
     async updateNote(noteId: string, note: INoteContent) {
-        const encryptedNoteUpdate = await AthenaEncryption.encryptNoteContent(this.encryptionKey, note);
+        this.checkEncryptionKey();
+
+        const encryptedNoteUpdate = await AthenaEncryption.encryptNoteContent(<string> this.encryptionKey, note);
         return AthenaAPIClient.query<INote>({
             method: 'PATCH',
             url: `${this.apiEndpoint}/v1/notes/${noteId}`,

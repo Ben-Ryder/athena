@@ -1,21 +1,24 @@
 import React, { useEffect } from 'react';
-import { AthenaAPIClient, INote } from '@ben-ryder/athena-js-sdk';
+import { INote } from '@ben-ryder/athena-js-sdk';
 
 import { Page } from '../../patterns/layout/page';
 import {ButtonLink} from "../../patterns/elements/button/button-link";
+import {useAthena} from "../../context/use-athena";
 
 
 export function NotesPage() {
   let [notes, setNotes] = React.useState<INote[]>();
+  let { apiClient } = useAthena();
 
   useEffect(() => {
     async function getNotes() {
-      const apiClient = new AthenaAPIClient(process.env.REACT_APP_API_ENDPOINT || "http://localhost:3001/api", process.env.REACT_APP_ENCRYPTION_KEY || "TODO");
+      console.log(apiClient.encryptionKey);
       const allNotes = await apiClient.getNotes();
+      console.log(allNotes);
       setNotes(allNotes.notes);
     }
     getNotes();
-  }, [])
+  }, [apiClient])
 
   return (
     <Page>

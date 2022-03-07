@@ -1,11 +1,7 @@
 import aes from "crypto-js/aes";
 import utf8 from "crypto-js/enc-utf8";
 import {INote, INoteContent} from './types/note';
-
-
-class AthenaEncryptionError extends Error {}
-class AthenaEncryptError extends AthenaEncryptionError {}
-class AthenaDecryptError extends AthenaEncryptionError {}
+import {AthenaDecryptError, AthenaEncryptError} from "./types/errors";
 
 
 export class AthenaEncryption {
