@@ -9,7 +9,7 @@ import { CreateNoteShape } from "./shapes/create.notes.shape";
 import { UpdateNoteShape } from "./shapes/update.notes.shape";
 
 
-@Controller('/v1/notes')
+@Controller('/notes/v1')
 export default class NotesController {
     constructor(
         private notesService: NotesService = new NotesService()

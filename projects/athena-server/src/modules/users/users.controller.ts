@@ -9,27 +9,28 @@ import { CreateUserShape } from './shapes/create.users.shape';
 import { UpdateUserShape } from './shapes/update.notes.shape';
 
 
-@Controller('/v1/users')
+@Controller('/users/v1')
 export default class UsersController {
     constructor(
       private usersService: UsersService = new UsersService()
     ) {}
 
-    @Route({
-        httpMethod: HTTPMethods.GET,
-    })
-    async getAll(req: Request, res: Response, next: NextFunction) {
-        let users: UserDto[] = [];
-
-        try {
-            users = await this.usersService.getAll();
-        }
-        catch (e) {
-            return next(e);
-        }
-
-        return res.send(users);
-    }
+    // todo: maybe introduce user roles and expose this endpoint to administrators?
+    // @Route({
+    //     httpMethod: HTTPMethods.GET,
+    // })
+    // async getAll(req: Request, res: Response, next: NextFunction) {
+    //     let users: UserDto[] = [];
+    //
+    //     try {
+    //         users = await this.usersService.getAll();
+    //     }
+    //     catch (e) {
+    //         return next(e);
+    //     }
+    //
+    //     return res.send(users);
+    // }
 
     @Route({
         httpMethod: HTTPMethods.POST,

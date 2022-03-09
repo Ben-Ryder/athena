@@ -1,30 +1,67 @@
-import {sign, SignOptions, verify} from "jsonwebtoken";
+import { decode, sign, verify } from 'jsonwebtoken';
 import cron from "node-cron";
 
+export interface TokenPayload {
+    userId: string
+}
+
+export interface AccessTokenPayload extends TokenPayload {
+    type: 'accessToken'
+}
+
+export interface RefreshTokenPayload extends TokenPayload {
+    type: 'refreshToken'
+}
+
+export interface TokenPair {
+    accessToken: string,
+    refreshToken: string
+}
 
 export class TokenService {
-    secretKey: string;
-    tokenBlacklist: string[] = [];
-    blacklistPruneCron: string;
+    accessTokenSecret: string;
+    refreshTokenSecret: string;
+    accessTokenBlacklist: string[] = [];
+    accessTokenBlacklistCron: string;
+    refreshTokenBlacklist: string[] = [];
+    refreshTokenBlacklistCron: string;
 
-    constructor(secretKey: string, blacklistPruneCron: string) {
-        this.secretKey = secretKey;
-        this.blacklistPruneCron = blacklistPruneCron;
+    constructor() {
+        this.accessTokenSecret = <string> process.env.ACCESS_TOKEN_SECRET;
+        this.refreshTokenSecret = <string> process.env.REFRESH_TOKEN_SECRET;
+        this.accessTokenBlacklistCron = <string> process.env.ACCESS_TOKEN_BLACKLIST_CRON;
+        this.refreshTokenBlacklistCron = <string> process.env.REFRESH_TOKEN_BLACKLIST_CRON;
 
-        // @todo: seperate into
-        cron.schedule(this.blacklistPruneCron, this.pruneBlacklist)
+        // @todo: separate into separate cron service?
+        cron.schedule(this.accessTokenBlacklistCron, this.pruneAccessTokenBlacklist)
+        cron.schedule(this.refreshTokenBlacklistCron, this.pruneRefreshTokenBlacklist)
     }
 
-    createToken(data: Object, options: SignOptions) {
-        return sign(data, this.secretKey, options);
+    /**
+     * Create an access and refresh token for the given user.
+     * @param userId
+     */
+    createTokenPair(userId: string): TokenPair {
+        return {
+            accessToken: this.createAccessToken(userId),
+            refreshToken: this.createRefreshToken(userId)
+        }
     }
 
-    isValidToken(token: string) {
+    private createAccessToken(userId: string) {
+        return sign({id: userId, type: "accessToken"}, this.accessTokenSecret, {expiresIn: '1h'});
+    }
+
+    private createRefreshToken(userId: string) {
+        return sign({id: userId, type: "refreshToken"}, this.refreshTokenSecret, {expiresIn: '7 days'});
+    }
+
+    isValidAccessToken(token: string) {
         try {
             // verify will throw an error if it fails
-            verify(token, this.secretKey);
+            verify(token, this.accessTokenSecret);
 
-            if (!this.tokenBlacklist.includes(token)) {
+            if (!this.accessTokenBlacklist.includes(token)) {
                 return true;
             }
         }
@@ -33,11 +70,41 @@ export class TokenService {
         return false;
     }
 
-    addTokenToBlacklist(token: string) {
-        this.tokenBlacklist.push(token);
+    isValidRefreshToken(token: string) {
+        try {
+            // verify will throw an error if it fails
+            verify(token, this.refreshTokenSecret);
+
+            if (!this.refreshTokenBlacklist.includes(token)) {
+                return true;
+            }
+        }
+        catch (err) {}
+
+        return false;
     }
 
-    pruneBlacklist() {
-        this.tokenBlacklist = this.tokenBlacklist.filter(this.isValidToken)
+    getAccessTokenPayload(token: string): AccessTokenPayload {
+        return <AccessTokenPayload> decode(token);
+    }
+
+    getRefreshTokenPayload(token: string): RefreshTokenPayload {
+        return <RefreshTokenPayload> decode(token);
+    }
+
+    blacklistAccessToken(token: string) {
+        this.accessTokenBlacklist.push(token);
+    }
+
+    blacklistRefreshToken(token: string) {
+        this.refreshTokenBlacklist.push(token);
+    }
+
+    pruneAccessTokenBlacklist() {
+        this.accessTokenBlacklist = this.accessTokenBlacklist.filter(this.isValidAccessToken)
+    }
+
+    pruneRefreshTokenBlacklist() {
+        this.refreshTokenBlacklist = this.refreshTokenBlacklist.filter(this.isValidRefreshToken)
     }
 }

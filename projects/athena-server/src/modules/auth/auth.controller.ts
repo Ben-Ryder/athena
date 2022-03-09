@@ -1,15 +1,18 @@
 import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
 import { Request, Response, NextFunction } from 'express';
 
-import { CheckShape } from "./shapes/check.shape";
+import { RefreshShape } from "./shapes/refresh.shape";
 import { LoginShape } from "./shapes/login.shape";
 import { RequestWithDto } from "@kangojs/class-validation";
+import { LogoutShape } from './shapes/logout.shape';
+import { AuthService } from './auth.service';
 
 
-@Controller('/v1/auth')
+@Controller('/auth/v1')
 class AuthController {
-    constructor() {
-    }
+    constructor(
+      private authService: AuthService = new AuthService()
+    ) {}
 
     @Route({
         path: '/login',
@@ -17,25 +20,58 @@ class AuthController {
         bodyShape: LoginShape
     })
     async login(req: RequestWithDto, res: Response, next: NextFunction) {
-        const loginDetails = req.bodyDto;
-        return res.send(`You have just attempted to login via /auth/login [POST].`);
+        const loginDetails = <LoginShape> req.bodyDto;
+
+        try {
+            const tokens = await this.authService.login(loginDetails.username, loginDetails.password);
+            return res.send(tokens);
+        }
+        catch(e) {
+            return next(e);
+        }
     }
 
     @Route({
         path: '/logout',
         httpMethod: HTTPMethods.POST,
+        bodyShape: LogoutShape
     })
-    async logout(req: Request, res: Response, next: NextFunction) {
-        return res.send(`You have just attempted to log out via /auth/logout [POST].`);
+    async logout(req: RequestWithDto, res: Response, next: NextFunction) {
+        const tokens = <LogoutShape> req.bodyDto;
+
+        try {
+            await this.authService.logout(tokens.refreshToken, tokens.accessToken);
+            return res.send({});
+        }
+        catch(e) {
+            return next(e);
+        }
+    }
+
+    @Route({
+        path: '/refresh',
+        httpMethod: HTTPMethods.POST,
+        bodyShape: RefreshShape
+    })
+    async refresh(req: RequestWithDto, res: Response, next: NextFunction) {
+        const bodyData = <RefreshShape> req.bodyDto;
+
+        try {
+            const tokens = await this.authService.refreshAccessToken(bodyData.refreshToken);
+            return res.send(tokens);
+        }
+        catch(e) {
+            return next(e);
+        }
     }
 
     @Route({
         path: '/check',
-        httpMethod: HTTPMethods.POST,
-        bodyShape: CheckShape
+        httpMethod: HTTPMethods.GET,
+        bodyShape: RefreshShape
     })
     async check(req: Request, res: Response, next: NextFunction) {
-        return res.send(`You have just attempted to check a user via /auth/check [POST].`);
+        return res.send({});
     }
 }
 

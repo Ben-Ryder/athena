@@ -21,6 +21,7 @@ export class UsersDatabaseRepository extends DatabaseRepository<UserEntity, User
       id: databaseEntity.id,
       username: databaseEntity.username,
       email: databaseEntity.email,
+      password: databaseEntity.password,
       isVerified: databaseEntity.isVerified,
       createdAt: databaseEntity.createdAt,
       updatedAt: databaseEntity.updatedAt

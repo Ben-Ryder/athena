@@ -5,8 +5,8 @@ import { KangoJS } from '@kangojs/kangojs';
 import { createBodyValidator, createQueryValidator } from '@kangojs/class-validation';
 import { useCommonMiddleware, useNotFoundMiddleware } from '@kangojs/common-middleware';
 import { useServeSPA } from '@kangojs/serve-spa';
-
 import { useErrorHandlerMiddleware } from "@kangojs/error-handler";
+import { useAuthValidator } from './modules/auth/auth.middleware';
 
 
 export default async function App() {
@@ -18,6 +18,7 @@ export default async function App() {
     // Load all controllers and setup KangoJS.
     const kangoJS = new KangoJS({
         controllerFilesGlob: path.join(__dirname, 'modules/**/*.controller.{ts,js}'),
+        authValidator: useAuthValidator(),
         bodyValidator: createBodyValidator(),
         queryValidator: createQueryValidator()
     });
