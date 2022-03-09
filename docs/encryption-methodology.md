@@ -28,5 +28,6 @@ If the decrypted content matches the known data then the client knows that the u
 This means it is completely plausible that a client could come across 
 
 ## Implementation
-- Content encryption is done client side using AES encryption from the `crypto-js` library.
 - Password hashing for users is done server side using `bcrypt`.
+- The user enters an 'encryption passphrase' on a client which is then transformed to an encryption key via a KDF function (PBKDF2 or Argon2?)
+- Content encryption is done client side using AES encryption from the `crypto-js` library using the users derived key.
