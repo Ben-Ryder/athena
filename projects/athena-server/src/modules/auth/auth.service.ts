@@ -56,6 +56,6 @@ export class AuthService {
         }
 
         this.tokenService.blacklistRefreshToken(refreshToken);
-        return this.tokenService.createTokenPair()
+        return this.tokenService.createTokenPair("user");
     }
 }

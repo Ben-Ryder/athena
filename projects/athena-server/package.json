@@ -24,11 +24,11 @@
     "node": "16.14.x"
   },
   "dependencies": {
-    "@kangojs/class-validation": "^1.0.3",
+    "@kangojs/class-validation": "^1.1.0",
     "@kangojs/common-middleware": "^1.2.0",
-    "@kangojs/error-handler": "^0.1.0",
+    "@kangojs/error-handler": "^0.2.1",
     "@kangojs/http-status-codes": "^1.0.1",
-    "@kangojs/kangojs": "^1.1.1",
+    "@kangojs/kangojs": "^1.2.0",
     "@kangojs/serve-spa": "^1.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",

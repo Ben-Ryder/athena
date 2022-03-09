@@ -1,6 +1,8 @@
 import { decode, sign, verify } from 'jsonwebtoken';
 import cron from "node-cron";
 
+import { config } from '../../config';
+
 export interface TokenPayload {
     userId: string
 }
@@ -27,10 +29,10 @@ export class TokenService {
     refreshTokenBlacklistCron: string;
 
     constructor() {
-        this.accessTokenSecret = <string> process.env.ACCESS_TOKEN_SECRET;
-        this.refreshTokenSecret = <string> process.env.REFRESH_TOKEN_SECRET;
-        this.accessTokenBlacklistCron = <string> process.env.ACCESS_TOKEN_BLACKLIST_CRON;
-        this.refreshTokenBlacklistCron = <string> process.env.REFRESH_TOKEN_BLACKLIST_CRON;
+        this.accessTokenSecret = config.auth.accessToken.secret;
+        this.accessTokenBlacklistCron = config.auth.accessToken.blacklistCron;
+        this.refreshTokenSecret = config.auth.refreshToken.secret;
+        this.refreshTokenBlacklistCron = config.auth.refreshToken.blacklistCron;
 
         // @todo: separate into separate cron service?
         cron.schedule(this.accessTokenBlacklistCron, this.pruneAccessTokenBlacklist)

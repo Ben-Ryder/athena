@@ -7,6 +7,7 @@ import { NotesService } from "./notes.service";
 import { NoteDto } from "./dtos/notes.dto";
 import { CreateNoteShape } from "./shapes/create.notes.shape";
 import { UpdateNoteShape } from "./shapes/update.notes.shape";
+import { NoteParamsShape } from './shapes/note-params.shape';
 
 
 @Controller('/notes/v1')
@@ -51,6 +52,7 @@ export default class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.GET,
+        paramsShape: NoteParamsShape
     })
     async get(req: Request, res: Response, next: NextFunction) {
         let note: NoteDto | null;
@@ -68,7 +70,8 @@ export default class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.PATCH,
-        bodyShape: UpdateNoteShape
+        bodyShape: UpdateNoteShape,
+        paramsShape: NoteParamsShape
     })
     async update(req: RequestWithDto, res: Response, next: NextFunction) {
         try {
@@ -83,6 +86,7 @@ export default class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.DELETE,
+        paramsShape: NoteParamsShape
     })
     async delete(req: Request, res: Response, next: NextFunction) {
         try {

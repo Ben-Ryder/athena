@@ -7,6 +7,7 @@ import { UsersService } from './users.service';
 import { UserDto } from './dtos/users.dto';
 import { CreateUserShape } from './shapes/create.users.shape';
 import { UpdateUserShape } from './shapes/update.notes.shape';
+import { UserParamsShape } from './shapes/user-params.shape';
 
 
 @Controller('/users/v1')
@@ -52,6 +53,7 @@ export default class UsersController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.GET,
+        paramsShape: UserParamsShape
     })
     async get(req: Request, res: Response, next: NextFunction) {
         let user: UserDto | null;
@@ -69,7 +71,8 @@ export default class UsersController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.PATCH,
-        bodyShape: UpdateUserShape
+        bodyShape: UpdateUserShape,
+        paramsShape: UserParamsShape
     })
     async update(req: RequestWithDto, res: Response, next: NextFunction) {
         try {
@@ -84,6 +87,7 @@ export default class UsersController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.DELETE,
+        paramsShape: UserParamsShape
     })
     async delete(req: Request, res: Response, next: NextFunction) {
         try {

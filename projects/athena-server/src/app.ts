@@ -2,7 +2,7 @@ import path from 'path';
 import express from 'express';
 
 import { KangoJS } from '@kangojs/kangojs';
-import { createBodyValidator, createQueryValidator } from '@kangojs/class-validation';
+import { createBodyValidator, createParamsValidator, createQueryValidator } from '@kangojs/class-validation';
 import { useCommonMiddleware, useNotFoundMiddleware } from '@kangojs/common-middleware';
 import { useServeSPA } from '@kangojs/serve-spa';
 import { useErrorHandlerMiddleware } from "@kangojs/error-handler";
@@ -20,14 +20,13 @@ export default async function App() {
         controllerFilesGlob: path.join(__dirname, 'modules/**/*.controller.{ts,js}'),
         authValidator: useAuthValidator(),
         bodyValidator: createBodyValidator(),
-        queryValidator: createQueryValidator()
+        queryValidator: createQueryValidator(),
+        paramsValidator: createParamsValidator()
     });
     await kangoJS.boostrap(app);
 
     // API 404 handling.
-    await useNotFoundMiddleware(app, {
-        path: '/api'
-    });
+    await useNotFoundMiddleware(app);
 
     // Setup serving of the web app.
     useServeSPA(app, {
@@ -36,7 +35,7 @@ export default async function App() {
 
     // Global Error Handling
     // todo: add custom logger from services
-    app.use(useErrorHandlerMiddleware);
+    useErrorHandlerMiddleware(app);
 
     return app;
 };
