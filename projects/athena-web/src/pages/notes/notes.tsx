@@ -3,7 +3,7 @@ import { INote } from '@ben-ryder/athena-js-sdk';
 
 import { Page } from '../../patterns/layout/page';
 import {ButtonLink} from "../../patterns/elements/button/button-link";
-import {useAthena} from "../../context/use-athena";
+import {useAthena} from "../../helpers/use-athena";
 
 
 export function NotesPage() {
@@ -12,9 +12,7 @@ export function NotesPage() {
 
   useEffect(() => {
     async function getNotes() {
-      console.log(apiClient.encryptionKey);
       const allNotes = await apiClient.getNotes();
-      console.log(allNotes);
       setNotes(allNotes.notes);
     }
     getNotes();

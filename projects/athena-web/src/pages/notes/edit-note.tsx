@@ -6,7 +6,7 @@ import { INote, INoteContent } from "@ben-ryder/athena-js-sdk";
 import { Page } from "../../patterns/layout/page";
 import { NoteForm } from "../../patterns/components/note-form";
 import { Button } from "../../patterns/elements/button/button";
-import {useAthena} from "../../context/use-athena";
+import {useAthena} from "../../helpers/use-athena";
 
 
 type PageURLParams = {

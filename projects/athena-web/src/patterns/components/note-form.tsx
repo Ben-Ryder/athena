@@ -1,11 +1,11 @@
 import React from "react";
 import { StrictReactNode } from "../../types/strict-react-node";
-import { Field, Form, Formik, FormikHelpers } from "formik";
+import {Field, Form, Formik, FormikHelpers, useFormikContext} from "formik";
+import { object as YupObject, string as YupString } from "yup";
 
 import { INoteContent } from "@ben-ryder/athena-js-sdk";
 
 import { Button } from "../elements/button/button";
-
 
 export interface NoteFormProps {
     initialValues: INoteContent,
@@ -13,14 +13,43 @@ export interface NoteFormProps {
     leftContent?: StrictReactNode
 }
 
+const NoteFormSchema = YupObject().shape({
+    title: YupString()
+        .required('The note must have a title.'),
+    body: YupString()
+        .required('The note must have a body.')
+        .nullable(),
+});
+
+function NoteFormError() {
+    const { errors } = useFormikContext<INoteContent>();
+
+    let error: string|null = null;
+    if (errors.title) {
+        error = errors.title;
+    }
+    else if (errors.body) {
+        error = errors.body;
+    }
+
+    if (error) {
+        return (<p className="text-sm flex items-center text-red-600">{error}</p>)
+    }
+    else {
+        return null;
+    }
+}
 
 export function NoteForm(props: NoteFormProps) {
     return (
         <Formik
             initialValues={props.initialValues}
             onSubmit={props.onSubmit}
+            validationSchema={NoteFormSchema}
+            validateOnBlur={false}
+            validateOnChange={false}
         >
-            {({values, handleChange}) => (
+            {({values, handleChange, errors, touched}) => (
                 <Form className="absolute h-full w-full flex flex-col">
                     <div className="border-b">
                         <label htmlFor="note-title" className="sr-only">Title</label>
@@ -44,6 +73,7 @@ export function NoteForm(props: NoteFormProps) {
                         <div>
                             {props.leftContent && props.leftContent}
                         </div>
+                        <NoteFormError />
                         <div>
                             <Button type="submit">Save</Button>
                         </div>

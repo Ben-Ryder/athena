@@ -17,8 +17,8 @@ export interface AthenaAPIClientOptions {
 }
 
 export class AthenaAPIClient {
-    apiEndpoint: string;
-    encryptionKey?: string | null;
+    private readonly apiEndpoint: string;
+    private encryptionKey?: string | null;
 
     constructor(options: AthenaAPIClientOptions) {
         this.apiEndpoint = options.apiEndpoint;
@@ -27,6 +27,10 @@ export class AthenaAPIClient {
 
     setEncryptionKey(encryptionKey: string | null) {
         this.encryptionKey = encryptionKey;
+    }
+
+    getEncryptionKey() {
+        return this.encryptionKey;
     }
 
     private static async query<ResponseType>(options: QueryOptions): Promise<ResponseType> {
@@ -62,9 +66,6 @@ export class AthenaAPIClient {
 
     async getNotes(): Promise<INoteDecryptionResult> {
         this.checkEncryptionKey();
-
-        console.log(this.encryptionKey);
-
         const encryptedNotes = await this.getEncryptedNotes();
         let notes: INote[] = [];
         let invalidNotes: INote[] = [];

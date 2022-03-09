@@ -8,6 +8,7 @@ export function Header() {
     <div className="flex min-h-[50px] border-b border-1">
       <Link className="mx-4 flex items-center" to="/">Home</Link>
       <Link className="mx-4 flex items-center" to="/notes">Notes</Link>
+        <Link className="mx-4 flex items-center" to="/user/logout">Logout</Link>
     </div>
   );
 }
