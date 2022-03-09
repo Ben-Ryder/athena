@@ -52,11 +52,18 @@ export class AthenaEncryption {
     }
 
     static decryptNote(key: string, note: INote): INote {
-        return {
+        const decryptedNote = {
             id: note.id,
             title: AthenaEncryption.decryptText(key, note.title),
             body: typeof note.body === 'string' ? AthenaEncryption.decryptText(key, note.body) : null
+        };
+
+        // If the title or body are empty then the encryption key must be wrong.
+        if (decryptedNote.title === '' || (typeof decryptedNote.body === "string" && decryptedNote.body === "")) {
+            throw new AthenaDecryptError();
         }
+
+        return decryptedNote;
     }
 
     static encryptNoteContent(key: string, note: INoteContent): INoteContent {
@@ -67,9 +74,16 @@ export class AthenaEncryption {
     }
 
     static decryptNoteContent(key: string, note: INoteContent): INoteContent {
-        return {
+        const decryptedNoteContent = {
             title: AthenaEncryption.decryptText(key, note.title),
             body: typeof note.body === 'string' ? AthenaEncryption.decryptText(key, note.body) : null
         }
+
+        // If the title or body are empty then the encryption key must be wrong.
+        if (decryptedNoteContent.title === '' || (typeof decryptedNoteContent.body === "string" && decryptedNoteContent.body === "")) {
+            throw new AthenaDecryptError();
+        }
+
+        return decryptedNoteContent;
     }
 }
