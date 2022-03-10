@@ -30,6 +30,7 @@
     "@kangojs/http-status-codes": "^1.0.1",
     "@kangojs/kangojs": "^1.2.0",
     "@kangojs/serve-spa": "^1.0.0",
+    "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.0",
@@ -42,6 +43,7 @@
     "typeorm": "^0.2.44"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",

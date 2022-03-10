@@ -6,6 +6,7 @@ import { LoginShape } from "./shapes/login.shape";
 import { RequestWithDto } from "@kangojs/class-validation";
 import { LogoutShape } from './shapes/logout.shape';
 import { AuthService } from './auth.service';
+import { RequestWithUser } from "./auth.middleware";
 
 
 @Controller('/auth/v1')
@@ -17,7 +18,8 @@ class AuthController {
     @Route({
         path: '/login',
         httpMethod: HTTPMethods.POST,
-        bodyShape: LoginShape
+        bodyShape: LoginShape,
+        authRequired: false
     })
     async login(req: RequestWithDto, res: Response, next: NextFunction) {
         const loginDetails = <LoginShape> req.bodyDto;
@@ -51,13 +53,14 @@ class AuthController {
     @Route({
         path: '/refresh',
         httpMethod: HTTPMethods.POST,
-        bodyShape: RefreshShape
+        bodyShape: RefreshShape,
+        authRequired: false
     })
-    async refresh(req: RequestWithDto, res: Response, next: NextFunction) {
+    async refresh(req: RequestWithUser, res: Response, next: NextFunction) {
         const bodyData = <RefreshShape> req.bodyDto;
 
         try {
-            const tokens = await this.authService.refreshAccessToken(bodyData.refreshToken);
+            const tokens = await this.authService.refreshAccessToken(req.user.id, bodyData.refreshToken);
             return res.send(tokens);
         }
         catch(e) {

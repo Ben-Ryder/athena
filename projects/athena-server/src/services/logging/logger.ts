@@ -10,11 +10,7 @@ export class Logger {
     }
   })
 
-  async logError(error: any) {
+  async log(error: any) {
     this._logger.error(error);
-  }
-
-  async logInformation(information: any) {
-    this._logger.info(information);
   }
 }

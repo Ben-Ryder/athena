@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 
 import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
 import { RequestWithDto } from "@kangojs/class-validation";
 
 import { UsersService } from './users.service';
-import { UserDto } from './dtos/users.dto';
+import { PublicUserDto } from "./dtos/public.users.dto";
 import { CreateUserShape } from './shapes/create.users.shape';
 import { UpdateUserShape } from './shapes/update.notes.shape';
 import { UserParamsShape } from './shapes/user-params.shape';
@@ -16,29 +16,12 @@ export default class UsersController {
       private usersService: UsersService = new UsersService()
     ) {}
 
-    // todo: maybe introduce user roles and expose this endpoint to administrators?
-    // @Route({
-    //     httpMethod: HTTPMethods.GET,
-    // })
-    // async getAll(req: Request, res: Response, next: NextFunction) {
-    //     let users: UserDto[] = [];
-    //
-    //     try {
-    //         users = await this.usersService.getAll();
-    //     }
-    //     catch (e) {
-    //         return next(e);
-    //     }
-    //
-    //     return res.send(users);
-    // }
-
     @Route({
         httpMethod: HTTPMethods.POST,
         bodyShape: CreateUserShape
     })
     async add(req: RequestWithDto, res: Response, next: NextFunction) {
-        let newUser: UserDto;
+        let newUser: PublicUserDto;
 
         try {
             newUser = await this.usersService.add(req.bodyDto);
@@ -51,15 +34,15 @@ export default class UsersController {
     }
 
     @Route({
-        path: '/:noteId',
+        path: '/:userId',
         httpMethod: HTTPMethods.GET,
         paramsShape: UserParamsShape
     })
-    async get(req: Request, res: Response, next: NextFunction) {
-        let user: UserDto | null;
+    async get(req: RequestWithDto, res: Response, next: NextFunction) {
+        let user: PublicUserDto | null;
 
         try {
-            user = await this.usersService.get(req.params.noteId);
+            user = await this.usersService.get(req.paramsDto.userId);
         }
         catch (e) {
             return next(e);
@@ -69,14 +52,14 @@ export default class UsersController {
     }
 
     @Route({
-        path: '/:noteId',
+        path: '/:userId',
         httpMethod: HTTPMethods.PATCH,
         bodyShape: UpdateUserShape,
         paramsShape: UserParamsShape
     })
     async update(req: RequestWithDto, res: Response, next: NextFunction) {
         try {
-            await this.usersService.update(req.params.noteId, req.bodyDto);
+            await this.usersService.update(req.paramsDto.userId, req.bodyDto);
         }
         catch (e) {
             return next(e);
@@ -85,13 +68,13 @@ export default class UsersController {
     }
 
     @Route({
-        path: '/:noteId',
+        path: '/:userId',
         httpMethod: HTTPMethods.DELETE,
         paramsShape: UserParamsShape
     })
-    async delete(req: Request, res: Response, next: NextFunction) {
+    async delete(req: RequestWithDto, res: Response, next: NextFunction) {
         try {
-            await this.usersService.delete(req.params.noteId);
+            await this.usersService.delete(req.paramsDto.userId);
         }
         catch (e) {
             return next(e);

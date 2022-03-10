@@ -54,11 +54,11 @@ export default class NotesController {
         httpMethod: HTTPMethods.GET,
         paramsShape: NoteParamsShape
     })
-    async get(req: Request, res: Response, next: NextFunction) {
+    async get(req: RequestWithDto, res: Response, next: NextFunction) {
         let note: NoteDto | null;
 
         try {
-            note = await this.notesService.get(req.params.noteId);
+            note = await this.notesService.get(req.paramsDto.noteId);
         }
         catch (e) {
             return next(e);
@@ -75,7 +75,7 @@ export default class NotesController {
     })
     async update(req: RequestWithDto, res: Response, next: NextFunction) {
         try {
-            await this.notesService.update(req.params.noteId, req.bodyDto);
+            await this.notesService.update(req.paramsDto.noteId, req.bodyDto);
         }
         catch (e) {
             return next(e);
@@ -88,9 +88,9 @@ export default class NotesController {
         httpMethod: HTTPMethods.DELETE,
         paramsShape: NoteParamsShape
     })
-    async delete(req: Request, res: Response, next: NextFunction) {
+    async delete(req: RequestWithDto, res: Response, next: NextFunction) {
         try {
-            await this.notesService.delete(req.params.noteId);
+            await this.notesService.delete(req.paramsDto.noteId);
         }
         catch (e) {
             return next(e);
