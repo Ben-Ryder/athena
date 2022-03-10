@@ -2,7 +2,7 @@
 node_modules
 
 # Typescript
-dist
+build
 
 # IDEs
 .idea

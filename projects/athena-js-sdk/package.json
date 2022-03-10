@@ -9,12 +9,12 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf ./build && tsc",
     "prepublishOnly": "npm run build",
     "test": "jest"
   },
   "files": [
-    "dist/**/*"
+    "build/**/*"
   ],
   "keywords": [],
   "devDependencies": {

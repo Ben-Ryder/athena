@@ -17,16 +17,16 @@
   "scripts": {
     "start": "npm run build && NODE_PATH=./dist node dist/src/server.js",
     "dev": "NODE_PATH=./ nodemon src/server.ts",
-    "build": "tsc",
+    "build": "rm -rf ./build && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
     "node": "16.14.x"
   },
   "dependencies": {
-    "@kangojs/class-validation": "^1.1.0",
+    "@kangojs/class-validation": "^1.1.1",
     "@kangojs/common-middleware": "^1.2.0",
-    "@kangojs/error-handler": "^0.2.1",
+    "@kangojs/error-handler": "^0.2.3",
     "@kangojs/http-status-codes": "^1.0.1",
     "@kangojs/kangojs": "^1.2.0",
     "@kangojs/serve-spa": "^1.0.0",

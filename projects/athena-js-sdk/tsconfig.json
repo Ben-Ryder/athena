@@ -5,11 +5,11 @@
     "strict": true,
     "declaration": true,
     "esModuleInterop": true,
-    "outDir": "./dist"
+    "outDir": "./build",
   },
   "exclude": [
     "tests",
-    "dist",
+    "build",
     "node_modules"
   ]
 }
