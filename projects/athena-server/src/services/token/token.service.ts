@@ -1,9 +1,9 @@
-import { decode, sign, verify } from 'jsonwebtoken';
-import cron from "node-cron";
+import {decode, JwtPayload, sign, verify} from 'jsonwebtoken';
 
 import { config } from '../../config';
+import { CacheService } from "../cache/cache.service";
 
-export interface TokenPayload {
+export interface TokenPayload extends JwtPayload {
     userId: string
 }
 
@@ -23,20 +23,12 @@ export interface TokenPair {
 export class TokenService {
     accessTokenSecret: string;
     refreshTokenSecret: string;
-    accessTokenBlacklist: string[] = [];
-    accessTokenBlacklistCron: string;
-    refreshTokenBlacklist: string[] = [];
-    refreshTokenBlacklistCron: string;
 
-    constructor() {
+    constructor(
+        private cacheService: CacheService = new CacheService()
+    ) {
         this.accessTokenSecret = config.auth.accessToken.secret;
-        this.accessTokenBlacklistCron = config.auth.accessToken.blacklistCron;
         this.refreshTokenSecret = config.auth.refreshToken.secret;
-        this.refreshTokenBlacklistCron = config.auth.refreshToken.blacklistCron;
-
-        // @todo: separate into separate cron service?
-        cron.schedule(this.accessTokenBlacklistCron, this.pruneAccessTokenBlacklist)
-        cron.schedule(this.refreshTokenBlacklistCron, this.pruneRefreshTokenBlacklist)
     }
 
     /**
@@ -51,62 +43,44 @@ export class TokenService {
     }
 
     private createAccessToken(userId: string) {
-        return sign({id: userId, type: "accessToken"}, this.accessTokenSecret, {expiresIn: '1h'});
+        return sign({userId, type: "accessToken"}, this.accessTokenSecret, {expiresIn: '1h'});
     }
 
     private createRefreshToken(userId: string) {
-        return sign({id: userId, type: "refreshToken"}, this.refreshTokenSecret, {expiresIn: '7 days'});
+        return sign({userId, type: "refreshToken"}, this.refreshTokenSecret, {expiresIn: '7 days'});
     }
 
-    isValidAccessToken(token: string) {
+    private async validateAndDecodeToken<PayloadType>(token: string, secret: string) {
         try {
             // verify will throw an error if it fails
-            verify(token, this.accessTokenSecret);
+            const payload = <PayloadType|string> verify(token, this.accessTokenSecret);
 
-            if (!this.accessTokenBlacklist.includes(token)) {
-                return true;
+            const isBlacklisted = await this.cacheService.itemExists(token);
+            if (!isBlacklisted && typeof payload !== 'string') {
+                return payload;
             }
         }
         catch (err) {}
 
-        return false;
+        return null;
     }
 
-    isValidRefreshToken(token: string) {
-        try {
-            // verify will throw an error if it fails
-            verify(token, this.refreshTokenSecret);
+    async validateAndDecodeAccessToken(token: string) {
+        return this.validateAndDecodeToken<AccessTokenPayload>(token, this.accessTokenSecret);
+    }
 
-            if (!this.refreshTokenBlacklist.includes(token)) {
-                return true;
-            }
+    async validateAndDecodeRefreshToken(token: string) {
+        return this.validateAndDecodeToken<RefreshTokenPayload>(token, this.refreshTokenSecret);
+    }
+
+    async addTokenToBlacklist(token: string) {
+        const payload = decode(token);
+
+        if (typeof payload !== 'string' && payload?.exp) {
+            await this.cacheService.addItem(token, true, {epochExpiry: payload.exp});
         }
-        catch (err) {}
-
-        return false;
-    }
-
-    getAccessTokenPayload(token: string): AccessTokenPayload {
-        return <AccessTokenPayload> decode(token);
-    }
-
-    getRefreshTokenPayload(token: string): RefreshTokenPayload {
-        return <RefreshTokenPayload> decode(token);
-    }
-
-    blacklistAccessToken(token: string) {
-        this.accessTokenBlacklist.push(token);
-    }
-
-    blacklistRefreshToken(token: string) {
-        this.refreshTokenBlacklist.push(token);
-    }
-
-    pruneAccessTokenBlacklist() {
-        this.accessTokenBlacklist = this.accessTokenBlacklist.filter(this.isValidAccessToken)
-    }
-
-    pruneRefreshTokenBlacklist() {
-        this.refreshTokenBlacklist = this.refreshTokenBlacklist.filter(this.isValidRefreshToken)
+        else {
+            await this.cacheService.addItem(token, true);
+        }
     }
 }

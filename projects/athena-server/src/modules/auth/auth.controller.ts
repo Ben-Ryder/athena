@@ -60,7 +60,7 @@ class AuthController {
         const bodyData = <RefreshShape> req.bodyDto;
 
         try {
-            const tokens = await this.authService.refreshAccessToken(req.user.id, bodyData.refreshToken);
+            const tokens = await this.authService.refresh(bodyData.refreshToken);
             return res.send(tokens);
         }
         catch(e) {
@@ -70,8 +70,7 @@ class AuthController {
 
     @Route({
         path: '/check',
-        httpMethod: HTTPMethods.GET,
-        bodyShape: RefreshShape
+        httpMethod: HTTPMethods.GET
     })
     async check(req: Request, res: Response, next: NextFunction) {
         return res.send({});

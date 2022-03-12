@@ -9,14 +9,15 @@ export interface Config {
     database: {
         url: string
     },
+    cache: {
+      redisUrl: string
+    },
     auth: {
         accessToken: {
-            secret: string,
-            blacklistCron: string
+            secret: string
         },
         refreshToken: {
-            secret: string,
-            blacklistCron: string
+            secret: string
         }
     }
 }
@@ -29,14 +30,15 @@ export const config: Config = {
     database: {
         url: process.env.DATABASE_URL as string
     },
+    cache: {
+        redisUrl: process.env.REDIS_URL as string
+    },
     auth: {
         accessToken: {
-            secret: process.env.ACCESS_TOKEN_SECRET as string,
-            blacklistCron: process.env.ACCESS_TOKEN_BLACKLIST_CRON as string
+            secret: process.env.ACCESS_TOKEN_SECRET as string
         },
         refreshToken: {
-            secret: process.env.REFRESH_TOKEN_SECRET as string,
-            blacklistCron: process.env.REFRESH_TOKEN_BLACKLIST_CRON as string
+            secret: process.env.REFRESH_TOKEN_SECRET as string
         }
     }
 }

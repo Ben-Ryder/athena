@@ -6,6 +6,7 @@ import { CreateUserDto } from './dtos/create.user.dto';
 import { UpdateUserDto } from './dtos/update.users.dto';
 
 import { PasswordService } from "../../services/password/password.service";
+import { AccessForbiddenError } from "@kangojs/error-handler";
 
 export class UsersService {
     constructor(
@@ -16,7 +17,13 @@ export class UsersService {
         return this.userDatabaseRepository.getById(userId);
     }
 
-    async get(userId: string): Promise<PublicUserDto|null> {
+    async get(currentUserId: string, userId: string,): Promise<PublicUserDto|null> {
+        if (userId !== currentUserId) {
+            throw new AccessForbiddenError({
+                message: "Access forbidden to user account fetch"
+            })
+        }
+
         const user = await this.userDatabaseRepository.getById(userId);
         if (user) {
             const { password, ...publicUserDto } = user;
@@ -39,7 +46,13 @@ export class UsersService {
         return publicUserDto;
     }
 
-    async update(userId: string, updateUserDto: UpdateUserDto) {
+    async update(currentUserId: string, userId: string, updateUserDto: UpdateUserDto) {
+        if (userId !== currentUserId) {
+            throw new AccessForbiddenError({
+                message: "Access forbidden to user account update"
+            })
+        }
+
         if (updateUserDto.password) {
             updateUserDto.password = await PasswordService.hashPassword(updateUserDto.password);
         }
@@ -47,7 +60,13 @@ export class UsersService {
         return this.userDatabaseRepository.update(userId, updateUserDto);
     }
 
-    async delete(noteId: string) {
-        return this.userDatabaseRepository.delete(noteId);
+    async delete(currentUserId: string, userId: string) {
+        if (userId !== currentUserId) {
+            throw new AccessForbiddenError({
+                message: "Access forbidden to user account deletion"
+            })
+        }
+
+        return this.userDatabaseRepository.delete(userId);
     }
 }

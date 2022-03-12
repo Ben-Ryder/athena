@@ -8,6 +8,7 @@ import { PublicUserDto } from "./dtos/public.users.dto";
 import { CreateUserShape } from './shapes/create.users.shape';
 import { UpdateUserShape } from './shapes/update.notes.shape';
 import { UserParamsShape } from './shapes/user-params.shape';
+import {RequestWithUser} from "../auth/auth.middleware";
 
 
 @Controller('/users/v1')
@@ -18,7 +19,8 @@ export default class UsersController {
 
     @Route({
         httpMethod: HTTPMethods.POST,
-        bodyShape: CreateUserShape
+        bodyShape: CreateUserShape,
+        authRequired: false
     })
     async add(req: RequestWithDto, res: Response, next: NextFunction) {
         let newUser: PublicUserDto;
@@ -38,11 +40,11 @@ export default class UsersController {
         httpMethod: HTTPMethods.GET,
         paramsShape: UserParamsShape
     })
-    async get(req: RequestWithDto, res: Response, next: NextFunction) {
+    async get(req: RequestWithUser, res: Response, next: NextFunction) {
         let user: PublicUserDto | null;
 
         try {
-            user = await this.usersService.get(req.paramsDto.userId);
+            user = await this.usersService.get(req.user.id, req.paramsDto.userId, );
         }
         catch (e) {
             return next(e);
@@ -57,9 +59,9 @@ export default class UsersController {
         bodyShape: UpdateUserShape,
         paramsShape: UserParamsShape
     })
-    async update(req: RequestWithDto, res: Response, next: NextFunction) {
+    async update(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
-            await this.usersService.update(req.paramsDto.userId, req.bodyDto);
+            await this.usersService.update(req.user.id, req.paramsDto.userId, req.bodyDto);
         }
         catch (e) {
             return next(e);
@@ -72,9 +74,9 @@ export default class UsersController {
         httpMethod: HTTPMethods.DELETE,
         paramsShape: UserParamsShape
     })
-    async delete(req: RequestWithDto, res: Response, next: NextFunction) {
+    async delete(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
-            await this.usersService.delete(req.paramsDto.userId);
+            await this.usersService.delete(req.user.id, req.paramsDto.userId);
         }
         catch (e) {
             return next(e);

@@ -12,26 +12,27 @@ export interface RequestWithUser extends RequestWithDto {
   user: RequestUser
 }
 
-export function getRequestUserId(req: Request) {
-
-}
 
 export function useAuthValidator(tokenService: TokenService = new TokenService()) {
-  return function authValidator(req: Request, res: Response, next: NextFunction) {
+  return async function authValidator(req: Request, res: Response, next: NextFunction) {
     const authorizationHeader = req.header('authorization');
 
     if (authorizationHeader) {
       const accessToken = authorizationHeader.split(" ")[1];
-      const validAccessToken = tokenService.isValidAccessToken(accessToken);
+      const accessTokenPayload = await tokenService.validateAndDecodeAccessToken(accessToken);
 
-      if (validAccessToken) {
+      if (accessTokenPayload) {
+        // todo: better way to handle req types and adding new attribute?
+        // @ts-ignore
+        req.user = {
+          id: accessTokenPayload.userId
+        }
         return next();
       }
     }
 
-    throw new AccessDeniedError({
-      message: 'Request Access Denied',
-      applicationMessage: ''
-    })
+    return next(new AccessDeniedError({
+      message: 'Request Access Denied'
+    }))
   }
 }

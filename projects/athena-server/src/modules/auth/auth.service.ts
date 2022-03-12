@@ -37,24 +37,24 @@ export class AuthService {
     }
 
     async logout(refreshToken: string, accessToken?: string) {
-        await this.tokenService.blacklistRefreshToken(refreshToken);
+        await this.tokenService.addTokenToBlacklist(refreshToken);
 
         if (accessToken) {
-          await this.tokenService.blacklistAccessToken(accessToken);
+          await this.tokenService.addTokenToBlacklist(accessToken);
         }
     }
 
-    async refreshAccessToken(userId: string, refreshToken: string) {
-        const validToken = this.tokenService.isValidRefreshToken(refreshToken);
+    async refresh(refreshToken: string) {
+        const tokenPayload = await this.tokenService.validateAndDecodeRefreshToken(refreshToken);
 
-        if (!validToken) {
+        if (!tokenPayload) {
           throw new AccessDeniedError({
             message: 'The supplied refresh token is invalid.',
             applicationMessage: 'The supplied refresh token is invalid.'
           });
         }
 
-        this.tokenService.blacklistRefreshToken(refreshToken);
-        return this.tokenService.createTokenPair(userId);
+        await this.tokenService.addTokenToBlacklist(refreshToken);
+        return this.tokenService.createTokenPair(tokenPayload.userId);
     }
 }

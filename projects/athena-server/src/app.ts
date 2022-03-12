@@ -7,6 +7,7 @@ import { useCommonMiddleware, useNotFoundMiddleware } from '@kangojs/common-midd
 import { useServeSPA } from '@kangojs/serve-spa';
 import { useErrorHandlerMiddleware } from "@kangojs/error-handler";
 import { useAuthValidator } from './modules/auth/auth.middleware';
+import {Logger} from "./services/logging/logger";
 
 
 export default async function App() {
@@ -35,7 +36,7 @@ export default async function App() {
 
     // Global Error Handling
     // todo: add custom logger from services
-    useErrorHandlerMiddleware(app);
+    useErrorHandlerMiddleware(app,{logger: new Logger()});
 
     return app;
 };
