@@ -1,17 +1,20 @@
 import axios from 'axios';
 
-import {INote, INoteContent, INoteDecryptionResult} from './types/note';
+import pbkdf2 from 'crypto-js/pbkdf2';
+import { random } from 'crypto-js/lib-typedarrays';
+
+import { INote, INoteContent, INoteDecryptionResult } from './types/note';
 import { AthenaEncryption } from './encryption';
 import {
     AthenaNoAccessTokenError,
     AthenaNoEncryptionKeyError,
     AthenaNoRefreshTokenError,
     AthenaRequestError,
+    AthenaTokenDeleteError,
     AthenaTokenLoadError,
-    AthenaTokenSaveError,
-    AthenaTokenDeleteError
-} from "./types/errors";
-import {LoginResponse, RefreshResponse} from "./types/auth";
+    AthenaTokenSaveError
+} from './types/errors';
+import { LoginResponse, RefreshResponse } from './types/auth';
 
 export interface QueryOptions {
     url: string,
@@ -48,11 +51,19 @@ export class AthenaAPIClient {
         this.options = options;
     }
 
-    setEncryptionKey(encryptionKey: string | null) {
-        this.options.encryptionKey = encryptionKey;
+    setEncryptionPhrase(encryptionPhrase: string | null) {
+        if (encryptionPhrase === null) {
+            this.options.encryptionKey = null;
+            return;
+        }
+
+        const salt = random(128 / 8);
+        const key = pbkdf2(encryptionPhrase, salt).toString();
+        console.log(key);
+        this.options.encryptionKey = key;
     }
 
-    getEncryptionKey() {
+    getEncryptionPhrase() {
         return this.options.encryptionKey;
     }
 

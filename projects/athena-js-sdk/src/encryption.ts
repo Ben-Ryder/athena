@@ -1,7 +1,8 @@
 import aes from "crypto-js/aes";
 import utf8 from "crypto-js/enc-utf8";
-import {INote, INoteContent} from './types/note';
-import {AthenaDecryptError, AthenaEncryptError} from "./types/errors";
+
+import { INote, INoteContent } from './types/note';
+import { AthenaDecryptError, AthenaEncryptError } from "./types/errors";
 
 
 export class AthenaEncryption {

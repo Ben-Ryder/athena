@@ -7,7 +7,7 @@
   "homepage": "https://github.com/Ben-Ryder/athena",
   "bugs": "https://github.com/Ben-Ryder/athena/issues",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "build/index.js",
   "scripts": {
     "build": "rm -rf ./build && tsc",
     "prepublishOnly": "npm run build",

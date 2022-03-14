@@ -13,11 +13,11 @@ const initialValues: EncryptionKeyFormData = {
 }
 
 export function EnterEncryptionKeyPage() {
-    const { setEncryptionKey } = useAthena();
+    const { setEncryptionPhrase } = useAthena();
     const navigate = useNavigate();
 
     const submitEncryptionKeyForm = async function(values: EncryptionKeyFormData, helpers: FormikHelpers<EncryptionKeyFormData>) {
-        await setEncryptionKey(values.encryptionKey);
+        await setEncryptionPhrase(values.encryptionKey);
         await navigate('/');
         helpers.setSubmitting(false);
     }

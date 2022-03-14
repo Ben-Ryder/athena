@@ -4,15 +4,15 @@ import {useAthena} from "../../helpers/use-athena";
 
 export function LogoutPage() {
     const navigate = useNavigate();
-    const { deleteEncryptionKey } = useAthena();
+    const { deleteEncryptionPhrase } = useAthena();
 
     useEffect(() => {
         async function logout() {
-            deleteEncryptionKey();
+            await deleteEncryptionPhrase();
             await navigate("/");
         }
         logout();
-    }, []);
+    }, [deleteEncryptionPhrase, navigate]);
 
     return (
         <>

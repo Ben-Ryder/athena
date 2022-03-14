@@ -4,7 +4,7 @@
   "private": true,
   "description": "The React web frontend for Athena.",
   "dependencies": {
-    "@ben-ryder/athena-js-sdk": "file:../athena-js-sdk/dist",
+    "@ben-ryder/athena-js-sdk": "file:../athena-js-sdk",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^13.5.0",
