@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { RefreshShape } from "./shapes/refresh.shape";
 import { LoginShape } from "./shapes/login.shape";
 import { RequestWithDto } from "@kangojs/class-validation";
-import { LogoutShape } from './shapes/logout.shape';
+import { RevokeShape } from './shapes/revoke.shape';
 import { AuthService } from './auth.service';
 import { RequestWithUser } from "./auth.middleware";
 
@@ -34,15 +34,21 @@ class AuthController {
     }
 
     @Route({
-        path: '/logout',
+        path: '/revoke',
         httpMethod: HTTPMethods.POST,
-        bodyShape: LogoutShape
+        bodyShape: RevokeShape,
+        authRequired: false
     })
-    async logout(req: RequestWithDto, res: Response, next: NextFunction) {
-        const tokens = <LogoutShape> req.bodyDto;
+    async revoke(req: RequestWithDto, res: Response, next: NextFunction) {
+        const tokens = <RevokeShape> req.bodyDto;
 
         try {
-            await this.authService.logout(tokens.refreshToken, tokens.accessToken);
+            if (tokens.refreshToken) {
+                await this.authService.revokeRefreshToken(tokens.refreshToken);
+            }
+            if (tokens.accessToken) {
+                await this.authService.revokeAccessToken(tokens.accessToken);
+            }
             return res.send({});
         }
         catch(e) {
@@ -68,6 +74,13 @@ class AuthController {
         }
     }
 
+    /**
+     * An empty endpoint which can be used to check if your auth credentials are valid.
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
     @Route({
         path: '/check',
         httpMethod: HTTPMethods.GET

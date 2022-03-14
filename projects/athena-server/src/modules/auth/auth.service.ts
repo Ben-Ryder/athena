@@ -36,12 +36,20 @@ export class AuthService {
        return this.tokenService.createTokenPair(user.id);
     }
 
-    async logout(refreshToken: string, accessToken?: string) {
-        await this.tokenService.addTokenToBlacklist(refreshToken);
-
-        if (accessToken) {
-          await this.tokenService.addTokenToBlacklist(accessToken);
+    async revokeRefreshToken(refreshToken: string) {
+        const isValid = await this.tokenService.isSignedRefreshToken(refreshToken);
+        if (isValid) {
+            await this.tokenService.addTokenToBlacklist(refreshToken);
         }
+        // todo: throw an error to the user or fail silently?
+    }
+
+    async revokeAccessToken(accessToken: string) {
+        const isValid = await this.tokenService.isSignedAccessToken(accessToken);
+        if (isValid) {
+            await this.tokenService.addTokenToBlacklist(accessToken);
+        }
+        // todo: throw an error to the user or fail silently?
     }
 
     async refresh(refreshToken: string) {

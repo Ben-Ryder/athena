@@ -1,9 +1,9 @@
 import { IsJWT } from 'class-validator';
 
 
-export class LogoutShape {
+export class RevokeShape {
     @IsJWT()
-    refreshToken!: string;
+    refreshToken?: string;
 
     @IsJWT()
     accessToken?: string;
