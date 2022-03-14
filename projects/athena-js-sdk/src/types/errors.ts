@@ -27,3 +27,10 @@ export class AthenaDecryptError extends AthenaEncryptionError {}
 export class AthenaAPIClientError extends AthenaError {}
 export class AthenaNoEncryptionKeyError extends AthenaAPIClientError {}
 export class AthenaRequestError extends AthenaAPIClientError {}
+
+export class AthenaNoRefreshTokenError extends AthenaAPIClientError {}
+export class AthenaNoAccessTokenError extends AthenaAPIClientError {}
+
+export class AthenaTokenLoadError extends AthenaAPIClientError {}
+export class AthenaTokenSaveError extends AthenaAPIClientError {}
+export class AthenaTokenDeleteError extends AthenaAPIClientError {}
