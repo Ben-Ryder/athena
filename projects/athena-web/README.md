@@ -1,2 +1,2 @@
 # athena-web
-A React dashboard client for Athena.
+A React client application for Athena.

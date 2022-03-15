@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "The React web frontend for Athena.",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "@ben-ryder/athena-js-sdk": "file:../athena-js-sdk",
     "@testing-library/jest-dom": "^5.16.2",

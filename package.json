@@ -37,7 +37,7 @@
     "url": "git+https://github.com/Ben-Ryder/athena.git"
   },
   "author": "Ben-Ryder",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-only",
   "bugs": {
     "url": "https://github.com/Ben-Ryder/athena/issues"
   },

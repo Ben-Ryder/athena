@@ -6,7 +6,7 @@
   "author": "Ben-Ryder <dev@benryder.me> (https://www.benryder.me)",
   "homepage": "https://github.com/Ben-Ryder/athena",
   "bugs": "https://github.com/Ben-Ryder/athena/issues",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "main": "build/index.js",
   "scripts": {
     "build": "rm -rf ./build && tsc",
