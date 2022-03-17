@@ -2,5 +2,5 @@
 export class CreateNoteDto {
     title!: string;
     body?: string;
-    userId!: string;
+    user!: string;
 }

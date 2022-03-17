@@ -69,7 +69,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         return this.mapDatabaseEntityToEntityDto(savedEntity);
     }
 
-    async getById(entityId: string): Promise<EntityDto|null> {
+    async getById(entityId: string): Promise<EntityDto> {
         return this.get(<FindOneOptions<DatabaseEntity>>{id: entityId});
     }
 

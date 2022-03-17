@@ -1,8 +1,10 @@
 import { NotesDatabaseRepository } from "./database/notes.database.repository";
 import { NoteEntity } from './database/notes.database.entity';
 
-import { CreateNoteDto } from "./dtos/create.notes.dto";
-import { UpdateNoteDto } from "./dtos/update.notes.dto";
+import { CreateNoteDto } from "./dtos/create.note.dto";
+import { UpdateNoteDto } from "./dtos/update.note.dto";
+import { NoteDto } from './dtos/note.dto';
+import { AccessDeniedError } from '@kangojs/error-handler';
 
 
 export class NotesService {
@@ -10,23 +12,40 @@ export class NotesService {
        private notesDatabaseRepository: NotesDatabaseRepository = new NotesDatabaseRepository(NoteEntity)
     ) {}
 
-    async getAll() {
+    checkAccess(requestUserId: string, note: NoteDto) {
+        if (requestUserId !== note.user) {
+            throw new AccessDeniedError({
+                message: "Access denied to note"
+            })
+        }
+    }
+
+    async getAll(requestUserId: string) {
         return this.notesDatabaseRepository.getAll();
     }
 
-    async get(noteId: string) {
-        return this.notesDatabaseRepository.getById(noteId);
+    async get(requestUserId: string, noteId: string) {
+        const note = await this.notesDatabaseRepository.getById(noteId);
+        this.checkAccess(requestUserId, note);
+        return note;
     }
 
-    async add(createNoteDto: CreateNoteDto) {
+    async add(requestUserId: string, createNoteDto: CreateNoteDto) {
+        createNoteDto.user = requestUserId;
         return this.notesDatabaseRepository.add(createNoteDto);
     }
 
-    async update(noteId: string, updateNoteDto: UpdateNoteDto) {
-        return this.notesDatabaseRepository.update(noteId, updateNoteDto);
+    async update(requestUserId: string, noteId: string, updateNoteDto: UpdateNoteDto) {
+        // todo: improve this, .getById already makes a database get request so this is doubling requests.
+        const note = await this.notesDatabaseRepository.getById(noteId);
+        this.checkAccess(requestUserId, note);
+        await this.notesDatabaseRepository.update(noteId, updateNoteDto);
     }
 
-    async delete(noteId: string) {
+    async delete(requestUserId: string, noteId: string) {
+        // todo: improve this, .delete already makes a database get request so this is doubling requests.
+        const note = await this.notesDatabaseRepository.getById(noteId);
+        this.checkAccess(requestUserId, note);
         return this.notesDatabaseRepository.delete(noteId);
     }
 }

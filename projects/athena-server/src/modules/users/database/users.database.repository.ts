@@ -3,9 +3,9 @@ import { DeepPartial } from 'typeorm';
 import { DatabaseRepository } from '../../../services/database/database.repository';
 
 import { UserEntity } from './users.database.entity';
-import { UserDto } from '../dtos/users.dto';
+import { UserDto } from '../dtos/user.dto';
 import { CreateUserDto } from '../dtos/create.user.dto';
-import { UpdateUserDto } from '../dtos/update.users.dto';
+import { UpdateUserDto } from '../dtos/update.user.dto';
 
 export class UsersDatabaseRepository extends DatabaseRepository<UserEntity, UserDto, CreateUserDto, UpdateUserDto>{
   mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateUserDto): DeepPartial<UserEntity> {

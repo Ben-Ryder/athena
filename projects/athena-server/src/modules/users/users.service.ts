@@ -1,10 +1,10 @@
 import { UsersDatabaseRepository } from './database/users.database.repository';
 import { UserEntity } from './database/users.database.entity';
 
-import { PublicUserDto } from "./dtos/public.users.dto";
+import { ExposedUserDto } from "./dtos/exposed.user.dto";
 import { CreateUserDto } from './dtos/create.user.dto';
-import { UpdateUserDto } from './dtos/update.users.dto';
-import { UserDto } from './dtos/users.dto';
+import { UpdateUserDto } from './dtos/update.user.dto';
+import { UserDto } from './dtos/user.dto';
 
 import { PasswordService } from "../../services/password/password.service";
 import { AccessForbiddenError } from "@kangojs/error-handler";
@@ -18,12 +18,16 @@ export class UsersService {
         return this.userDatabaseRepository.getById(userId);
     }
 
-    async get(currentUserId: string, userId: string,): Promise<PublicUserDto|null> {
-        if (userId !== currentUserId) {
+    checkAccess(requestUserId: string, userId: string) {
+        if (requestUserId !== userId) {
             throw new AccessForbiddenError({
-                message: "Access forbidden to user account fetch"
+                message: "Access forbidden to user"
             })
         }
+    }
+
+    async get(requestUserId: string, userId: string,): Promise<ExposedUserDto|null> {
+        this.checkAccess(requestUserId, userId);
 
         const user = await this.userDatabaseRepository.getById(userId);
         if (user) {
@@ -32,7 +36,7 @@ export class UsersService {
         return null;
     }
 
-    makeUserPublic(userDto: UserDto): PublicUserDto {
+    makeUserPublic(userDto: UserDto): ExposedUserDto {
         const { password, ...publicUserDto } = userDto;
         return publicUserDto;
     }
@@ -51,12 +55,8 @@ export class UsersService {
         return publicUserDto;
     }
 
-    async update(currentUserId: string, userId: string, updateUserDto: UpdateUserDto) {
-        if (userId !== currentUserId) {
-            throw new AccessForbiddenError({
-                message: "Access forbidden to user account update"
-            })
-        }
+    async update(requestUserId: string, userId: string, updateUserDto: UpdateUserDto) {
+        this.checkAccess(requestUserId, userId);
 
         if (updateUserDto.password) {
             updateUserDto.password = await PasswordService.hashPassword(updateUserDto.password);
@@ -65,13 +65,8 @@ export class UsersService {
         return this.userDatabaseRepository.update(userId, updateUserDto);
     }
 
-    async delete(currentUserId: string, userId: string) {
-        if (userId !== currentUserId) {
-            throw new AccessForbiddenError({
-                message: "Access forbidden to user account deletion"
-            })
-        }
-
+    async delete(requestUserId: string, userId: string) {
+        this.checkAccess(requestUserId, userId);
         return this.userDatabaseRepository.delete(userId);
     }
 }

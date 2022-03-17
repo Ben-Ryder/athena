@@ -4,9 +4,9 @@ import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
 import { RequestWithDto } from "@kangojs/class-validation";
 
 import { UsersService } from './users.service';
-import { PublicUserDto } from "./dtos/public.users.dto";
+import { ExposedUserDto } from "./dtos/exposed.user.dto";
 import { CreateUserShape } from './shapes/create.users.shape';
-import { UpdateUserShape } from './shapes/update.notes.shape';
+import { UpdateUserShape } from './shapes/update.users.shape';
 import { UserParamsShape } from './shapes/user-params.shape';
 import {RequestWithUser} from "../auth/auth.middleware";
 
@@ -23,7 +23,7 @@ export default class UsersController {
         authRequired: false
     })
     async add(req: RequestWithDto, res: Response, next: NextFunction) {
-        let newUser: PublicUserDto;
+        let newUser: ExposedUserDto;
 
         try {
             newUser = await this.usersService.add(req.bodyDto);
@@ -41,7 +41,7 @@ export default class UsersController {
         paramsShape: UserParamsShape
     })
     async get(req: RequestWithUser, res: Response, next: NextFunction) {
-        let user: PublicUserDto | null;
+        let user: ExposedUserDto | null;
 
         try {
             user = await this.usersService.get(req.user.id, req.paramsDto.userId, );

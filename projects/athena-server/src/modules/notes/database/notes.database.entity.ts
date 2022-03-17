@@ -32,7 +32,9 @@ export class NoteEntity {
     updatedAt!: Date;
 
     @ManyToOne(
-        type => UserEntity, user => user.notes
+      type => UserEntity,
+        user => user.notes,
+      {nullable: false}
     )
     user!: UserEntity;
 }

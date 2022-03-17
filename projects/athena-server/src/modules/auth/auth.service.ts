@@ -4,7 +4,7 @@ import { TokenService } from "../../services/token/token.service";
 import { PasswordService } from "../../services/password/password.service";
 
 import { UsersService } from "../users/users.service";
-import { UserDto } from "../users/dtos/users.dto";
+import { UserDto } from "../users/dtos/user.dto";
 
 export class AuthService {
     constructor(

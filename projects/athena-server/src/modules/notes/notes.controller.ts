@@ -1,10 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 
 import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
-import { RequestWithDto } from "@kangojs/class-validation";
 
 import { NotesService } from "./notes.service";
-import { NoteDto } from "./dtos/notes.dto";
+import { RequestWithUser } from '../auth/auth.middleware';
+
+import { NoteDto } from "./dtos/note.dto";
 import { CreateNoteShape } from "./shapes/create.notes.shape";
 import { UpdateNoteShape } from "./shapes/update.notes.shape";
 import { NoteParamsShape } from './shapes/note-params.shape';
@@ -19,11 +20,11 @@ export default class NotesController {
     @Route({
         httpMethod: HTTPMethods.GET,
     })
-    async getAll(req: Request, res: Response, next: NextFunction) {
+    async getAll(req: RequestWithUser, res: Response, next: NextFunction) {
         let notes: NoteDto[] = [];
 
         try {
-            notes = await this.notesService.getAll();
+            notes = await this.notesService.getAll(req.user.id);
         }
         catch (e) {
             return next(e);
@@ -36,11 +37,11 @@ export default class NotesController {
         httpMethod: HTTPMethods.POST,
         bodyShape: CreateNoteShape
     })
-    async add(req: RequestWithDto, res: Response, next: NextFunction) {
+    async add(req: RequestWithUser, res: Response, next: NextFunction) {
         let newNote: NoteDto;
 
         try {
-            newNote = await this.notesService.add(req.bodyDto);
+            newNote = await this.notesService.add(req.user.id, req.bodyDto);
         }
         catch (e) {
             return next(e);
@@ -54,11 +55,11 @@ export default class NotesController {
         httpMethod: HTTPMethods.GET,
         paramsShape: NoteParamsShape
     })
-    async get(req: RequestWithDto, res: Response, next: NextFunction) {
+    async get(req: RequestWithUser, res: Response, next: NextFunction) {
         let note: NoteDto | null;
 
         try {
-            note = await this.notesService.get(req.paramsDto.noteId);
+            note = await this.notesService.get(req.user.id, req.paramsDto.noteId);
         }
         catch (e) {
             return next(e);
@@ -73,9 +74,9 @@ export default class NotesController {
         bodyShape: UpdateNoteShape,
         paramsShape: NoteParamsShape
     })
-    async update(req: RequestWithDto, res: Response, next: NextFunction) {
+    async update(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
-            await this.notesService.update(req.paramsDto.noteId, req.bodyDto);
+            await this.notesService.update(req.user.id, req.paramsDto.noteId, req.bodyDto);
         }
         catch (e) {
             return next(e);
@@ -88,9 +89,9 @@ export default class NotesController {
         httpMethod: HTTPMethods.DELETE,
         paramsShape: NoteParamsShape
     })
-    async delete(req: RequestWithDto, res: Response, next: NextFunction) {
+    async delete(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
-            await this.notesService.delete(req.paramsDto.noteId);
+            await this.notesService.delete(req.user.id, req.paramsDto.noteId);
         }
         catch (e) {
             return next(e);
