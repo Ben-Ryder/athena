@@ -25,8 +25,8 @@ class AuthController {
         const loginDetails = <LoginShape> req.bodyDto;
 
         try {
-            const tokens = await this.authService.login(loginDetails.username, loginDetails.password);
-            return res.send(tokens);
+            const loginResponse = await this.authService.login(loginDetails.username, loginDetails.password);
+            return res.send(loginResponse);
         }
         catch(e) {
             return next(e);

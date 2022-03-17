@@ -4,6 +4,7 @@ import { UserEntity } from './database/users.database.entity';
 import { PublicUserDto } from "./dtos/public.users.dto";
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UpdateUserDto } from './dtos/update.users.dto';
+import { UserDto } from './dtos/users.dto';
 
 import { PasswordService } from "../../services/password/password.service";
 import { AccessForbiddenError } from "@kangojs/error-handler";
@@ -26,10 +27,14 @@ export class UsersService {
 
         const user = await this.userDatabaseRepository.getById(userId);
         if (user) {
-            const { password, ...publicUserDto } = user;
-            return publicUserDto;
+            return this.makeUserPublic(user);
         }
         return null;
+    }
+
+    makeUserPublic(userDto: UserDto): PublicUserDto {
+        const { password, ...publicUserDto } = userDto;
+        return publicUserDto;
     }
 
     async getFullByUsername(username: string) {

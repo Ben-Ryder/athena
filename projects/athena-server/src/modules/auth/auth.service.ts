@@ -33,7 +33,13 @@ export class AuthService {
          });
        }
 
-       return this.tokenService.createTokenPair(user.id);
+       const publicUser = this.usersService.makeUserPublic(user);
+       const tokenPair = this.tokenService.createTokenPair(user.id);
+
+       return {
+         user: publicUser,
+         ...tokenPair
+       };
     }
 
     async revokeRefreshToken(refreshToken: string) {
