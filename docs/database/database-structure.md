@@ -2,7 +2,7 @@
 
 ## Requirement Notes  
 
-### Reminders  
+### Reminders  
 
 Basic reminders are easy to implement just with a timestamp, here are some examples:
 - Remind me on Thurs 26th May 2022 at 16:00
@@ -20,6 +20,24 @@ Implementation Ideas:
 - Monthly reminders will need some thought, for example "Remind me on the 31st each month" isn't valid. Would the system allow this then just not remind users for months it's not valid?
 - Could maybe store a start date, recur type and recur interval? Would that cover all use cases? Interval in days?
   - That wouldn't handle irregular recuring though such as "Tuesdays and Thursdays at 13:00"
+
+### Journal
+I imagine the "journal" functionality to be a more structured version of note taking optimized for things like https://www.themesystem.com/ or repetitive daily notes taking.
+Part of this system should include some form of template that 
+
+
+
+## Top Level Overview
+- Notes
+- Task Lists
+  - Tasks
+- Tags
+- Reminders
+  - Basic Reminders
+  - Recurring Reminders
+- Journal Entries
+- Journal Templates?
+- Note Templates?
 
 ## Content Model
 Notes
