@@ -1,9 +1,10 @@
+import {UserEntity} from "../../users/database/users.database.entity";
 
 export class NoteDto {
     id!: string;
     title!: string;
     body?: string | null;
-    user!: string;
+    user!: UserEntity;
     createdAt!: Date;
     updatedAt!: Date;
 }

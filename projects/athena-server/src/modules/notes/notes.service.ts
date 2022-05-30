@@ -13,7 +13,7 @@ export class NotesService {
     ) {}
 
     checkAccess(requestUserId: string, note: NoteDto) {
-        if (requestUserId !== note.user) {
+        if (requestUserId !== note.user.id) {
             throw new AccessDeniedError({
                 message: "Access denied to note"
             })

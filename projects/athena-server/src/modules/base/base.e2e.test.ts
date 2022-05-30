@@ -1,5 +1,5 @@
 import { SuperAgentTest } from "supertest";
-import {getTestApp} from "../../../tests/e2e/test-app";
+import { getTestApp } from "../../../tests/e2e/test-app";
 
 let testApp: SuperAgentTest;
 
@@ -19,7 +19,8 @@ describe('Base Route',() => {
 
     it('When a request is made, Then the response should be a string message', async () => {
       const {body: data} = await testApp.get('/');
-      expect(data).toBeInstanceOf(String);
+      expect(data).toHaveProperty('message');
+      expect(typeof data.message).toEqual('string');
     })
 
     // When a request is made without authorization, Then the response should still succeed
@@ -36,7 +37,8 @@ describe('Base Route',() => {
 
     it('When a request is made, Then the response should be a string message', async () => {
       const {body: data} = await testApp.get('/');
-      expect(data).toBeInstanceOf(String);
+      expect(data).toHaveProperty('message');
+      expect(typeof data.message).toEqual('string');
     })
 
     // When a request is made without authorization, Then the response should still succeed

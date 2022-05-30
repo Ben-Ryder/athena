@@ -5,6 +5,10 @@ const config: Config.InitialOptions = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  "modulePaths": [
+    "<rootDir>"
+  ],
+
 }
 
 export default config;

@@ -13,7 +13,7 @@ export class NotesDatabaseRepository extends DatabaseRepository<NoteEntity, Note
             title: createEntityDto.title,
             body: createEntityDto.body || null,
             user: {
-                id: createEntityDto.userId
+                id: createEntityDto.user
             }
         };
     }
@@ -24,7 +24,8 @@ export class NotesDatabaseRepository extends DatabaseRepository<NoteEntity, Note
             title: databaseEntity.title,
             body: databaseEntity.body,
             createdAt: databaseEntity.createdAt,
-            updatedAt: databaseEntity.updatedAt
+            updatedAt: databaseEntity.updatedAt,
+            user: databaseEntity.user
         };
     }
 
