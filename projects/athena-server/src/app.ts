@@ -10,7 +10,7 @@ import { useAuthValidator } from './modules/auth/auth.middleware';
 import {Logger} from "./services/logging/logger";
 
 
-export default async function App() {
+export async function getApp() {
     const app = express();
 
     // Middleware Setup
@@ -39,4 +39,4 @@ export default async function App() {
     useErrorHandlerMiddleware(app,{logger: new Logger()});
 
     return app;
-};
+}

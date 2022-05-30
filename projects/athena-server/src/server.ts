@@ -1,10 +1,10 @@
 import { config } from "./config";
 
-import App from './app';
+import { getApp } from "./app";
 
 
 async function startServer() {
-    const app = await App();
+    const app = await getApp();
 
     // Start server listening for requests
     app.listen(config.node.port, () => {
