@@ -1,13 +1,24 @@
 import { DeepPartial } from 'typeorm';
 
+import { Injectable } from "@kangojs/core";
+
 import { DatabaseRepository } from '../../../services/database/database.repository';
 
 import { UserEntity } from './users.database.entity';
 import { UserDto } from '../dtos/user.dto';
 import { CreateUserDto } from '../dtos/create.user.dto';
 import { UpdateUserDto } from '../dtos/update.user.dto';
+import {DatabaseService} from "../../../services/database/database.service";
 
+
+@Injectable()
 export class UsersDatabaseRepository extends DatabaseRepository<UserEntity, UserDto, CreateUserDto, UpdateUserDto>{
+  constructor(
+    private databaseService: DatabaseService
+  ) {
+    super(UserEntity, databaseService);
+  }
+
   mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateUserDto): DeepPartial<UserEntity> {
     return {
       username: createEntityDto.username,

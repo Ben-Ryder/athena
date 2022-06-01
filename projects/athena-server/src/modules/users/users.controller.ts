@@ -1,20 +1,21 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
-import { RequestWithDto } from "@kangojs/class-validation";
+import { Controller, Route, HTTPMethods } from '@kangojs/core';
 
 import { UsersService } from './users.service';
 import { ExposedUserDto } from "./dtos/exposed.user.dto";
 import { CreateUserShape } from './shapes/create.users.shape';
 import { UpdateUserShape } from './shapes/update.users.shape';
 import { UserParamsShape } from './shapes/user-params.shape';
-import {RequestWithUser} from "../auth/auth.middleware";
+import {RequestWithUser} from "../auth/auth.validator";
 
 
-@Controller('/users/v1')
-export default class UsersController {
+@Controller('/users/v1',{
+    identifier: "users-controller"
+})
+export class UsersController {
     constructor(
-      private usersService: UsersService = new UsersService()
+      private usersService: UsersService
     ) {}
 
     @Route({
@@ -22,11 +23,11 @@ export default class UsersController {
         bodyShape: CreateUserShape,
         authRequired: false
     })
-    async add(req: RequestWithDto, res: Response, next: NextFunction) {
+    async add(req: Request, res: Response, next: NextFunction) {
         let newUser: ExposedUserDto;
 
         try {
-            newUser = await this.usersService.add(req.bodyDto);
+            newUser = await this.usersService.add(req.body);
         }
         catch(e) {
             return next(e);
@@ -44,7 +45,7 @@ export default class UsersController {
         let user: ExposedUserDto | null;
 
         try {
-            user = await this.usersService.get(req.user.id, req.paramsDto.userId, );
+            user = await this.usersService.get(req.user.id, req.params.userId);
         }
         catch (e) {
             return next(e);
@@ -61,7 +62,7 @@ export default class UsersController {
     })
     async update(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
-            await this.usersService.update(req.user.id, req.paramsDto.userId, req.bodyDto);
+            await this.usersService.update(req.user.id, req.params.userId, req.body);
         }
         catch (e) {
             return next(e);
@@ -76,7 +77,7 @@ export default class UsersController {
     })
     async delete(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
-            await this.usersService.delete(req.user.id, req.paramsDto.userId);
+            await this.usersService.delete(req.user.id, req.params.userId);
         }
         catch (e) {
             return next(e);

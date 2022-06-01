@@ -1,10 +1,13 @@
 import Redis, {Redis as IRedis} from 'ioredis';
-import { SystemError } from "@kangojs/error-handler";
+import { SystemError } from "@kangojs/core";
+import {Injectable} from "@kangojs/core";
 
 export interface CacheOptions {
     epochExpiry: number;
 }
 
+
+@Injectable()
 export class CacheService {
     private redis: IRedis
 

@@ -1,12 +1,12 @@
 import {DeepPartial, EntityTarget, FindConditions, FindOneOptions, Repository} from 'typeorm';
 
-import { databaseServiceInstance, DatabaseService } from 'src/services/database/database.service';
+import { DatabaseService } from 'src/services/database/database.service';
 import { DatabaseErrorCodes } from './database-error-codes';
 
-import { SystemError } from "@kangojs/error-handler";
-import { ResourceNotFoundError } from "@kangojs/error-handler";
-import { ResourceRelationshipError } from "@kangojs/error-handler";
-import { ResourceNotUniqueError } from "@kangojs/error-handler";
+import { SystemError } from "@kangojs/core";
+import { ResourceNotFoundError } from "@kangojs/core";
+import { ResourceRelationshipError } from "@kangojs/core";
+import { ResourceNotUniqueError } from "@kangojs/core";
 
 
 /**
@@ -17,7 +17,7 @@ import { ResourceNotUniqueError } from "@kangojs/error-handler";
 export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntityDto, UpdateEntityDto> {
     constructor(
       private entity: EntityTarget<DatabaseEntity>,
-      private db: DatabaseService = databaseServiceInstance
+      private db: DatabaseService
     ) {}
 
     abstract mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateEntityDto): DeepPartial<DatabaseEntity> ;

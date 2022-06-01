@@ -13,5 +13,11 @@
     "resolveJsonModule" : true
   },
   "include": ["src"],
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules",
+    "tests",
+    "jest.*.ts",
+    "*.test.ts",
+    "*.tests.ts"
+  ],
 }

@@ -21,15 +21,12 @@
     "test": "jest"
   },
   "engines": {
-    "node": "16.14.x"
+    "node": "16.x.x"
   },
   "dependencies": {
-    "@kangojs/class-validation": "^1.1.1",
-    "@kangojs/common-middleware": "^1.2.0",
-    "@kangojs/error-handler": "^0.2.4",
-    "@kangojs/http-status-codes": "^1.0.1",
-    "@kangojs/kangojs": "^1.2.1",
-    "@kangojs/serve-spa": "^1.0.0",
+    "@kangojs/class-validation": "2.0.0-alpha.1",
+    "@kangojs/core": "2.0.0-alpha.6",
+    "@kangojs/serve-spa": "2.0.0-alpha.1",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",

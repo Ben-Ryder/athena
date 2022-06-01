@@ -1,7 +1,9 @@
 import { agent as _request } from "supertest"
-import { getApp } from "../../src/app";
+import { createApp } from "../../src/app";
 
 export const getTestApp = async function() {
-  const app = await getApp();
-  return _request(app);
+  const kangoJS = await createApp();
+  const expressApp = kangoJS.getApp();
+
+  return _request(expressApp);
 };

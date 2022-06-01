@@ -1,15 +1,16 @@
-import { config } from "./config";
-
-import { getApp } from "./app";
+import { createApp } from "./app";
+import {ConfigService} from "./services/config/config";
 
 
 async function startServer() {
-    const app = await getApp();
+    const kangoJS = await createApp();
+    const app = kangoJS.getApp();
+
+    const configService = kangoJS.dependencyContainer.useDependency<ConfigService>(ConfigService);
 
     // Start server listening for requests
-    app.listen(config.node.port, () => {
-            console.log(`Server started. Listening on http://localhost:${config.node.port}`);
-        }
-    );
+    app.listen(configService.config.node.port, () => {
+      console.log(`Server started. Listening on http://localhost:${configService.config.node.port}`);
+    });
 }
 startServer();

@@ -1,10 +1,13 @@
-import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
+import { Controller, Route, HTTPMethods } from '@kangojs/core';
 import { Request, Response, NextFunction } from 'express';
 
-@Controller('/')
-class BaseController {
+@Controller('/', {
+    identifier: "base-controller",
+})
+export class BaseController {
     @Route({
         httpMethod: HTTPMethods.GET,
+        authRequired: false
     })
     async base(req: Request, res: Response, next: NextFunction) {
         return this.sendWelcomeMessage(req, res, next);
@@ -13,6 +16,7 @@ class BaseController {
     @Route({
         path: 'v1',
         httpMethod: HTTPMethods.GET,
+        authRequired: false
     })
     async baseV1(req: Request, res: Response, next: NextFunction) {
         return this.sendWelcomeMessage(req, res, next);
@@ -25,5 +29,3 @@ class BaseController {
         });
     }
 }
-
-export default BaseController;

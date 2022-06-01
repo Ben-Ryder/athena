@@ -1,42 +1,33 @@
-import path from 'path';
-import express from 'express';
+import {KangoJS} from '@kangojs/core';
+import {ClassValidator} from '@kangojs/class-validation';
+import {AuthValidator} from './modules/auth/auth.validator';
+import { createServeSPAMiddleware } from "@kangojs/serve-spa";
 
-import { KangoJS } from '@kangojs/kangojs';
-import { createBodyValidator, createParamsValidator, createQueryValidator } from '@kangojs/class-validation';
-import { useCommonMiddleware, useNotFoundMiddleware } from '@kangojs/common-middleware';
-import { useServeSPA } from '@kangojs/serve-spa';
-import { useErrorHandlerMiddleware } from "@kangojs/error-handler";
-import { useAuthValidator } from './modules/auth/auth.middleware';
-import {Logger} from "./services/logging/logger";
+import {AuthController} from "./modules/auth/auth.controller";
+import {BaseController} from "./modules/base/base.controller";
+import {NotesController} from "./modules/notes/notes.controller";
+import {UsersController} from "./modules/users/users.controller";
 
 
-export async function getApp() {
-    const app = express();
+export async function createApp() {
+  const serveSpaMiddleware = createServeSPAMiddleware({
+    folderPath: "../../dashboard/build"
+  });
 
-    // Middleware Setup
-    await useCommonMiddleware(app);
-
-    // Load all controllers and setup KangoJS.
-    const kangoJS = new KangoJS({
-        controllerFilesGlob: path.join(__dirname, 'modules/**/*.controller.{ts,js}'),
-        authValidator: useAuthValidator(),
-        bodyValidator: createBodyValidator(),
-        queryValidator: createQueryValidator(),
-        paramsValidator: createParamsValidator()
-    });
-    await kangoJS.boostrap(app);
-
-    // API 404 handling.
-    await useNotFoundMiddleware(app);
-
-    // Setup serving of the web app.
-    useServeSPA(app, {
-        folderPath: '../../athena-web/build'
-    })
-
-    // Global Error Handling
-    // todo: add custom logger from services
-    useErrorHandlerMiddleware(app,{logger: new Logger()});
-
-    return app;
+  // Load all controllers and setup KangoJS.
+  return new KangoJS({
+    controllers: [
+      BaseController,
+      AuthController,
+      NotesController,
+      UsersController
+    ],
+    middleware: [
+      serveSpaMiddleware
+    ],
+    authValidator: AuthValidator,
+    bodyValidator: ClassValidator,
+    queryValidator: ClassValidator,
+    paramsValidator: ClassValidator
+  });
 }

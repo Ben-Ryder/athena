@@ -1,7 +1,8 @@
 import {decode, JwtPayload, sign, verify} from 'jsonwebtoken';
 
-import { config } from '../../config';
+import { ConfigService } from '../config/config';
 import { CacheService } from "../cache/cache.service";
+import { Injectable } from "@kangojs/core";
 
 export interface TokenPayload extends JwtPayload {
     userId: string
@@ -20,15 +21,17 @@ export interface TokenPair {
     refreshToken: string
 }
 
+@Injectable()
 export class TokenService {
     accessTokenSecret: string;
     refreshTokenSecret: string;
 
     constructor(
-        private cacheService: CacheService = new CacheService()
+      private configService: ConfigService,
+      private cacheService: CacheService
     ) {
-        this.accessTokenSecret = config.auth.accessToken.secret;
-        this.refreshTokenSecret = config.auth.refreshToken.secret;
+        this.accessTokenSecret = this.configService.config.auth.accessToken.secret;
+        this.refreshTokenSecret = this.configService.config.auth.refreshToken.secret;
     }
 
     /**

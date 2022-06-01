@@ -1,15 +1,17 @@
-import { AccessDeniedError } from '@kangojs/error-handler';
+import { AccessDeniedError } from '@kangojs/core';
 
 import { TokenService } from "../../services/token/token.service";
 import { PasswordService } from "../../services/password/password.service";
 
 import { UsersService } from "../users/users.service";
 import { UserDto } from "../users/dtos/user.dto";
+import { Injectable } from "@kangojs/core";
 
+@Injectable()
 export class AuthService {
     constructor(
-        private usersService: UsersService = new UsersService(),
-        private tokenService: TokenService = new TokenService()
+        private usersService: UsersService,
+        private tokenService: TokenService
     ) {}
 
     async login(username: string, password: string) {

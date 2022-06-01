@@ -1,9 +1,9 @@
 import { Response, NextFunction } from 'express';
 
-import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
+import { Controller, Route, HTTPMethods } from '@kangojs/core';
 
 import { NotesService } from "./notes.service";
-import { RequestWithUser } from '../auth/auth.middleware';
+import { RequestWithUser } from '../auth/auth.validator';
 
 import { NoteDto } from "./dtos/note.dto";
 import { CreateNoteShape } from "./shapes/create.notes.shape";
@@ -11,10 +11,12 @@ import { UpdateNoteShape } from "./shapes/update.notes.shape";
 import { NoteParamsShape } from './shapes/note-params.shape';
 
 
-@Controller('/notes/v1')
-export default class NotesController {
+@Controller('/notes/v1', {
+    identifier: "notes-controller"
+})
+export class NotesController {
     constructor(
-        private notesService: NotesService = new NotesService()
+        private notesService: NotesService
     ) {}
 
     @Route({
@@ -41,7 +43,7 @@ export default class NotesController {
         let newNote: NoteDto;
 
         try {
-            newNote = await this.notesService.add(req.user.id, req.bodyDto);
+            newNote = await this.notesService.add(req.user.id, req.body);
         }
         catch (e) {
             return next(e);
@@ -59,7 +61,7 @@ export default class NotesController {
         let note: NoteDto | null;
 
         try {
-            note = await this.notesService.get(req.user.id, req.paramsDto.noteId);
+            note = await this.notesService.get(req.user.id, req.params.noteId);
         }
         catch (e) {
             return next(e);
@@ -76,7 +78,7 @@ export default class NotesController {
     })
     async update(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
-            await this.notesService.update(req.user.id, req.paramsDto.noteId, req.bodyDto);
+            await this.notesService.update(req.user.id, req.params.noteId, req.body);
         }
         catch (e) {
             return next(e);
@@ -91,7 +93,7 @@ export default class NotesController {
     })
     async delete(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
-            await this.notesService.delete(req.user.id, req.paramsDto.noteId);
+            await this.notesService.delete(req.user.id, req.params.noteId);
         }
         catch (e) {
             return next(e);

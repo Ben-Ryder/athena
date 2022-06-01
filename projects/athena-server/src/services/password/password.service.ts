@@ -1,5 +1,5 @@
 import { hash, compare } from "bcrypt";
-import {SystemError} from "@kangojs/error-handler";
+import {SystemError} from "@kangojs/core";
 
 export class PasswordService {
     static HASH_ROUNDS = 10;

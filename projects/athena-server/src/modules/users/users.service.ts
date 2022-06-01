@@ -1,5 +1,6 @@
 import { UsersDatabaseRepository } from './database/users.database.repository';
-import { UserEntity } from './database/users.database.entity';
+
+import { Injectable } from "@kangojs/core";
 
 import { ExposedUserDto } from "./dtos/exposed.user.dto";
 import { CreateUserDto } from './dtos/create.user.dto';
@@ -7,11 +8,12 @@ import { UpdateUserDto } from './dtos/update.user.dto';
 import { UserDto } from './dtos/user.dto';
 
 import { PasswordService } from "../../services/password/password.service";
-import { AccessForbiddenError } from "@kangojs/error-handler";
+import { AccessForbiddenError } from "@kangojs/core";
 
+@Injectable()
 export class UsersService {
     constructor(
-       private userDatabaseRepository: UsersDatabaseRepository = new UsersDatabaseRepository(UserEntity)
+       private userDatabaseRepository: UsersDatabaseRepository
     ) {}
 
     async getFull(userId: string) {

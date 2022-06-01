@@ -1,18 +1,18 @@
-import { Controller, Route, HTTPMethods } from '@kangojs/kangojs';
+import { Controller, Route, HTTPMethods } from '@kangojs/core';
 import { Request, Response, NextFunction } from 'express';
 
 import { RefreshShape } from "./shapes/refresh.shape";
 import { LoginShape } from "./shapes/login.shape";
-import { RequestWithDto } from "@kangojs/class-validation";
 import { RevokeShape } from './shapes/revoke.shape';
 import { AuthService } from './auth.service';
-import { RequestWithUser } from "./auth.middleware";
 
 
-@Controller('/auth/v1')
-class AuthController {
+@Controller('/auth/v1', {
+    identifier: "auth-controller"
+})
+export class AuthController {
     constructor(
-      private authService: AuthService = new AuthService()
+      private authService: AuthService
     ) {}
 
     @Route({
@@ -21,8 +21,8 @@ class AuthController {
         bodyShape: LoginShape,
         authRequired: false
     })
-    async login(req: RequestWithDto, res: Response, next: NextFunction) {
-        const loginDetails = <LoginShape> req.bodyDto;
+    async login(req: Request, res: Response, next: NextFunction) {
+        const loginDetails = <LoginShape> req.body;
 
         try {
             const loginResponse = await this.authService.login(loginDetails.username, loginDetails.password);
@@ -39,8 +39,8 @@ class AuthController {
         bodyShape: RevokeShape,
         authRequired: false
     })
-    async revoke(req: RequestWithDto, res: Response, next: NextFunction) {
-        const tokens = <RevokeShape> req.bodyDto;
+    async revoke(req: Request, res: Response, next: NextFunction) {
+        const tokens = <RevokeShape> req.body;
 
         try {
             if (tokens.refreshToken) {
@@ -62,8 +62,8 @@ class AuthController {
         bodyShape: RefreshShape,
         authRequired: false
     })
-    async refresh(req: RequestWithUser, res: Response, next: NextFunction) {
-        const bodyData = <RefreshShape> req.bodyDto;
+    async refresh(req: Request, res: Response, next: NextFunction) {
+        const bodyData = <RefreshShape> req.body;
 
         try {
             const tokens = await this.authService.refresh(bodyData.refreshToken);
@@ -89,5 +89,3 @@ class AuthController {
         return res.send({});
     }
 }
-
-export default AuthController;

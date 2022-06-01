@@ -1,15 +1,16 @@
 import { NotesDatabaseRepository } from "./database/notes.database.repository";
-import { NoteEntity } from './database/notes.database.entity';
 
 import { CreateNoteDto } from "./dtos/create.note.dto";
 import { UpdateNoteDto } from "./dtos/update.note.dto";
 import { NoteDto } from './dtos/note.dto';
-import { AccessDeniedError } from '@kangojs/error-handler';
+import { AccessDeniedError } from '@kangojs/core';
+import { Injectable } from "@kangojs/core";
 
 
+@Injectable()
 export class NotesService {
     constructor(
-       private notesDatabaseRepository: NotesDatabaseRepository = new NotesDatabaseRepository(NoteEntity)
+       private notesDatabaseRepository: NotesDatabaseRepository
     ) {}
 
     checkAccess(requestUserId: string, note: NoteDto) {

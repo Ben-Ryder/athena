@@ -1,25 +1,31 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { AccessDeniedError } from '@kangojs/error-handler';
-import { RequestWithDto } from '@kangojs/class-validation';
+import {AccessDeniedError, Middleware} from '@kangojs/core';
 import { TokenService } from '../../services/token/token.service';
+import  {MiddlewareFactory } from "@kangojs/core";
 
 export interface RequestUser {
   id: string
 }
 
-export interface RequestWithUser extends RequestWithDto {
+export interface RequestWithUser extends Request {
   user: RequestUser
 }
 
+@Middleware({
+  identifier: "auth-validator-middleware"
+})
+export class AuthValidator implements MiddlewareFactory {
+  constructor(
+    private tokenService: TokenService
+  ) {}
 
-export function useAuthValidator(tokenService: TokenService = new TokenService()) {
-  return async function authValidator(req: Request, res: Response, next: NextFunction) {
+  async run(req: Request, res: Response, next: NextFunction): Promise<any> {
     const authorizationHeader = req.header('authorization');
 
     if (authorizationHeader) {
       const accessToken = authorizationHeader.split(" ")[1];
-      const accessTokenPayload = await tokenService.validateAndDecodeAccessToken(accessToken);
+      const accessTokenPayload = await this.tokenService.validateAndDecodeAccessToken(accessToken);
 
       if (accessTokenPayload) {
         // todo: better way to handle req types and adding new attribute?
@@ -31,8 +37,10 @@ export function useAuthValidator(tokenService: TokenService = new TokenService()
       }
     }
 
-    return next(new AccessDeniedError({
+    return next(
+      new AccessDeniedError({
       message: 'Request Access Denied'
-    }))
+      })
+    )
   }
 }
