@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@kangojs/class-validation": "2.0.0-alpha.1",
-    "@kangojs/core": "2.0.0-alpha.6",
+    "@kangojs/core": "2.0.0-alpha.7",
     "@kangojs/serve-spa": "2.0.0-alpha.1",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
