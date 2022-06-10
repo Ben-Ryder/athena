@@ -1,5 +1,5 @@
 {
-  "name": "@ben-ryder/athena-js-sdk",
+  "name": "@ben-ryder/athena-js-lib",
   "private": true,
   "version": "0.1.0",
   "description": "A JavaScript SDK library for Athena.",

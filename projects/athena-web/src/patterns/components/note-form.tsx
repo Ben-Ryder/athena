@@ -3,7 +3,7 @@ import { StrictReactNode } from "../../types/strict-react-node";
 import {Field, Form, Formik, FormikHelpers, useFormikContext} from "formik";
 import { object as YupObject, string as YupString } from "yup";
 
-import { INoteContent } from "@ben-ryder/athena-js-sdk";
+import { INoteContent } from "@ben-ryder/athena-js-lib";
 
 import { Button } from "../elements/button/button";
 

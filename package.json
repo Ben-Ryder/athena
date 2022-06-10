@@ -12,9 +12,9 @@
 
     "setup": "npm run install-all && npm run build-all",
     "install-all": "concurrently 'npm:install:*'",
-    "build-all": "npm run build:js-sdk && npm run build:server && npm run build:web",
+    "build-all": "npm run build:js-lib && npm run build:server && npm run build:web",
     "dev-web": "concurrently 'npm run dev:server' 'npm run dev:web'",
-    "test-all": "npm run test:js-sdk && npm run test:server && npm run test:web",
+    "test-all": "npm run test:js-lib && npm run test:server && npm run test:web",
 
     "install:server": "cd ./projects/athena-server && npm i",
     "build:server": "cd ./projects/athena-server && npm run build",
@@ -22,9 +22,9 @@
     "test:server": "cd ./projects/athena-server && npm run test",
     "run:server": "cd ./projects/athena-server && npm start",
 
-    "install:js-sdk": "cd ./projects/athena-js-sdk && npm i",
-    "build:js-sdk": "cd ./projects/athena-js-sdk && npm run build",
-    "test:js-sdk": "cd ./projects/athena-js-sdk && npm run test",
+    "install:js-lib": "cd projects/athena-js-lib && npm i",
+    "build:js-lib": "cd projects/athena-js-lib && npm run build",
+    "test:js-lib": "cd projects/athena-js-lib && npm run test",
 
     "install:web": "cd ./projects/athena-web && npm i",
     "build:web": "cd ./projects/athena-web && npm run build",

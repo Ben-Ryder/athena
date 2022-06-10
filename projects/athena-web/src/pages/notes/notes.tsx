@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { INote } from '@ben-ryder/athena-js-sdk';
+import { INote } from '@ben-ryder/athena-js-lib';
 
 import { Page } from '../../patterns/layout/page';
 import {ButtonLink} from "../../patterns/elements/button/button-link";

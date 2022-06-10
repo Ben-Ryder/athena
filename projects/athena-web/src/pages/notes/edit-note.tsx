@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { INote, INoteContent } from "@ben-ryder/athena-js-sdk";
+import { INote, INoteContent } from "@ben-ryder/athena-js-lib";
 
 import { Page } from "../../patterns/layout/page";
 import { NoteForm } from "../../patterns/components/note-form";

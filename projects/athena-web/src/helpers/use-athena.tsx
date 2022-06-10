@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { AthenaAPIClient } from "@ben-ryder/athena-js-sdk";
+import { AthenaAPIClient } from "@ben-ryder/athena-js-lib";
 
 export interface IAthenaContext {
     apiClient: AthenaAPIClient,
