@@ -17,7 +17,7 @@
   "scripts": {
     "start": "npm run build && NODE_PATH=./build node build/src/server.js",
     "dev": "NODE_PATH=./ nodemon src/server.ts",
-    "build": "rm -rf ./build && tsc",
+    "build": "rimraf ./build && tsc",
     "test": "jest"
   },
   "engines": {
@@ -53,6 +53,7 @@
     "@types/validator": "^13.7.1",
     "jest": "^28.1.0",
     "nodemon": "^2.0.15",
+    "rimraf": "^3.0.2",
     "supertest": "^6.2.3",
     "ts-jest": "^28.0.3",
     "ts-node": "^10.5.0",

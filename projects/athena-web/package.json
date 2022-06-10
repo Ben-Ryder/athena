@@ -25,7 +25,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start:test": "react-scripts test",
+    "test": "npm run start:test -- --watchAll=false",
     "eject": "react-scripts eject",
     "serve": "npm run build && http-server ./build"
   },

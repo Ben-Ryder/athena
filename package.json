@@ -12,9 +12,9 @@
 
     "setup": "npm run install-all && npm run build-all",
     "install-all": "concurrently 'npm:install:*'",
-    "build-all": "concurrently 'npm:build:*'",
+    "build-all": "npm run build:js-sdk && npm run build:server && npm run build:web",
     "dev-web": "concurrently 'npm run dev:server' 'npm run dev:web'",
-    "test-all": "concurrently 'npm:test:*'",
+    "test-all": "npm run test:js-sdk && npm run test:server && npm run test:web",
 
     "install:server": "cd ./projects/athena-server && npm i",
     "build:server": "cd ./projects/athena-server && npm run build",
