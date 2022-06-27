@@ -1,12 +1,17 @@
 import { SuperAgentTest } from "supertest";
 import { getTestApp } from "../../../tests/e2e/test-app";
+import {KangoJS} from "@kangojs/core";
 
+let kangoJSApp: KangoJS;
 let testApp: SuperAgentTest;
+
 
 describe('Base Route',() => {
 
   beforeAll(async () => {
-    testApp = await getTestApp();
+    let apps = await getTestApp();
+    testApp = apps.testApp;
+    kangoJSApp = apps.kangoJSApp;
   })
 
   /**
