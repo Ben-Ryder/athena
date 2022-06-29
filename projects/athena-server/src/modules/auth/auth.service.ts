@@ -1,13 +1,14 @@
-import { AccessDeniedError } from '@kangojs/core';
+import {Injectable, AccessDeniedError} from '@kangojs/core';
 
 import { TokenService } from "../../services/token/token.service";
 import { PasswordService } from "../../services/password/password.service";
 
 import { UsersService } from "../users/users.service";
 import { UserDto } from "../users/dtos/user.dto";
-import { Injectable } from "@kangojs/core";
 
-@Injectable()
+@Injectable({
+  identifier: "auth-service"
+})
 export class AuthService {
     constructor(
         private usersService: UsersService,

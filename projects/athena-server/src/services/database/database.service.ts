@@ -32,7 +32,7 @@ export class DatabaseService {
           NoteEntity,
           UserEntity
       ],
-      synchronize: this.configService.config.node.environment !== 'production',
+      synchronize: this.configService.config.database.sync,
       logging: false,
     });
 

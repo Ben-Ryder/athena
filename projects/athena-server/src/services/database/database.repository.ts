@@ -1,4 +1,5 @@
-import {DeepPartial, EntityTarget, FindConditions, FindOneOptions, Repository} from 'typeorm';
+import {DeepPartial, EntityTarget, Repository} from 'typeorm';
+import {FindOptionsWhere} from "typeorm/find-options/FindOptionsWhere";
 
 import { DatabaseService } from 'src/services/database/database.service';
 import { DatabaseErrorCodes } from './database-error-codes';
@@ -70,16 +71,17 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
     }
 
     async getById(entityId: string): Promise<EntityDto> {
-        return this.get(<FindOneOptions<DatabaseEntity>>{id: entityId});
+        const where = {id: entityId} as unknown as FindOptionsWhere<DatabaseEntity>;
+        return this.get(where);
     }
 
-    async get(options: Object): Promise<EntityDto> {
+    async get(options: FindOptionsWhere<DatabaseEntity>): Promise<EntityDto> {
         const repo = await this.getRepository();
 
-        let result: DatabaseEntity | undefined;
+        let result: DatabaseEntity | null;
 
         try {
-            result = await repo.findOne(options);
+            result = await repo.findOneBy(options);
         }
         catch(e: any) {
             throw new SystemError({
@@ -123,7 +125,8 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
 
         let entity;
         try {
-            entity = await repo.findOne(entityId);
+            const where = {id: entityId} as unknown as FindOptionsWhere<DatabaseEntity>;
+            entity = await repo.findOne(where);
         }
         catch (e: any) {
             throw new SystemError({
@@ -174,7 +177,8 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
 
         let entity;
         try {
-            entity = await repo.findOne(entityId);
+            const where = {id: entityId} as unknown as FindOptionsWhere<DatabaseEntity>;
+            entity = await repo.findOne(where);
         }
         catch (e: any) {
             throw new SystemError({
