@@ -46,9 +46,8 @@ export function EditNotePage() {
                     title: note.title,
                     body: note.body
                 }}
-                onSubmit={async (values: INoteContent, { setSubmitting }) => {
+                onSubmit={async (values: INoteContent) => {
                     await apiClient.updateNote(noteId, values);
-                    setSubmitting(false);
                 }}
                 leftContent={
                     <Button

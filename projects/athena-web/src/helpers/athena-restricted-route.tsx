@@ -2,39 +2,41 @@ import {Navigate, Outlet, useLocation} from "react-router-dom";
 import { useAthena } from "./use-athena";
 import { useEffect, useState } from 'react';
 
-enum EncryptionKeyStatus {
+enum LoginCheckStatus {
     CHECKING = 'checking',
-    SET = 'set',
-    NOT_SET = 'not-set',
+    LOGGED_IN = 'logged-in',
+    NOT_LOGGED_IN = 'not-logged-in',
 }
 
 /**
- * A route wrapper that can redirect users if they are not logged in or haven't entered their encryption key.
+ * A route wrapper that can redirect users if they are not logged in.
  * @constructor
  */
 export function AthenaRestrictedRoute() {
-    let { checkEncryptionPhrase } = useAthena();
+    let { loadCurrentUser, loadEncryptionKey } = useAthena();
     const location = useLocation();
-    const [ encryptionKeyStatus, setEncryptionKeyStatus ] = useState(EncryptionKeyStatus.CHECKING);
+    const [ loginCheckStatus, setLoginCheckStatus ] = useState(LoginCheckStatus.CHECKING);
 
     useEffect(() => {
-        async function checkEncryptionKey() {
-            const encryptionKeyPresent = await checkEncryptionPhrase();
-            if (encryptionKeyPresent) {
-                setEncryptionKeyStatus(EncryptionKeyStatus.SET)
+        async function checkUserLogin() {
+            const currentUser = await loadCurrentUser();
+            const encryptionKey = await loadEncryptionKey();
+
+            if (currentUser && encryptionKey) {
+                setLoginCheckStatus(LoginCheckStatus.LOGGED_IN)
             }
             else {
-                setEncryptionKeyStatus(EncryptionKeyStatus.NOT_SET)
+                setLoginCheckStatus(LoginCheckStatus.NOT_LOGGED_IN)
             }
         }
-        checkEncryptionKey();
-    }, [checkEncryptionPhrase, setEncryptionKeyStatus]);
+        checkUserLogin();
+    }, [loadCurrentUser]);
 
-    if (encryptionKeyStatus === EncryptionKeyStatus.CHECKING) {
+    if (loginCheckStatus === LoginCheckStatus.CHECKING) {
         return null;
     }
-    else if (encryptionKeyStatus === EncryptionKeyStatus.NOT_SET) {
-        return <Navigate to="/user/enter-encryption-key" state={{ from: location }} />;
+    else if (loginCheckStatus === LoginCheckStatus.NOT_LOGGED_IN) {
+        return <Navigate to="/user/login" state={{ from: location }} />;
     }
     else {
         return <Outlet />

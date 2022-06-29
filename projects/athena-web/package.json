@@ -6,6 +6,7 @@
   "license": "AGPL-3.0-only",
   "dependencies": {
     "@ben-ryder/athena-js-lib": "file:../athena-js-lib",
+    "@ben-ryder/jigsaw": "^0.2.1",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^13.5.0",
@@ -14,13 +15,13 @@
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
     "classnames": "^2.3.1",
-    "formik": "^2.2.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-helmet-async": "^1.3.0",
+    "react-hook-form": "^7.33.0",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
-    "typescript": "^4.5.5",
-    "yup": "^0.32.11"
+    "typescript": "^4.5.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -49,6 +50,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-helmet": "^6.1.5",
     "@types/yup": "^0.29.13",
     "autoprefixer": "^10.4.2",
     "http-server": "^14.1.0",

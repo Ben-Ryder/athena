@@ -31,6 +31,6 @@ export class AthenaRequestError extends AthenaAPIClientError {}
 export class AthenaNoRefreshTokenError extends AthenaAPIClientError {}
 export class AthenaNoAccessTokenError extends AthenaAPIClientError {}
 
-export class AthenaTokenLoadError extends AthenaAPIClientError {}
-export class AthenaTokenSaveError extends AthenaAPIClientError {}
-export class AthenaTokenDeleteError extends AthenaAPIClientError {}
+export class AthenaDataLoadError extends AthenaAPIClientError {}
+export class AthenaDataSaveError extends AthenaAPIClientError {}
+export class AthenaDataDeleteError extends AthenaAPIClientError {}

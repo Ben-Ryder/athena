@@ -19,9 +19,13 @@ export function NewNotePage() {
           title: "",
           body: ""
         }}
-        onSubmit={async (values: INoteContent, { setSubmitting }) => {
-          await apiClient.addNote(values);
-          setSubmitting(false);
+        onSubmit={async (values: INoteContent) => {
+          try {
+            await apiClient.addNote(values);
+          }
+          catch (e: any) {
+            console.log(e);
+          }
           await navigate("/notes")
         }}
       />

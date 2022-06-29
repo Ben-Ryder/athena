@@ -15,7 +15,7 @@ export class NotesDatabaseRepository extends DatabaseRepository<NoteEntity, Note
     constructor(
       private databaseService: DatabaseService
     ) {
-        super(NoteEntity, databaseService);
+        super(NoteEntity, databaseService, ["user"]);
     }
 
     mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateNoteDto): DeepPartial<NoteEntity> {

@@ -1,8 +1,5 @@
 import axios from 'axios';
 
-import pbkdf2 from 'crypto-js/pbkdf2';
-import { random } from 'crypto-js/lib-typedarrays';
-
 import { INote, INoteContent, INoteDecryptionResult } from './types/note';
 import { AthenaEncryption } from './encryption';
 import {
@@ -10,11 +7,12 @@ import {
     AthenaNoEncryptionKeyError,
     AthenaNoRefreshTokenError,
     AthenaRequestError,
-    AthenaTokenDeleteError,
-    AthenaTokenLoadError,
-    AthenaTokenSaveError
+    AthenaDataDeleteError,
+    AthenaDataLoadError,
+    AthenaDataSaveError
 } from './types/errors';
 import { LoginResponse, RefreshResponse } from './types/auth';
+import {IUser} from "./types/user";
 
 export interface QueryOptions {
     url: string,
@@ -25,21 +23,28 @@ export interface QueryOptions {
     requiresEncryptionKey?: boolean
 }
 
-export type TokenLoader = () => Promise<string|null>;
-export type TokenSaver = (token: string) => Promise<void>;
-export type TokenDeleter = () => Promise<void>;
+export type DataLoader<T> = () => Promise<T|null>;
+export type DataSaver<T> = (data: T) => Promise<void>;
+export type DataDeleter<T> = () => Promise<void>;
 
 export interface AthenaAPIClientOptions {
     apiEndpoint: string;
+
     encryptionKey?: string | null;
+    loadEncryptionKey: DataLoader<string>;
+    deleteEncryptionKey: DataDeleter<string>;
 
-    loadAccessToken: TokenLoader;
-    saveAccessToken: TokenSaver;
-    deleteAccessToken: TokenDeleter;
+    loadAccessToken: DataLoader<string>;
+    saveAccessToken: DataSaver<string>;
+    deleteAccessToken: DataDeleter<string>;
 
-    loadRefreshToken: TokenLoader;
-    saveRefreshToken: TokenSaver;
-    deleteRefreshToken: TokenDeleter;
+    loadRefreshToken: DataLoader<string>;
+    saveRefreshToken: DataSaver<string>;
+    deleteRefreshToken: DataDeleter<string>;
+
+    loadCurrentUser: DataLoader<IUser>;
+    saveCurrentUser: DataSaver<IUser>;
+    deleteCurrentUser: DataDeleter<IUser>;
 }
 
 export class AthenaAPIClient {
@@ -51,26 +56,20 @@ export class AthenaAPIClient {
         this.options = options;
     }
 
-    setEncryptionPhrase(encryptionPhrase: string | null) {
-        if (encryptionPhrase === null) {
+    setEncryptionKey(encryptionKey: string | null) {
+        if (encryptionKey === null) {
             this.options.encryptionKey = null;
             return;
         }
 
-        const salt = random(128 / 8);
-        const key = pbkdf2(encryptionPhrase, salt).toString();
-        console.log(key);
-        this.options.encryptionKey = key;
-    }
-
-    getEncryptionPhrase() {
-        return this.options.encryptionKey;
+        // todo: add pbkdf2 or similar rather than using the raw phrase?
+        this.options.encryptionKey = encryptionKey;
     }
 
     private async query<ResponseType>(options: QueryOptions, repeat = false): Promise<ResponseType> {
         if (!options.noAuthRequired && !this.accessToken) {
-            const accessToken = await AthenaAPIClient.loadToken(this.options.loadAccessToken);
-            const refreshToken = await AthenaAPIClient.loadToken(this.options.loadRefreshToken);
+            const accessToken = await AthenaAPIClient.loadData(this.options.loadAccessToken);
+            const refreshToken = await AthenaAPIClient.loadData(this.options.loadRefreshToken);
             if (refreshToken) {
                 this.refreshToken = refreshToken;
             }
@@ -120,44 +119,51 @@ export class AthenaAPIClient {
         return this.query(options, true);
     }
 
-    private checkEncryptionKey() {
+    private async checkEncryptionKey() {
         if (!this.options.encryptionKey) {
+            const encryptionKey = await AthenaAPIClient.loadData(this.options.loadEncryptionKey);
+
+            if (encryptionKey) {
+                this.options.encryptionKey = encryptionKey;
+                return;
+            }
+
             throw new AthenaNoEncryptionKeyError();
         }
     }
 
-    // Auth
-    private static async loadToken(loader: TokenLoader) {
+    // Data Loading
+    private static async loadData(loader: DataLoader<any>) {
         try {
             return await loader();
         }
         catch (e) {
-            throw new AthenaTokenLoadError({originalError: e});
+            throw new AthenaDataLoadError({originalError: e});
         }
     }
 
-    private static async saveToken(saver: TokenSaver, token: string) {
+    private static async saveData(saver: DataSaver<any>, data: any) {
         try {
-            return await saver(token);
+            return await saver(data);
         }
         catch (e) {
-            throw new AthenaTokenSaveError({originalError: e});
+            throw new AthenaDataSaveError({originalError: e});
         }
     }
 
-    private static async deleteToken(deleter: TokenDeleter) {
+    private static async deleteData(deleter: DataDeleter<any>) {
         try {
             return await deleter();
         }
         catch (e) {
-            throw new AthenaTokenDeleteError({originalError: e});
+            throw new AthenaDataDeleteError({originalError: e});
         }
     }
 
     public async login(username: string, password: string) {
-        const tokens = await this.query<LoginResponse>({
+        const data = await this.query<LoginResponse>({
             method: 'POST',
-            url: `${this.options.apiEndpoint}/v1/user`,
+            url: `${this.options.apiEndpoint}/auth/v1/login`,
             data: {
                 username,
                 password
@@ -165,10 +171,12 @@ export class AthenaAPIClient {
             noAuthRequired: true
         });
 
-        await AthenaAPIClient.saveToken(this.options.saveRefreshToken, tokens.refreshToken);
-        this.refreshToken = tokens.refreshToken;
-        await AthenaAPIClient.saveToken(this.options.saveAccessToken, tokens.accessToken);
-        this.accessToken = tokens.accessToken;
+        await AthenaAPIClient.saveData(this.options.saveCurrentUser, data.user);
+
+        await AthenaAPIClient.saveData(this.options.saveRefreshToken, data.refreshToken);
+        this.refreshToken = data.refreshToken;
+        await AthenaAPIClient.saveData(this.options.saveAccessToken, data.accessToken);
+        this.accessToken = data.accessToken;
     }
 
     public async logout() {
@@ -183,14 +191,17 @@ export class AthenaAPIClient {
 
         await this.query({
             method: 'POST',
-            url: `${this.options.apiEndpoint}/v1/auth/revoke`,
+            url: `${this.options.apiEndpoint}/auth/v1/revoke`,
             noAuthRequired: true,
             data: tokens
         });
 
-        await AthenaAPIClient.deleteToken(this.options.deleteRefreshToken);
+        await AthenaAPIClient.deleteData(this.options.deleteCurrentUser);
+        await AthenaAPIClient.deleteData(this.options.deleteEncryptionKey);
+
+        await AthenaAPIClient.deleteData(this.options.deleteRefreshToken);
         delete this.refreshToken;
-        await AthenaAPIClient.deleteToken(this.options.deleteAccessToken);
+        await AthenaAPIClient.deleteData(this.options.deleteAccessToken);
         delete this.accessToken;
     }
 
@@ -201,13 +212,13 @@ export class AthenaAPIClient {
 
         const tokens = await this.query<RefreshResponse>({
             method: 'POST',
-            url: `${this.options.apiEndpoint}/v1/auth/refresh`,
+            url: `${this.options.apiEndpoint}/auth/v1/refresh`,
             noAuthRequired: true
         });
 
-        await AthenaAPIClient.saveToken(this.options.saveRefreshToken, tokens.refreshToken);
+        await AthenaAPIClient.saveData(this.options.saveRefreshToken, tokens.refreshToken);
         this.refreshToken = tokens.refreshToken;
-        await AthenaAPIClient.saveToken(this.options.saveAccessToken, tokens.accessToken);
+        await AthenaAPIClient.saveData(this.options.saveAccessToken, tokens.accessToken);
         this.accessToken = tokens.accessToken;
     }
 
@@ -215,11 +226,13 @@ export class AthenaAPIClient {
     private async getEncryptedNotes(): Promise<INote[]> {
         return this.query<INote[]>({
             method: 'GET',
-            url: `${this.options.apiEndpoint}/v1/notes`
+            url: `${this.options.apiEndpoint}/notes/v1`
         });
     }
 
     async getNotes(): Promise<INoteDecryptionResult> {
+        await this.checkEncryptionKey();
+
         const encryptedNotes = await this.getEncryptedNotes();
         let notes: INote[] = [];
         let invalidNotes: INote[] = [];
@@ -241,12 +254,13 @@ export class AthenaAPIClient {
     }
 
     async addNote(newNote: INoteContent) {
-        this.checkEncryptionKey();
+        await this.checkEncryptionKey();
 
         const encryptedNote = AthenaEncryption.encryptNoteContent(<string> this.options.encryptionKey, newNote);
+
         return this.query<INoteContent>({
             method: 'POST',
-            url: `${this.options.apiEndpoint}/v1/notes`,
+            url: `${this.options.apiEndpoint}/notes/v1`,
             data: encryptedNote
         })
     }
@@ -254,20 +268,24 @@ export class AthenaAPIClient {
     private async getEncryptedNote(noteId: string): Promise<INote> {
         return this.query<INote>({
             method: 'GET',
-            url: `${this.options.apiEndpoint}/v1/notes/${noteId}`
+            url: `${this.options.apiEndpoint}/notes/v1/${noteId}`
         })
     }
 
     async getNote(noteId: string): Promise<INote> {
+        await this.checkEncryptionKey();
+
         const encryptedNote = await this.getEncryptedNote(noteId);
         return AthenaEncryption.decryptNote(<string> this.options.encryptionKey, encryptedNote);
     }
 
     async updateNote(noteId: string, note: INoteContent) {
+        await this.checkEncryptionKey();
+
         const encryptedNoteUpdate = await AthenaEncryption.encryptNoteContent(<string> this.options.encryptionKey, note);
         return this.query<INote>({
             method: 'PATCH',
-            url: `${this.options.apiEndpoint}/v1/notes/${noteId}`,
+            url: `${this.options.apiEndpoint}/notes/v1/${noteId}`,
             data: encryptedNoteUpdate
         })
     }
@@ -275,7 +293,7 @@ export class AthenaAPIClient {
     async deleteNote(noteId: string) {
         return this.query<INote>({
             method: 'DELETE',
-            url: `${this.options.apiEndpoint}/v1/notes/${noteId}`
+            url: `${this.options.apiEndpoint}/notes/v1/${noteId}`
         })
     }
 }

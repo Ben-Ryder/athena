@@ -18,7 +18,8 @@ import { ResourceNotUniqueError } from "@kangojs/core";
 export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntityDto, UpdateEntityDto> {
     constructor(
       private entity: EntityTarget<DatabaseEntity>,
-      private db: DatabaseService
+      private db: DatabaseService,
+      private relations: string[] = []
     ) {}
 
     abstract mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateEntityDto): DeepPartial<DatabaseEntity> ;
@@ -81,7 +82,10 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         let result: DatabaseEntity | null;
 
         try {
-            result = await repo.findOneBy(options);
+            result = await repo.findOne({
+                where: options,
+                relations: this.relations
+            });
         }
         catch(e: any) {
             throw new SystemError({
@@ -107,7 +111,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         let result: DatabaseEntity[];
 
         try {
-            result = await repo.find();
+            result = await repo.find({relations: this.relations});
         }
         catch(e: any) {
             throw new SystemError({
@@ -126,7 +130,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         let entity;
         try {
             const where = {id: entityId} as unknown as FindOptionsWhere<DatabaseEntity>;
-            entity = await repo.findOne(where);
+            entity = await repo.findOne({where});
         }
         catch (e: any) {
             throw new SystemError({
@@ -178,7 +182,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
         let entity;
         try {
             const where = {id: entityId} as unknown as FindOptionsWhere<DatabaseEntity>;
-            entity = await repo.findOne(where);
+            entity = await repo.findOne({where});
         }
         catch (e: any) {
             throw new SystemError({
