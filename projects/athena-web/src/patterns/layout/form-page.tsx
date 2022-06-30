@@ -11,7 +11,7 @@ export interface FormPageProps {
 
 export function FormPage(props: FormPageProps) {
   return (
-    <>
+    <div className="bg-br-atom-700">
       <Helmet>
         <title>{`${props.title} | Athena`}</title>
       </Helmet>
@@ -24,6 +24,6 @@ export function FormPage(props: FormPageProps) {
           {props.children}
         </div>
       </div>
-    </>
+    </div>
   );
 }
