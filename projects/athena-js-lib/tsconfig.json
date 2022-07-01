@@ -2,14 +2,24 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "strict": true,
-    "declaration": true,
-    "esModuleInterop": true,
+    "baseUrl": "./",
+    "rootDir": "./",
     "outDir": "./build",
+    "esModuleInterop": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule" : true,
+    "declaration": true,
+    "jsx": "react-jsx"
   },
+  "include": ["src"],
   "exclude": [
+    "node_modules",
     "tests",
-    "build",
-    "node_modules"
+    "jest.*.ts",
+    "**/*.test.ts",
+    "**/*.tests.ts"
   ]
 }

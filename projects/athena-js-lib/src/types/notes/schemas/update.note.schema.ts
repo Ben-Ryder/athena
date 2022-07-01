@@ -1,11 +1,11 @@
 import {IsString, IsOptional, Length} from 'class-validator';
 
 
-export class UpdateNoteShape {
+export class UpdateNoteSchema {
     @IsString()
     @Length(1, 100)
     @IsOptional()
-    title!: string;
+    title?: string;
 
     @IsString()
     @IsOptional()

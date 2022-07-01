@@ -25,7 +25,10 @@ export class UserEntity {
     email!: string;
 
     @Column()
-    password!: string;
+    passwordHash!: string;
+
+    @Column()
+    passwordSalt!: string;
 
     @Column({
         default: false

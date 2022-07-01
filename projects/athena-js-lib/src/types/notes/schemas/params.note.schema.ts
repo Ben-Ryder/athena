@@ -1,6 +1,6 @@
 import { IsUUID } from 'class-validator';
 
-export class UserParamsShape {
+export class NoteParamsSchema {
     @IsUUID()
-    userId!: string;
+    noteId!: string;
 }

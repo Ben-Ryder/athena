@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-import { INote, INoteContent, INoteDecryptionResult } from './types/note';
 import { AthenaEncryption } from './encryption';
 import {
     AthenaNoAccessTokenError,
@@ -9,10 +8,13 @@ import {
     AthenaRequestError,
     AthenaDataDeleteError,
     AthenaDataLoadError,
-    AthenaDataSaveError
+    AthenaDataSaveError, AthenaDecryptError
 } from './types/errors';
-import { LoginResponse, RefreshResponse } from './types/auth';
-import {IUser} from "./types/user";
+import {UserDto} from "./types/users/dtos/user.dto";
+import {LoginResponse} from "./types/auth/responses/login.res.auth.dto";
+import {RefreshResponse} from "./types/auth/responses/refresh.res.auth.shape";
+import {NoteDto} from "./types/notes/dtos/note.dto";
+import {CreateNoteDto} from "./types/notes/dtos/create.note.dto";
 
 export interface QueryOptions {
     url: string,
@@ -42,9 +44,9 @@ export interface AthenaAPIClientOptions {
     saveRefreshToken: DataSaver<string>;
     deleteRefreshToken: DataDeleter<string>;
 
-    loadCurrentUser: DataLoader<IUser>;
-    saveCurrentUser: DataSaver<IUser>;
-    deleteCurrentUser: DataDeleter<IUser>;
+    loadCurrentUser: DataLoader<UserDto>;
+    saveCurrentUser: DataSaver<UserDto>;
+    deleteCurrentUser: DataDeleter<UserDto>;
 }
 
 export class AthenaAPIClient {
@@ -223,67 +225,58 @@ export class AthenaAPIClient {
     }
 
     // Notes
-    private async getEncryptedNotes(): Promise<INote[]> {
-        return this.query<INote[]>({
+    private async getEncryptedNotes(): Promise<NoteDto[]> {
+        return this.query<NoteDto[]>({
             method: 'GET',
             url: `${this.options.apiEndpoint}/notes/v1`
         });
     }
 
-    async getNotes(): Promise<INoteDecryptionResult> {
+    async getNotes(): Promise<NoteDto[]> {
         await this.checkEncryptionKey();
 
         const encryptedNotes = await this.getEncryptedNotes();
-        let notes: INote[] = [];
-        let invalidNotes: INote[] = [];
+        let notes: NoteDto[] = [];
         for (let note of encryptedNotes) {
-            try {
-                notes.push(
-                    AthenaEncryption.decryptNote(<string> this.options.encryptionKey, note)
-                )
-            }
-            catch (e) {
-                invalidNotes.push(note);
-            }
+            notes.push(
+              AthenaEncryption.decryptNote(<string> this.options.encryptionKey, note)
+            )
         }
 
-        return {
-            notes,
-            invalidNotes
-        };
+        return notes;
     }
 
-    async addNote(newNote: INoteContent) {
+    async addNote(newNote: CreateNoteDto) {
         await this.checkEncryptionKey();
 
         const encryptedNote = AthenaEncryption.encryptNoteContent(<string> this.options.encryptionKey, newNote);
 
-        return this.query<INoteContent>({
+        return this.query({
             method: 'POST',
             url: `${this.options.apiEndpoint}/notes/v1`,
             data: encryptedNote
         })
     }
 
-    private async getEncryptedNote(noteId: string): Promise<INote> {
-        return this.query<INote>({
+    private async getEncryptedNote(noteId: string): Promise<NoteDto> {
+        return this.query<NoteDto>({
             method: 'GET',
             url: `${this.options.apiEndpoint}/notes/v1/${noteId}`
         })
     }
 
-    async getNote(noteId: string): Promise<INote> {
+    async getNote(noteId: string): Promise<NoteDto> {
         await this.checkEncryptionKey();
 
         const encryptedNote = await this.getEncryptedNote(noteId);
         return AthenaEncryption.decryptNote(<string> this.options.encryptionKey, encryptedNote);
     }
 
-    async updateNote(noteId: string, note: INoteContent) {
+    async updateNote(noteId: string, note: NoteDto) {
         await this.checkEncryptionKey();
 
         const encryptedNoteUpdate = await AthenaEncryption.encryptNoteContent(<string> this.options.encryptionKey, note);
-        return this.query<INote>({
+        return this.query({
             method: 'PATCH',
             url: `${this.options.apiEndpoint}/notes/v1/${noteId}`,
             data: encryptedNoteUpdate
@@ -291,7 +284,7 @@ export class AthenaAPIClient {
     }
 
     async deleteNote(noteId: string) {
-        return this.query<INote>({
+        return this.query({
             method: 'DELETE',
             url: `${this.options.apiEndpoint}/notes/v1/${noteId}`
         })

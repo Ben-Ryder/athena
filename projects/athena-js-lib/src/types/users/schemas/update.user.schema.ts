@@ -1,17 +1,17 @@
 import { IsString, IsEmail, MinLength, IsOptional } from 'class-validator';
 
 
-export class UpdateUserShape {
+export class UpdateUserSchema {
     @IsString()
     @IsOptional()
-    username!: string;
+    username?: string;
 
     @IsEmail()
     @IsOptional()
-    email!: string;
+    email?: string;
 
     @IsString()
     @MinLength(8)
     @IsOptional()
-    password!: string;
+    password?: string;
 }

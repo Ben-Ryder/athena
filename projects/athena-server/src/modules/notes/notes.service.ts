@@ -1,10 +1,8 @@
 import { NotesDatabaseRepository } from "./database/notes.database.repository";
 
-import { CreateNoteDto } from "./dtos/create.note.dto";
-import { UpdateNoteDto } from "./dtos/update.note.dto";
-import { NoteDto } from './dtos/note.dto';
 import { AccessDeniedError } from '@kangojs/core';
 import { Injectable } from "@kangojs/core";
+import {CreateNoteDto, NoteDto, UpdateNoteDto} from "@ben-ryder/athena-js-lib/build/src";
 
 
 @Injectable()
@@ -32,7 +30,7 @@ export class NotesService {
     }
 
     async add(requestUserId: string, createNoteDto: CreateNoteDto) {
-        createNoteDto.user = requestUserId;
+        createNoteDto.userId = requestUserId;
         return this.notesDatabaseRepository.add(createNoteDto);
     }
 

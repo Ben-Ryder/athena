@@ -4,11 +4,7 @@ import { Controller, Route, HTTPMethods } from '@kangojs/core';
 
 import { NotesService } from "./notes.service";
 import { RequestWithUser } from '../auth/auth.validator';
-
-import { NoteDto } from "./dtos/note.dto";
-import { CreateNoteShape } from "./shapes/create.notes.shape";
-import { UpdateNoteShape } from "./shapes/update.notes.shape";
-import { NoteParamsShape } from './shapes/note-params.shape';
+import {CreateNoteSchema, NoteDto, NoteParamsSchema, UpdateNoteSchema} from "@ben-ryder/athena-js-lib";
 
 
 @Controller('/notes/v1', {
@@ -37,7 +33,7 @@ export class NotesController {
 
     @Route({
         httpMethod: HTTPMethods.POST,
-        bodyShape: CreateNoteShape
+        bodyShape: CreateNoteSchema
     })
     async add(req: RequestWithUser, res: Response, next: NextFunction) {
         let newNote: NoteDto;
@@ -55,7 +51,7 @@ export class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.GET,
-        paramsShape: NoteParamsShape
+        paramsShape: NoteParamsSchema
     })
     async get(req: RequestWithUser, res: Response, next: NextFunction) {
         let note: NoteDto | null;
@@ -73,8 +69,8 @@ export class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.PATCH,
-        bodyShape: UpdateNoteShape,
-        paramsShape: NoteParamsShape
+        bodyShape: UpdateNoteSchema,
+        paramsShape: NoteParamsSchema
     })
     async update(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
@@ -89,7 +85,7 @@ export class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.DELETE,
-        paramsShape: NoteParamsShape
+        paramsShape: NoteParamsSchema
     })
     async delete(req: RequestWithUser, res: Response, next: NextFunction) {
         try {

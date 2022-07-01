@@ -4,7 +4,8 @@ import { TokenService } from "../../services/token/token.service";
 import { PasswordService } from "../../services/password/password.service";
 
 import { UsersService } from "../users/users.service";
-import { UserDto } from "../users/dtos/user.dto";
+import {LoginResponse, RefreshResponse, UserWithPasswordDto} from "@ben-ryder/athena-js-lib/build/src";
+
 
 @Injectable({
   identifier: "auth-service"
@@ -15,11 +16,11 @@ export class AuthService {
         private tokenService: TokenService
     ) {}
 
-    async login(username: string, password: string) {
-       let user: UserDto;
+    async login(username: string, password: string): Promise<LoginResponse> {
+       let user: UserWithPasswordDto;
 
        try {
-           user = await this.usersService.getFullByUsername(username);
+           user = await this.usersService.getWithPasswordByUsername(username);
        }
        catch (e) {
            throw new AccessDeniedError({
@@ -28,7 +29,7 @@ export class AuthService {
            });
        }
 
-       const passwordValid = PasswordService.checkPassword(password, user.password);
+       const passwordValid = PasswordService.checkPassword(password, user.passwordHash);
        if (!passwordValid) {
          throw new AccessDeniedError({
            message: 'The supplied username & password combination is invalid.',
@@ -36,16 +37,16 @@ export class AuthService {
          });
        }
 
-       const publicUser = this.usersService.makeUserPublic(user);
+       const userDto = this.usersService.removePasswordFromUser(user);
        const tokenPair = this.tokenService.createTokenPair(user.id);
 
        return {
-         user: publicUser,
+         user: userDto,
          ...tokenPair
        };
     }
 
-    async revokeRefreshToken(refreshToken: string) {
+    async revokeRefreshToken(refreshToken: string): Promise<void> {
         const isValid = await this.tokenService.isSignedRefreshToken(refreshToken);
         if (isValid) {
             await this.tokenService.addTokenToBlacklist(refreshToken);
@@ -53,7 +54,7 @@ export class AuthService {
         // todo: throw an error to the user or fail silently?
     }
 
-    async revokeAccessToken(accessToken: string) {
+    async revokeAccessToken(accessToken: string): Promise<void> {
         const isValid = await this.tokenService.isSignedAccessToken(accessToken);
         if (isValid) {
             await this.tokenService.addTokenToBlacklist(accessToken);
@@ -61,7 +62,7 @@ export class AuthService {
         // todo: throw an error to the user or fail silently?
     }
 
-    async refresh(refreshToken: string) {
+    async refresh(refreshToken: string): Promise<RefreshResponse> {
         const tokenPayload = await this.tokenService.validateAndDecodeRefreshToken(refreshToken);
 
         if (!tokenPayload) {

@@ -1,7 +1,7 @@
 import { IsString, IsEmail, MinLength } from 'class-validator';
 
 
-export class CreateUserShape {
+export class CreateUserSchema {
     @IsString()
     username!: string;
 

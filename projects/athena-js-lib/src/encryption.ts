@@ -1,8 +1,8 @@
 import aes from "crypto-js/aes";
 import utf8 from "crypto-js/enc-utf8";
 
-import { INote, INoteContent } from './types/note';
 import { AthenaDecryptError, AthenaEncryptError } from "./types/errors";
+import { NoteContent, NoteDto } from "./types/notes/dtos/note.dto";
 
 
 export class AthenaEncryption {
@@ -44,37 +44,39 @@ export class AthenaEncryption {
         }
     }
 
-    static encryptNote(key: string, note: INote): INote {
+    static encryptNote(key: string, note: NoteDto): NoteDto {
         return {
-            id: note.id,
+            ...note,
             title: AthenaEncryption.encryptText(key, note.title),
             body: typeof note.body === 'string' ? AthenaEncryption.encryptText(key, note.body) : null
         }
     }
 
-    static decryptNote(key: string, note: INote): INote {
-        const decryptedNote = {
-            id: note.id,
+    static decryptNote(key: string, note: NoteDto): NoteDto {
+        const decryptedNoteContent = {
             title: AthenaEncryption.decryptText(key, note.title),
             body: typeof note.body === 'string' ? AthenaEncryption.decryptText(key, note.body) : null
         };
 
         // If the title or body are empty then the encryption key must be wrong.
-        if (decryptedNote.title === '' || (typeof decryptedNote.body === "string" && decryptedNote.body === "")) {
+        if (decryptedNoteContent.title === '' || (typeof decryptedNoteContent.body === "string" && decryptedNoteContent.body === "")) {
             throw new AthenaDecryptError();
         }
 
-        return decryptedNote;
+        return {
+            ...note,
+            ...decryptedNoteContent
+        };
     }
 
-    static encryptNoteContent(key: string, note: INoteContent): INoteContent {
+    static encryptNoteContent(key: string, note: NoteContent): NoteContent {
         return {
             title: AthenaEncryption.encryptText(key, note.title),
             body: typeof note.body === 'string' ? AthenaEncryption.encryptText(key, note.body) : null
         }
     }
 
-    static decryptNoteContent(key: string, note: INoteContent): INoteContent {
+    static decryptNoteContent(key: string, note: NoteContent): NoteContent {
         const decryptedNoteContent = {
             title: AthenaEncryption.decryptText(key, note.title),
             body: typeof note.body === 'string' ? AthenaEncryption.decryptText(key, note.body) : null

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "The server backend for Athena.",
-  "main": "dist/src/server.js",
+  "main": "build/src/server.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Ben-Ryder/athena.git"
@@ -24,6 +24,7 @@
     "node": "16.x.x"
   },
   "dependencies": {
+    "@ben-ryder/athena-js-lib": "../athena-js-lib",
     "@kangojs/class-validation": "2.0.0-alpha.1",
     "@kangojs/core": "2.0.0-alpha.7",
     "@kangojs/serve-spa": "2.0.0-alpha.1",

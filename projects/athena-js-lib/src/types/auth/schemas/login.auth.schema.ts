@@ -1,7 +1,7 @@
 import { IsString } from 'class-validator';
 
 
-export class LoginShape {
+export class LoginSchema {
     @IsString()
     username!: string;
 

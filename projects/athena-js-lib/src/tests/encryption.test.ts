@@ -1,5 +1,6 @@
-import {AthenaEncryption, INote} from "../index";
 import {AthenaDecryptError} from "../types/errors";
+import {AthenaEncryption} from "../encryption";
+import {NoteContentShape} from "../types/notes/dtos/note.dto";
 
 test('encrypt and decrypt a string', () => {
     const secret = "ibiova86g9q438ogr8wofw4";
@@ -50,13 +51,13 @@ test('encrypt and decrypt an object', () => {
 test('encrypt and decrypt a note', () => {
     const secret = "aergihbwialefvwaeuygfuoysakgvjaw";
 
-    const note = <INote> {
+    const note = <NoteContentShape> {
         title: "Test Note",
         body: "test note body"
     };
 
-    const encryptedNote = AthenaEncryption.encryptNote(secret, note);
-    const decryptedNote = AthenaEncryption.decryptNote(secret, encryptedNote);
+    const encryptedNote = AthenaEncryption.encryptNoteContent(secret, note);
+    const decryptedNote = AthenaEncryption.decryptNoteContent(secret, encryptedNote);
 
     expect(decryptedNote).toEqual(note);
 })
@@ -65,15 +66,15 @@ test('attempting note decryption with wrong secret', () => {
     const secret = "aergihbwialefvwaeuygfuoysakgvjaw";
     const wrongSecret = "arfbglawvfuliaejvsuyfkvjarr";
 
-    const note = <INote> {
+    const note = <NoteContentShape> {
         title: "Test Note",
         body: "test note body"
     };
 
-    const encryptedNote = AthenaEncryption.encryptNote(secret, note);
+    const encryptedNote = AthenaEncryption.encryptNoteContent(secret, note);
 
     const errorFunction = () => {
-        AthenaEncryption.decryptNote(wrongSecret, encryptedNote);
+        AthenaEncryption.decryptNoteContent(wrongSecret, encryptedNote);
     };
 
     expect(errorFunction).toThrow(AthenaDecryptError);

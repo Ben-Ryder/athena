@@ -1,7 +1,7 @@
 import { IsJWT } from 'class-validator';
 
 
-export class RefreshShape {
+export class RefreshSchema {
     @IsJWT()
     refreshToken!: string;
 }

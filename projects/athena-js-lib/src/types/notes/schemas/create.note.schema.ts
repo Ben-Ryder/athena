@@ -1,7 +1,7 @@
 import { IsString, IsOptional, Length } from 'class-validator';
 
 
-export class CreateNoteShape {
+export class CreateNoteSchema {
     @IsString()
     @Length(1, 100)
     title!: string;

@@ -4,10 +4,8 @@ import { DatabaseRepository } from '../../../services/database/database.reposito
 import { Injectable } from "@kangojs/core";
 
 import { NoteEntity } from "./notes.database.entity";
-import { NoteDto } from "../dtos/note.dto";
-import { CreateNoteDto } from "../dtos/create.note.dto";
-import { UpdateNoteDto } from "../dtos/update.note.dto";
 import {DatabaseService} from "../../../services/database/database.service";
+import {CreateNoteDto, NoteDto, UpdateNoteDto} from "@ben-ryder/athena-js-lib";
 
 
 @Injectable()
@@ -23,7 +21,7 @@ export class NotesDatabaseRepository extends DatabaseRepository<NoteEntity, Note
             title: createEntityDto.title,
             body: createEntityDto.body || null,
             user: {
-                id: createEntityDto.user
+                id: createEntityDto.userId
             }
         };
     }
