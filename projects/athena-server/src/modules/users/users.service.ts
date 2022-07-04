@@ -5,7 +5,7 @@ import { Injectable } from "@kangojs/core";
 import { PasswordService } from "../../services/password/password.service";
 import { AccessForbiddenError } from "@kangojs/core";
 import {CreateUserDto, UpdateUserDto, UserDto, UserWithPasswordDto} from "@ben-ryder/athena-js-lib";
-import {CreateUserWithPasswordDto, UpdateUserWithPasswordDto} from "@ben-ryder/athena-js-lib/build/src";
+import {CreateUserWithPasswordDto, UpdateUserWithPasswordDto} from "@ben-ryder/athena-js-lib";
 
 
 @Injectable()

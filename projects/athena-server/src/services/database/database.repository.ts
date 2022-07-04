@@ -53,7 +53,7 @@ export abstract class DatabaseRepository<DatabaseEntity, EntityDto, CreateEntity
                     originalError: e,
                 });
             }
-            else if (e.message && e.message.includes("Duplicate entry")) {
+            else if (e.message && e.message.includes("duplicate key")) {
                 throw new ResourceNotUniqueError({
                     message: e.message,
                     applicationMessage: 'You have tried to add an entity that is not unique.',

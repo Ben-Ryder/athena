@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 
-import { INoteContent } from "@ben-ryder/athena-js-lib";
+import { NoteContent } from "@ben-ryder/athena-js-lib";
 
 import { Page } from "../../patterns/layout/page";
 import { NoteForm } from "../../patterns/components/note-form";
@@ -19,7 +19,7 @@ export function NewNotePage() {
           title: "",
           body: ""
         }}
-        onSubmit={async (values: INoteContent) => {
+        onSubmit={async (values: NoteContent) => {
           try {
             await apiClient.addNote(values);
           }

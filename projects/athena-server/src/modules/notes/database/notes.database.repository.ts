@@ -5,18 +5,18 @@ import { Injectable } from "@kangojs/core";
 
 import { NoteEntity } from "./notes.database.entity";
 import {DatabaseService} from "../../../services/database/database.service";
-import {CreateNoteDto, NoteDto, UpdateNoteDto} from "@ben-ryder/athena-js-lib";
+import {CreateNoteWithUserDto, NoteDto, UpdateNoteDto} from "@ben-ryder/athena-js-lib";
 
 
 @Injectable()
-export class NotesDatabaseRepository extends DatabaseRepository<NoteEntity, NoteDto, CreateNoteDto, UpdateNoteDto>{
+export class NotesDatabaseRepository extends DatabaseRepository<NoteEntity, NoteDto, CreateNoteWithUserDto, UpdateNoteDto>{
     constructor(
       private databaseService: DatabaseService
     ) {
         super(NoteEntity, databaseService, ["user"]);
     }
 
-    mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateNoteDto): DeepPartial<NoteEntity> {
+    mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateNoteWithUserDto): DeepPartial<NoteEntity> {
         return {
             title: createEntityDto.title,
             body: createEntityDto.body || null,

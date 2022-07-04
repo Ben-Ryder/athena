@@ -38,9 +38,12 @@ export function LoginPage() {
   };
 
   return (
-    <FormPage title="Log In">
+    <FormPage
+      title="Log In"
+      description={<p className="text-br-whiteGrey-200">Log in to your account. Don't have an account? <a href='/user/sign-up'>Sign Up</a></p>}
+    >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
+        <div className="mt-4">
           <Controller
             name="username"
             defaultValue=""
@@ -48,7 +51,7 @@ export function LoginPage() {
             render={({ field }) => <Input {...field} id="username" label="Username" type="text"/>}
           />
         </div>
-        <div>
+        <div className="mt-4">
           <Controller
             name="password"
             defaultValue=""
@@ -56,16 +59,16 @@ export function LoginPage() {
             render={({ field }) => <Input {...field} id="password" label="Password" type="password" />}
           />
         </div>
-        <div>
+        <div className="mt-4">
           <Controller
             name="encryptionKey"
             defaultValue=""
             control={control}
             render={({ field }) => <Input {...field} id="encryptionKey" label="Encryption Key" type="text" />}
           />
-          <p>Your encryption key is never sent to the server.</p>
+          <p className="text-br-whiteGrey-200">Your encryption key is never sent to the server.</p>
         </div>
-        <div>
+        <div className="mt-4 flex justify-end">
           <Button type="submit">Log In</Button>
         </div>
       </form>

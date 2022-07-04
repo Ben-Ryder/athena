@@ -2,7 +2,7 @@ import { Controller, Route, HTTPMethods } from '@kangojs/core';
 import { Request, Response, NextFunction } from 'express';
 
 import { AuthService } from './auth.service';
-import {LoginDto, LoginSchema, RefreshSchema, RevokeSchema} from "@ben-ryder/athena-js-lib/build/src";
+import {LoginDto, LoginSchema, RefreshSchema, RevokeSchema} from "@ben-ryder/athena-js-lib";
 
 
 @Controller('/auth/v1', {

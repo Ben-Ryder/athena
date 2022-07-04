@@ -4,7 +4,7 @@ import { TokenService } from "../../services/token/token.service";
 import { PasswordService } from "../../services/password/password.service";
 
 import { UsersService } from "../users/users.service";
-import {LoginResponse, RefreshResponse, UserWithPasswordDto} from "@ben-ryder/athena-js-lib/build/src";
+import {LoginResponse, RefreshResponse, UserWithPasswordDto} from "@ben-ryder/athena-js-lib";
 
 
 @Injectable({

@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { INote, INoteContent } from "@ben-ryder/athena-js-lib";
+import { NoteDto, NoteContent } from "@ben-ryder/athena-js-lib";
 
 import { Page } from "../../patterns/layout/page";
 import { NoteForm } from "../../patterns/components/note-form";
-import { Button } from "../../patterns/elements/button/button";
+import { Button } from "@ben-ryder/jigsaw";
 import {useAthena} from "../../helpers/use-athena";
 
 
@@ -15,7 +15,7 @@ type PageURLParams = {
 
 export function EditNotePage() {
     let { noteId } = useParams<PageURLParams>() as { noteId: string };
-    const [note, setNote] = React.useState<INote>();
+    const [note, setNote] = React.useState<NoteDto>();
     const navigate = useNavigate();
     let { apiClient } = useAthena();
 
@@ -46,12 +46,15 @@ export function EditNotePage() {
                     title: note.title,
                     body: note.body
                 }}
-                onSubmit={async (values: INoteContent) => {
-                    await apiClient.updateNote(noteId, values);
+                onSubmit={async (values: NoteContent) => {
+                    await apiClient.updateNote(noteId, {
+                        ...note,
+                        ...values
+                    });
                 }}
                 leftContent={
                     <Button
-                        variant="danger"
+                        styling="destructive"
                         onClick={async (e) => {
                             e.preventDefault();
                             await deleteNote(noteId);

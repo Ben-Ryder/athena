@@ -1,9 +1,10 @@
 import { createContext, useContext } from "react";
-import { AthenaAPIClient, IUser } from "@ben-ryder/athena-js-lib";
+import { AthenaAPIClient, UserDto } from "@ben-ryder/athena-js-lib";
+
 
 export interface IAthenaContext {
     apiClient: AthenaAPIClient,
-    loadCurrentUser: () => Promise<IUser | null>,
+    loadCurrentUser: () => Promise<UserDto | null>,
     setEncryptionKey: (encryptionKey: string) => Promise<void>,
     loadEncryptionKey: () => Promise<string | null>,
 }
@@ -60,12 +61,12 @@ class AthenaWrapper {
         return localStorage.removeItem(AthenaWrapper.REFRESH_TOKEN_STORAGE_KEY);
     }
 
-    static async loadCurrentUser(): Promise<IUser|null> {
+    static async loadCurrentUser(): Promise<UserDto|null> {
         const raw = localStorage.getItem(AthenaWrapper.CURRENT_USER_STORAGE_KEY);
         if (raw) {
             try {
                 const loaded = JSON.parse(raw);
-                return loaded as IUser;
+                return loaded as UserDto;
             }
             catch (e) {
                 return null;
@@ -73,7 +74,7 @@ class AthenaWrapper {
         }
         return null;
     }
-    static async saveCurrentUser(currentUser: IUser) {
+    static async saveCurrentUser(currentUser: UserDto) {
         localStorage.setItem(AthenaWrapper.CURRENT_USER_STORAGE_KEY, JSON.stringify(currentUser));
     }
     static async deleteCurrentUser() {

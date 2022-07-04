@@ -6,7 +6,7 @@
   "license": "AGPL-3.0-only",
   "dependencies": {
     "@ben-ryder/athena-js-lib": "file:../athena-js-lib",
-    "@ben-ryder/jigsaw": "^0.2.2",
+    "@ben-ryder/jigsaw": "^0.3.0",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^13.5.0",
