@@ -12,6 +12,7 @@ import {PageNotFound} from "./pages/page-not-found";
 import {LogoutPage} from "./pages/user/logout";
 import {Helmet, HelmetProvider} from "react-helmet-async";
 import {LoginPage} from "./pages/user/login";
+import {MainPage} from "./pages/main/main";
 
 
 function App() {
@@ -23,6 +24,9 @@ function App() {
     </Helmet>
     <BrowserRouter>
       <Routes>
+        {/* Main Routes */}
+        <Route path="/main" element={<MainPage />}/>
+
         {/* User Routes */}
         <Route path="/user/logout" element={<LogoutPage />}/>
         <Route path="/user/login" element={<LoginPage />}/>
