@@ -10,7 +10,7 @@ import {
     AthenaDataLoadError,
     AthenaDataSaveError, AthenaDecryptError
 } from './types/errors';
-import {UserDto} from "./types/users/dtos/user.dto";
+import {UserDto} from "./types/users/dtos/user.dto-interface";
 import {LoginResponse} from "./types/auth/responses/login.res.auth.dto";
 import {RefreshResponse} from "./types/auth/responses/refresh.res.auth.shape";
 import {NoteDto} from "./types/notes/dtos/note.dto";
