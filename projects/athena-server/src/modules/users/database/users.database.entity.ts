@@ -28,7 +28,7 @@ export class UserEntity {
     passwordHash!: string;
 
     @Column()
-    passwordSalt!: string;
+    encryptionSecret!: string;
 
     @Column({
         default: false

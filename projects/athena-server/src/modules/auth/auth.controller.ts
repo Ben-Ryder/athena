@@ -2,7 +2,7 @@ import { Controller, Route, HTTPMethods } from '@kangojs/core';
 import { Request, Response, NextFunction } from 'express';
 
 import { AuthService } from './auth.service';
-import {LoginDto, LoginSchema, RefreshSchema, RevokeSchema} from "@ben-ryder/athena-js-lib";
+import {LoginRequestSchema, RefreshRequestSchema, RevokeRequestSchema} from "@ben-ryder/athena-js-lib";
 
 
 @Controller('/auth/v1', {
@@ -16,11 +16,11 @@ export class AuthController {
     @Route({
         path: '/login',
         httpMethod: HTTPMethods.POST,
-        bodyShape: LoginSchema,
+        bodyShape: LoginRequestSchema,
         authRequired: false
     })
     async login(req: Request, res: Response, next: NextFunction) {
-        const loginDetails = <LoginDto> req.body;
+        const loginDetails = <LoginRequestSchema> req.body;
 
         try {
             const loginResponse = await this.authService.login(loginDetails.username, loginDetails.password);
@@ -34,11 +34,11 @@ export class AuthController {
     @Route({
         path: '/revoke',
         httpMethod: HTTPMethods.POST,
-        bodyShape: RevokeSchema,
+        bodyShape: RevokeRequestSchema,
         authRequired: false
     })
     async revoke(req: Request, res: Response, next: NextFunction) {
-        const tokens = <RevokeSchema> req.body;
+        const tokens = <RevokeRequestSchema> req.body;
 
         try {
             if (tokens.refreshToken) {
@@ -57,11 +57,11 @@ export class AuthController {
     @Route({
         path: '/refresh',
         httpMethod: HTTPMethods.POST,
-        bodyShape: RefreshSchema,
+        bodyShape: RefreshRequestSchema,
         authRequired: false
     })
     async refresh(req: Request, res: Response, next: NextFunction) {
-        const bodyData = <RefreshSchema> req.body;
+        const bodyData = <RefreshRequestSchema> req.body;
 
         try {
             const tokens = await this.authService.refresh(bodyData.refreshToken);

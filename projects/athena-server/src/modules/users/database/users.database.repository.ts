@@ -6,40 +6,42 @@ import { DatabaseRepository } from '../../../services/database/database.reposito
 
 import { UserEntity } from './users.database.entity';
 import {DatabaseService} from "../../../services/database/database.service";
-import {UserWithPasswordDto, CreateUserWithPasswordDto, UpdateUserWithPasswordDto} from "@ben-ryder/athena-js-lib";
+import {DatabaseUserDto} from "../dtos/database-user.dto-interface";
+import {CreateDatabaseUserDto} from "../dtos/create.database-user.dto-interface";
+import {UpdateDatabaseUserDto} from "../dtos/update.database-user.dto-interface";
 
 
 @Injectable()
-export class UsersDatabaseRepository extends DatabaseRepository<UserEntity, UserWithPasswordDto, CreateUserWithPasswordDto, UpdateUserWithPasswordDto> {
+export class UsersDatabaseRepository extends DatabaseRepository<UserEntity, DatabaseUserDto, CreateDatabaseUserDto, UpdateDatabaseUserDto> {
   constructor(
     private databaseService: DatabaseService
   ) {
     super(UserEntity, databaseService);
   }
 
-  mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateUserWithPasswordDto): DeepPartial<UserEntity> {
+  mapCreateEntityDtoToDatabaseEntity(createEntityDto: CreateDatabaseUserDto): DeepPartial<UserEntity> {
     return {
       username: createEntityDto.username,
       email: createEntityDto.email,
       passwordHash: createEntityDto.passwordHash,
-      passwordSalt: createEntityDto.passwordSalt
+      encryptionSecret: createEntityDto.encryptionSecret,
     };
   }
 
-  mapDatabaseEntityToEntityDto(databaseEntity: UserEntity): UserWithPasswordDto {
+  mapDatabaseEntityToEntityDto(databaseEntity: UserEntity): DatabaseUserDto {
     return {
       id: databaseEntity.id,
       username: databaseEntity.username,
       email: databaseEntity.email,
       passwordHash: databaseEntity.passwordHash,
-      passwordSalt: databaseEntity.passwordSalt,
+      encryptionSecret: databaseEntity.encryptionSecret,
       isVerified: databaseEntity.isVerified,
       createdAt: databaseEntity.createdAt,
       updatedAt: databaseEntity.updatedAt
     };
   }
 
-  mergeUpdateEntityDtoWithDatabaseEntity(databaseEntity: UserEntity, updateEntityDto: UpdateUserWithPasswordDto): DeepPartial<UserEntity> {
+  mergeUpdateEntityDtoWithDatabaseEntity(databaseEntity: UserEntity, updateEntityDto: UpdateDatabaseUserDto): DeepPartial<UserEntity> {
     return {
       ...databaseEntity,
       ...updateEntityDto

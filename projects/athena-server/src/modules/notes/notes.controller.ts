@@ -4,7 +4,13 @@ import { Controller, Route, HTTPMethods } from '@kangojs/core';
 
 import { NotesService } from "./notes.service";
 import { RequestWithUser } from '../auth/auth.validator';
-import {CreateNoteSchema, NoteDto, NoteParamsSchema, UpdateNoteSchema} from "@ben-ryder/athena-js-lib";
+import {
+    CreateNoteRequestSchema,
+    CreateNoteResponse,
+    NoteDto,
+    NotesQueryParamsSchema,
+    NoteURLParamsSchema, UpdateNoteRequestSchema
+} from "@ben-ryder/athena-js-lib";
 
 
 @Controller('/notes/v1', {
@@ -17,12 +23,13 @@ export class NotesController {
 
     @Route({
         httpMethod: HTTPMethods.GET,
+        queryShape: NotesQueryParamsSchema
     })
-    async getAll(req: RequestWithUser, res: Response, next: NextFunction) {
+    async getList(req: RequestWithUser, res: Response, next: NextFunction) {
         let notes: NoteDto[] = [];
 
         try {
-            notes = await this.notesService.getAll(req.user.id);
+            notes = await this.notesService.getList(req.user.id);
         }
         catch (e) {
             return next(e);
@@ -33,10 +40,10 @@ export class NotesController {
 
     @Route({
         httpMethod: HTTPMethods.POST,
-        bodyShape: CreateNoteSchema
+        bodyShape: CreateNoteRequestSchema
     })
     async add(req: RequestWithUser, res: Response, next: NextFunction) {
-        let newNote: NoteDto;
+        let newNote: CreateNoteResponse;
 
         try {
             newNote = await this.notesService.add(req.user.id, req.body);
@@ -51,10 +58,10 @@ export class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.GET,
-        paramsShape: NoteParamsSchema
+        paramsShape: NoteURLParamsSchema
     })
     async get(req: RequestWithUser, res: Response, next: NextFunction) {
-        let note: NoteDto | null;
+        let note: NoteDto;
 
         try {
             note = await this.notesService.get(req.user.id, req.params.noteId);
@@ -69,8 +76,8 @@ export class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.PATCH,
-        bodyShape: UpdateNoteSchema,
-        paramsShape: NoteParamsSchema
+        bodyShape: UpdateNoteRequestSchema,
+        paramsShape: NoteURLParamsSchema
     })
     async update(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
@@ -85,7 +92,7 @@ export class NotesController {
     @Route({
         path: '/:noteId',
         httpMethod: HTTPMethods.DELETE,
-        paramsShape: NoteParamsSchema
+        paramsShape: NoteURLParamsSchema
     })
     async delete(req: RequestWithUser, res: Response, next: NextFunction) {
         try {

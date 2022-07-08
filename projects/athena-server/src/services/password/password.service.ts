@@ -1,12 +1,12 @@
-import { hash, compare } from "bcrypt";
+import {hash, compare, genSalt} from "bcrypt";
 import {SystemError} from "@kangojs/core";
 
 export class PasswordService {
-    static HASH_ROUNDS = 10;
+    static SALT_ROUNDS = 20;
 
     static async hashPassword(password: string) {
         try {
-            return await hash(password, PasswordService.HASH_ROUNDS);
+            return await hash(password, PasswordService.SALT_ROUNDS);
         }
         catch (e) {
             throw new SystemError({
@@ -22,7 +22,7 @@ export class PasswordService {
         }
         catch (e) {
             throw new SystemError({
-                message: "Error while hashing password",
+                message: "Error while checking password hash",
                 originalError: e
             })
         }

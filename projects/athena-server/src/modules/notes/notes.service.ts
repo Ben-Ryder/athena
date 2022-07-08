@@ -2,7 +2,9 @@ import { NotesDatabaseRepository } from "./database/notes.database.repository";
 
 import { AccessDeniedError } from '@kangojs/core';
 import { Injectable } from "@kangojs/core";
-import {CreateNoteDto, CreateNoteWithUserDto, NoteDto, UpdateNoteDto} from "@ben-ryder/athena-js-lib";
+import {CreateNoteRequestSchema, NoteDto, UpdateNoteRequestSchema} from "@ben-ryder/athena-js-lib";
+import {DatabaseNoteDto} from "./dtos/database-note.dto-interface";
+import {CreateDatabaseNoteDto} from "./dtos/create.database-note.dto-interface";
 
 
 @Injectable()
@@ -11,16 +13,17 @@ export class NotesService {
        private notesDatabaseRepository: NotesDatabaseRepository
     ) {}
 
-    checkAccess(requestUserId: string, note: NoteDto) {
-        if (requestUserId !== note.user.id) {
+    // todo: check access via database query? (where userId rather than checking later)
+    checkAccess(requestUserId: string, note: DatabaseNoteDto) {
+        if (requestUserId !== note.userId) {
             throw new AccessDeniedError({
                 message: "Access denied to note"
             })
         }
     }
 
-    async getAll(requestUserId: string) {
-        return this.notesDatabaseRepository.getAll();
+    async getList(requestUserId: string) {
+        return this.notesDatabaseRepository.getList(requestUserId);
     }
 
     async get(requestUserId: string, noteId: string) {
@@ -29,8 +32,8 @@ export class NotesService {
         return note;
     }
 
-    async add(requestUserId: string, createNoteDto: CreateNoteDto) {
-        const noteWithUser: CreateNoteWithUserDto = {
+    async add(requestUserId: string, createNoteDto: CreateNoteRequestSchema) {
+        const noteWithUser: CreateDatabaseNoteDto = {
             ...createNoteDto,
             userId: requestUserId
         }
@@ -38,7 +41,7 @@ export class NotesService {
         return this.notesDatabaseRepository.add(noteWithUser);
     }
 
-    async update(requestUserId: string, noteId: string, updateNoteDto: UpdateNoteDto) {
+    async update(requestUserId: string, noteId: string, updateNoteDto: UpdateNoteRequestSchema) {
         // todo: improve this, .getById already makes a database get request so this is doubling requests.
         const note = await this.notesDatabaseRepository.getById(noteId);
         this.checkAccess(requestUserId, note);

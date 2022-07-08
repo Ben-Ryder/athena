@@ -4,7 +4,8 @@ import { TokenService } from "../../services/token/token.service";
 import { PasswordService } from "../../services/password/password.service";
 
 import { UsersService } from "../users/users.service";
-import {LoginResponse, RefreshResponse, UserWithPasswordDto} from "@ben-ryder/athena-js-lib";
+import {LoginResponse, RefreshResponse} from "@ben-ryder/athena-js-lib";
+import {DatabaseUserDto} from "../users/dtos/database-user.dto-interface";
 
 
 @Injectable({
@@ -17,7 +18,7 @@ export class AuthService {
     ) {}
 
     async login(username: string, password: string): Promise<LoginResponse> {
-       let user: UserWithPasswordDto;
+       let user: DatabaseUserDto;
 
        try {
            user = await this.usersService.getWithPasswordByUsername(username);

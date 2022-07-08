@@ -1,10 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { Controller, Route, HTTPMethods } from '@kangojs/core';
+import {Controller, Route, HTTPMethods, ResourceNotFoundError} from '@kangojs/core';
 
 import { UsersService } from './users.service';
 import {RequestWithUser} from "../auth/auth.validator";
-import {CreateUserSchema, UpdateUserSchema, UserDto, UserParamsSchema} from "@ben-ryder/athena-js-lib";
+import {
+    CreateUserRequestSchema,
+    CreateUserResponse,
+    GetUserResponse, UpdateUserRequestSchema,
+    UserDto,
+    UsersURLParamsSchema
+} from "@ben-ryder/athena-js-lib";
 
 
 @Controller('/users/v1',{
@@ -17,11 +23,11 @@ export class UsersController {
 
     @Route({
         httpMethod: HTTPMethods.POST,
-        bodyShape: CreateUserSchema,
+        bodyShape: CreateUserRequestSchema,
         authRequired: false
     })
     async add(req: Request, res: Response, next: NextFunction) {
-        let newUser: UserDto;
+        let newUser: CreateUserResponse;
 
         try {
             newUser = await this.usersService.add(req.body);
@@ -36,10 +42,10 @@ export class UsersController {
     @Route({
         path: '/:userId',
         httpMethod: HTTPMethods.GET,
-        paramsShape: UserParamsSchema
+        paramsShape: UsersURLParamsSchema
     })
     async get(req: RequestWithUser, res: Response, next: NextFunction) {
-        let user: UserDto | null;
+        let user: GetUserResponse | null;
 
         try {
             user = await this.usersService.get(req.user.id, req.params.userId);
@@ -54,8 +60,8 @@ export class UsersController {
     @Route({
         path: '/:userId',
         httpMethod: HTTPMethods.PATCH,
-        bodyShape: UpdateUserSchema,
-        paramsShape: UserParamsSchema
+        bodyShape: UpdateUserRequestSchema,
+        paramsShape: UsersURLParamsSchema
     })
     async update(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
@@ -70,7 +76,7 @@ export class UsersController {
     @Route({
         path: '/:userId',
         httpMethod: HTTPMethods.DELETE,
-        paramsShape: UserParamsSchema
+        paramsShape: UsersURLParamsSchema
     })
     async delete(req: RequestWithUser, res: Response, next: NextFunction) {
         try {
