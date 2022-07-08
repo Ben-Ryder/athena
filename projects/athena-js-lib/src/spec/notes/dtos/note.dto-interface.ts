@@ -1,9 +1,8 @@
 import {TagDto} from "../../tags/dtos/tag.dto-interface";
+import {NoteContentDto} from "./note-content.dto-interface";
 
-export interface NoteDto {
+export interface NoteDto extends NoteContentDto {
   id: string;
-  title: string;
-  body: string;
   tags: TagDto[];
   createdAt: Date;
   updatedAt: Date;

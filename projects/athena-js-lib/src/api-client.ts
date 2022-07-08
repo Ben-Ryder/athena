@@ -9,12 +9,18 @@ import {
     AthenaDataDeleteError,
     AthenaDataLoadError,
     AthenaDataSaveError, AthenaDecryptError
-} from './types/errors';
-import {UserDto} from "./types/users/dtos/user.dto-interface";
-import {LoginResponse} from "./types/auth/responses/login.res.auth.dto";
-import {RefreshResponse} from "./types/auth/responses/refresh.res.auth.shape";
-import {NoteDto} from "./types/notes/dtos/note.dto";
-import {CreateNoteDto} from "./types/notes/dtos/create.note.dto";
+} from './errors';
+import {UserDto} from "./spec/users/dtos/user.dto-interface";
+import {LoginResponse} from "./spec/auth/response/login.auth.response-interface";
+import {RefreshResponse} from "./spec/auth/response/refresh.auth.response-interface";
+import {GetNoteResponse} from "./spec/notes/response/get.note.response-interface";
+import {GetNotesResponse} from "./spec/notes/response/get.notes.response-interface";
+import {NoteDto} from "./spec/notes/dtos/note.dto-interface";
+import {CreateNoteResponse} from "./spec/notes/response/create.notes.response-interface";
+import {UpdateNoteResponse} from "./spec/notes/response/update.notes.response-interface";
+import {CreateNoteRequestSchema} from "./spec/notes/request/create.notes.request-schema";
+import {UpdateNoteRequestSchema} from "./spec/notes/request/update.notes.request-schema";
+
 
 export interface QueryOptions {
     url: string,
@@ -225,47 +231,50 @@ export class AthenaAPIClient {
     }
 
     // Notes
-    private async getEncryptedNotes(): Promise<NoteDto[]> {
-        return this.query<NoteDto[]>({
+    private async getEncryptedNotes(): Promise<GetNotesResponse> {
+        return this.query<GetNotesResponse>({
             method: 'GET',
             url: `${this.options.apiEndpoint}/notes/v1`
         });
     }
 
-    async getNotes(): Promise<NoteDto[]> {
+    async getNotes(): Promise<GetNotesResponse> {
         await this.checkEncryptionKey();
 
-        const encryptedNotes = await this.getEncryptedNotes();
+        const encryptedNotesResponse = await this.getEncryptedNotes();
         let notes: NoteDto[] = [];
-        for (let note of encryptedNotes) {
+        for (let note of encryptedNotesResponse.notes) {
             notes.push(
               AthenaEncryption.decryptNote(<string> this.options.encryptionKey, note)
             )
         }
 
-        return notes;
+        return {
+            notes,
+            meta: encryptedNotesResponse.meta
+        };
     }
 
-    async addNote(newNote: CreateNoteDto) {
+    async createNote(newNote: CreateNoteRequestSchema) {
         await this.checkEncryptionKey();
 
         const encryptedNote = AthenaEncryption.encryptNoteContent(<string> this.options.encryptionKey, newNote);
 
-        return this.query({
+        return this.query<CreateNoteResponse>({
             method: 'POST',
             url: `${this.options.apiEndpoint}/notes/v1`,
             data: encryptedNote
         })
     }
 
-    private async getEncryptedNote(noteId: string): Promise<NoteDto> {
-        return this.query<NoteDto>({
+    private async getEncryptedNote(noteId: string): Promise<GetNoteResponse> {
+        return this.query<GetNoteResponse>({
             method: 'GET',
             url: `${this.options.apiEndpoint}/notes/v1/${noteId}`
         })
     }
 
-    async getNote(noteId: string): Promise<NoteDto> {
+    async getNote(noteId: string): Promise<GetNoteResponse> {
         await this.checkEncryptionKey();
 
         const encryptedNote = await this.getEncryptedNote(noteId);
@@ -275,8 +284,8 @@ export class AthenaAPIClient {
     async updateNote(noteId: string, note: NoteDto) {
         await this.checkEncryptionKey();
 
-        const encryptedNoteUpdate = await AthenaEncryption.encryptNoteContent(<string> this.options.encryptionKey, note);
-        return this.query({
+        const encryptedNoteUpdate = await AthenaEncryption.encryptNote(<string> this.options.encryptionKey, note);
+        return this.query<UpdateNoteResponse>({
             method: 'PATCH',
             url: `${this.options.apiEndpoint}/notes/v1/${noteId}`,
             data: encryptedNoteUpdate
