@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { NoteDto, NoteContent } from "@ben-ryder/athena-js-lib";
+import { NoteDto, NoteContentDto } from "@ben-ryder/athena-js-lib";
 
 import { Page } from "../../patterns/layout/page";
 import { NoteForm } from "../../patterns/components/note-form";
@@ -46,7 +46,7 @@ export function EditNotePage() {
                     title: note.title,
                     body: note.body
                 }}
-                onSubmit={async (values: NoteContent) => {
+                onSubmit={async (values: NoteContentDto) => {
                     await apiClient.updateNote(noteId, {
                         ...note,
                         ...values

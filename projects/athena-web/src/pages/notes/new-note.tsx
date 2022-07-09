@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 
-import { NoteContent } from "@ben-ryder/athena-js-lib";
+import { NoteContentDto } from "@ben-ryder/athena-js-lib";
 
 import { Page } from "../../patterns/layout/page";
 import { NoteForm } from "../../patterns/components/note-form";
@@ -19,9 +19,12 @@ export function NewNotePage() {
           title: "",
           body: ""
         }}
-        onSubmit={async (values: NoteContent) => {
+        onSubmit={async (values: NoteContentDto) => {
           try {
-            await apiClient.addNote(values);
+            await apiClient.createNote({
+              ...values,
+              tags: []
+            });
           }
           catch (e: any) {
             console.log(e);

@@ -12,8 +12,8 @@ export function NotesPage() {
 
   useEffect(() => {
     async function getNotes() {
-      const allNotes = await apiClient.getNotes();
-      setNotes(allNotes);
+      const notesResponse = await apiClient.getNotes();
+      setNotes(notesResponse.notes);
     }
     getNotes();
   }, [apiClient])

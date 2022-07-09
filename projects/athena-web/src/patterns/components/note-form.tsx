@@ -1,18 +1,18 @@
 import React from "react";
 import { StrictReactNode } from "../../types/strict-react-node";
 
-import { NoteContent } from "@ben-ryder/athena-js-lib";
+import { NoteContentDto } from "@ben-ryder/athena-js-lib";
 
 import { Button} from "@ben-ryder/jigsaw";
 import { useForm, SubmitHandler, FieldErrors } from "react-hook-form";
 
 export interface NoteFormProps {
-    initialValues: NoteContent,
-    onSubmit: SubmitHandler<NoteContent>,
+    initialValues: NoteContentDto,
+    onSubmit: SubmitHandler<NoteContentDto>,
     leftContent?: StrictReactNode
 }
 
-function NoteFormError(errors:  FieldErrors<NoteContent>) {
+function NoteFormError(errors:  FieldErrors<NoteContentDto>) {
     let error: string|undefined;
     if (errors.title) {
         error = errors.title.message;
@@ -30,7 +30,7 @@ function NoteFormError(errors:  FieldErrors<NoteContent>) {
 }
 
 export function NoteForm(props: NoteFormProps) {
-    const { register, handleSubmit, formState: { errors } } = useForm<NoteContent>();
+    const { register, handleSubmit, formState: { errors } } = useForm<NoteContentDto>();
 
     return (
       <form onSubmit={handleSubmit(props.onSubmit)} className="absolute h-full w-full flex flex-col">
