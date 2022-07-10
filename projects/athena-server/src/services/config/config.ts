@@ -12,8 +12,7 @@ export interface ConfigInterface {
         environment: string
     },
     database: {
-        url: string,
-        sync: boolean
+        url: string
     },
     cache: {
       redisUrl: string
@@ -40,8 +39,7 @@ export const config: ConfigInterface = Object.freeze({
         environment: process.env.NODE_ENV || 'production'
     },
     database: {
-        url: process.env.DATABASE_URL as string,
-        sync: process.env.DATABASE_SYNCRONIZE === 'true'
+        url: process.env.DATABASE_URL as string
     },
     cache: {
         redisUrl: process.env.REDIS_URL as string
