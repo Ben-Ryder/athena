@@ -35,10 +35,9 @@
     "express": "^4.17.3",
     "ioredis": "^4.28.5",
     "jsonwebtoken": "^8.5.1",
-    "pg": "^8.7.3",
     "pino": "^7.8.0",
     "pino-pretty": "^7.5.1",
-    "typeorm": "^0.3.6"
+    "postgres": "^3.2.4"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
