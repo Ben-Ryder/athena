@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import {LoginRequestSchema, RefreshRequestSchema, RevokeRequestSchema} from "@ben-ryder/athena-js-lib";
 
 
-@Controller('/auth/v1', {
+@Controller('/v1/auth', {
     identifier: "auth-controller"
 })
 export class AuthController {

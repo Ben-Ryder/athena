@@ -1,18 +1,18 @@
-import { UsersDatabaseRepository } from './database/users.database.repository';
-
 import { Injectable } from "@kangojs/core";
+import { AccessForbiddenError } from "@kangojs/core";
+
+import {CreateUserRequestSchema, GetUserResponse, UpdateUserRequestSchema, UserDto} from "@ben-ryder/athena-js-lib";
 
 import { PasswordService } from "../../services/password/password.service";
-import { AccessForbiddenError } from "@kangojs/core";
-import {CreateUserRequestSchema, GetUserResponse, UpdateUserRequestSchema, UserDto} from "@ben-ryder/athena-js-lib";
 import {DatabaseUserDto} from "./dtos/database-user.dto-interface";
 import {UpdateDatabaseUserDto} from "./dtos/update.database-user.dto-interface";
+import {UsersDatabaseService} from "./database/users.database.service";
 
 
 @Injectable()
 export class UsersService {
     constructor(
-       private userDatabaseRepository: UsersDatabaseRepository
+       private usersDatabaseService: UsersDatabaseService
     ) {}
 
     checkAccess(requestUserId: string, userId: string): void {
@@ -26,7 +26,7 @@ export class UsersService {
     async get(requestUserId: string, userId: string): Promise<GetUserResponse> {
         this.checkAccess(requestUserId, userId);
 
-        const user = await this.userDatabaseRepository.getById(userId);
+        const user = await this.usersDatabaseService.get(userId);
         return this.removePasswordFromUser(user);
     }
 
@@ -36,9 +36,7 @@ export class UsersService {
     }
 
     async getWithPasswordByUsername(username: string): Promise<DatabaseUserDto> {
-        return this.userDatabaseRepository.get({
-            username
-        })
+        return this.usersDatabaseService.getByUsername(username);
     }
 
     async add(createUserDto: CreateUserRequestSchema): Promise<UserDto> {
@@ -51,11 +49,11 @@ export class UsersService {
             passwordHash
         }
 
-        const resultUser = await this.userDatabaseRepository.add(user);
+        const resultUser = await this.usersDatabaseService.create(user);
         return this.removePasswordFromUser(resultUser);
     }
 
-    async update(requestUserId: string, userId: string, updateUserDto: UpdateUserRequestSchema): Promise<void> {
+    async update(requestUserId: string, userId: string, updateUserDto: UpdateUserRequestSchema): Promise<UserDto> {
         this.checkAccess(requestUserId, userId);
 
         let newPasswordHash: string|null = null;
@@ -71,11 +69,12 @@ export class UsersService {
             updatedUser.passwordHash = newPasswordHash;
         }
 
-        return this.userDatabaseRepository.update(userId, updateUserDto);
+        const user = await this.usersDatabaseService.update(userId, updateUserDto);
+        return this.removePasswordFromUser(user);
     }
 
     async delete(requestUserId: string, userId: string): Promise<void> {
         this.checkAccess(requestUserId, userId);
-        return this.userDatabaseRepository.delete(userId);
+        return this.usersDatabaseService.delete(userId);
     }
 }

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import {Controller, Route, HTTPMethods, ResourceNotFoundError} from '@kangojs/core';
+import {Controller, Route, HTTPMethods} from '@kangojs/core';
 
 import { UsersService } from './users.service';
 import {RequestWithUser} from "../auth/auth.validator";
@@ -8,12 +8,11 @@ import {
     CreateUserRequestSchema,
     CreateUserResponse,
     GetUserResponse, UpdateUserRequestSchema,
-    UserDto,
     UsersURLParamsSchema
 } from "@ben-ryder/athena-js-lib";
 
 
-@Controller('/users/v1',{
+@Controller('/v1/users',{
     identifier: "users-controller"
 })
 export class UsersController {

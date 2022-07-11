@@ -39,7 +39,7 @@ export class AuthValidator implements MiddlewareFactory {
 
     return next(
       new AccessDeniedError({
-      message: 'Request Access Denied'
+        message: 'Request Access Denied'
       })
     )
   }

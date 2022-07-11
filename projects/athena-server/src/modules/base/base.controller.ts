@@ -14,7 +14,7 @@ export class BaseController {
     }
 
     @Route({
-        path: 'v1',
+        path: '/v1',
         httpMethod: HTTPMethods.GET,
         authRequired: false
     })

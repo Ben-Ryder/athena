@@ -36,12 +36,13 @@ create type order_directions as enum ('ASC', 'DESC');
  */
 create table if not exists users (
     id uuid not null default uuid_generate_v4(),
-    username varchar(20) not null,
-    email varchar(100) not null,
+    username varchar(20) not null unique,
+    email varchar(100) not null unique,
     password_hash varchar(100) not null,
+    encryption_secret varchar(255) not null,
     is_verified boolean not null default false,
     created_at timestamp not null default now(),
-    updated_at timestamp not null,
+    updated_at timestamp not null default now(),
     PRIMARY KEY (id)
 );
 create trigger update_user_timestamps before update on users for each row execute procedure update_table_timestamps();
@@ -54,9 +55,9 @@ create trigger update_user_timestamps before update on users for each row execut
 create table if not exists vaults (
     id uuid not null default uuid_generate_v4(),
     name varchar(50) not null,
-    description varchar(255) not null,
+    description varchar(255),
     created_at timestamp not null default now(),
-    updated_at timestamp not null,
+    updated_at timestamp not null default now(),
     owner uuid not null,
     PRIMARY KEY (id),
     constraint vault_owner foreign key (owner) references users(id) on delete cascade
@@ -74,7 +75,7 @@ create table if not exists notes (
     description varchar(255),
     body text not null,
     created_at timestamp not null default now(),
-    updated_at timestamp not null,
+    updated_at timestamp not null default now(),
     vault uuid not null,
     PRIMARY KEY (id),
     constraint tag_vault foreign key (vault) references vaults(id) on delete cascade
@@ -92,7 +93,7 @@ create table if not exists tags (
     background_colour char(7),
     text_colour char(7),
     created_at timestamp not null default now(),
-    updated_at timestamp not null,
+    updated_at timestamp not null default now(),
     vault uuid not null,
     PRIMARY KEY (id),
     constraint tag_vault foreign key (vault) references vaults(id) on delete cascade
@@ -124,7 +125,7 @@ create table if not exists queries (
     order_by order_by_fields not null,
     order_direction order_directions not null ,
     created_at timestamp not null default now(),
-    updated_at timestamp not null,
+    updated_at timestamp not null default now(),
     vault uuid not null,
     PRIMARY KEY (id),
     constraint tag_vault foreign key (vault) references vaults(id) on delete cascade

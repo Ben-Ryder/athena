@@ -9,7 +9,7 @@ import postgres, {Sql} from "postgres";
 
 @Injectable()
 export class DatabaseService {
-  sql: Sql<any> | null = null;
+  private sql: Sql<any> | null = null;
 
   constructor(
     private configService: ConfigService
