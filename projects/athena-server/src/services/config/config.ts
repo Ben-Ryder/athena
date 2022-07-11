@@ -19,10 +19,12 @@ export interface ConfigInterface {
     },
     auth: {
         accessToken: {
-            secret: string
+            secret: string,
+            expiry: string
         },
         refreshToken: {
-            secret: string
+            secret: string,
+            expiry: string
         }
     }
 }
@@ -46,10 +48,12 @@ export const config: ConfigInterface = Object.freeze({
     },
     auth: {
         accessToken: {
-            secret: process.env.ACCESS_TOKEN_SECRET as string
+            secret: process.env.ACCESS_TOKEN_SECRET as string,
+            expiry: process.env.ACCESS_TOKEN_EXPIRY as string
         },
         refreshToken: {
-            secret: process.env.REFRESH_TOKEN_SECRET as string
+            secret: process.env.REFRESH_TOKEN_SECRET as string,
+            expiry: process.env.REFRESH_TOKEN_EXPIRY as string
         }
     }
 })

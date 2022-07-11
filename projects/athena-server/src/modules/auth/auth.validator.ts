@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import {AccessDeniedError, Middleware} from '@kangojs/core';
+import {AccessUnauthorizedError, Middleware} from '@kangojs/core';
 import { TokenService } from '../../services/token/token.service';
 import  {MiddlewareFactory } from "@kangojs/core";
 
@@ -38,7 +38,7 @@ export class AuthValidator implements MiddlewareFactory {
     }
 
     return next(
-      new AccessDeniedError({
+      new AccessUnauthorizedError({
         message: 'Request Access Denied'
       })
     )

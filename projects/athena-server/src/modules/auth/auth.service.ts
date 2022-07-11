@@ -1,4 +1,4 @@
-import {Injectable, AccessDeniedError} from '@kangojs/core';
+import {Injectable, AccessUnauthorizedError} from '@kangojs/core';
 
 import { TokenService } from "../../services/token/token.service";
 import { PasswordService } from "../../services/password/password.service";
@@ -24,7 +24,7 @@ export class AuthService {
            user = await this.usersService.getWithPasswordByUsername(username);
        }
        catch (e) {
-           throw new AccessDeniedError({
+           throw new AccessUnauthorizedError({
              message: 'The supplied username & password combination is invalid.',
              applicationMessage: 'The supplied username & password combination is invalid.'
            });
@@ -32,7 +32,7 @@ export class AuthService {
 
        const passwordValid = PasswordService.checkPassword(password, user.passwordHash);
        if (!passwordValid) {
-         throw new AccessDeniedError({
+         throw new AccessUnauthorizedError({
            message: 'The supplied username & password combination is invalid.',
            applicationMessage: 'The supplied username & password combination is invalid.'
          });
@@ -67,7 +67,7 @@ export class AuthService {
         const tokenPayload = await this.tokenService.validateAndDecodeRefreshToken(refreshToken);
 
         if (!tokenPayload) {
-          throw new AccessDeniedError({
+          throw new AccessUnauthorizedError({
             message: 'The supplied refresh token is invalid.',
             applicationMessage: 'The supplied refresh token is invalid.'
           });

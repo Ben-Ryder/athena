@@ -44,4 +44,9 @@ export class CacheService {
             })
         }
     }
+
+    // todo: add @OnKill() decorator or similar to kangojs so services can handle cleanup
+    async onKill() {
+        this.redis.disconnect();
+    }
 }

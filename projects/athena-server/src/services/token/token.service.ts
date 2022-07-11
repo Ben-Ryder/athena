@@ -23,16 +23,10 @@ export interface TokenPair {
 
 @Injectable()
 export class TokenService {
-    accessTokenSecret: string;
-    refreshTokenSecret: string;
-
     constructor(
       private configService: ConfigService,
       private cacheService: CacheService
-    ) {
-        this.accessTokenSecret = this.configService.config.auth.accessToken.secret;
-        this.refreshTokenSecret = this.configService.config.auth.refreshToken.secret;
-    }
+    ) {}
 
     /**
      * Create an access and refresh token for the given user.
@@ -50,7 +44,11 @@ export class TokenService {
      * @param userId
      */
     private createAccessToken(userId: string) {
-        return sign({userId, type: "accessToken"}, this.accessTokenSecret, {expiresIn: '1h'});
+        return sign(
+          {userId, type: "accessToken"},
+          this.configService.config.auth.accessToken.secret,
+          {expiresIn: this.configService.config.auth.accessToken.expiry}
+        );
     }
 
     /**
@@ -58,7 +56,11 @@ export class TokenService {
      * @param userId
      */
     private createRefreshToken(userId: string) {
-        return sign({userId, type: "refreshToken"}, this.refreshTokenSecret, {expiresIn: '7 days'});
+        return sign(
+          {userId, type: "refreshToken"},
+          this.configService.config.auth.refreshToken.secret,
+          {expiresIn: this.configService.config.auth.refreshToken.expiry}
+        );
     }
 
     /**
@@ -86,7 +88,7 @@ export class TokenService {
      * @param token
      */
     async validateAndDecodeAccessToken(token: string) {
-        return this.validateAndDecodeToken<AccessTokenPayload>(token, this.accessTokenSecret);
+        return this.validateAndDecodeToken<AccessTokenPayload>(token, this.configService.config.auth.accessToken.secret);
     }
 
     /**
@@ -94,7 +96,7 @@ export class TokenService {
      * @param token
      */
     async validateAndDecodeRefreshToken(token: string) {
-        return this.validateAndDecodeToken<RefreshTokenPayload>(token, this.refreshTokenSecret);
+        return this.validateAndDecodeToken<RefreshTokenPayload>(token, this.configService.config.auth.refreshToken.secret);
     }
 
     /**
@@ -119,7 +121,7 @@ export class TokenService {
      * @param token
      */
     async isSignedAccessToken(token: string) {
-        return TokenService.isSignedToken(token, this.accessTokenSecret);
+        return TokenService.isSignedToken(token, this.configService.config.auth.accessToken.secret);
     }
 
     /**
@@ -128,7 +130,7 @@ export class TokenService {
      * @param token
      */
     async isSignedRefreshToken(token: string) {
-        return TokenService.isSignedToken(token, this.refreshTokenSecret);
+        return TokenService.isSignedToken(token, this.configService.config.auth.refreshToken.secret);
     }
 
     async addTokenToBlacklist(token: string) {

@@ -2,7 +2,7 @@ import {hash, compare, genSalt} from "bcrypt";
 import {SystemError} from "@kangojs/core";
 
 export class PasswordService {
-    static SALT_ROUNDS = 10;
+    static SALT_ROUNDS = 12;
 
     static async hashPassword(password: string) {
         try {

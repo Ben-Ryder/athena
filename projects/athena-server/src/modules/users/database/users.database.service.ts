@@ -74,7 +74,7 @@ export class UsersDatabaseService {
 
     let result: InternalDatabaseUserDto[] = [];
     try {
-      result = await sql<InternalDatabaseUserDto[]>`SELECT * from users where id = ${userId}`;
+      result = await sql<InternalDatabaseUserDto[]>`SELECT * FROM users WHERE id = ${userId}`;
     }
     catch (e: any) {
       throw new SystemError({
@@ -99,7 +99,7 @@ export class UsersDatabaseService {
 
     let result: InternalDatabaseUserDto[] = [];
     try {
-      result = await sql<InternalDatabaseUserDto[]>`SELECT * from users where username = ${username}`;
+      result = await sql<InternalDatabaseUserDto[]>`SELECT * FROM users WHERE username = ${username}`;
     }
     catch (e: any) {
       throw new SystemError({
@@ -187,7 +187,7 @@ export class UsersDatabaseService {
 
     let result: RowList<Row[]>;
     try {
-      result = await sql`DELETE from users where id = ${userId}`;
+      result = await sql`DELETE FROM users WHERE id = ${userId}`;
     }
     catch (e: any) {
       throw new SystemError({

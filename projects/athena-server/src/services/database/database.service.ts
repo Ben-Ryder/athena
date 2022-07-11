@@ -23,4 +23,10 @@ export class DatabaseService {
     this.sql = postgres(this.configService.config.database.url);
     return this.sql;
   }
+
+  public async onKill() {
+    if (this.sql) {
+      await this.sql.end();
+    }
+  }
 }

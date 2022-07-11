@@ -1,1 +1,2 @@
-setup.sql
+*.sql
+!example.setup.sql
