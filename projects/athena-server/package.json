@@ -18,7 +18,9 @@
     "start": "npm run build && NODE_PATH=./build node build/src/server.js",
     "dev": "NODE_PATH=./ nodemon src/server.ts",
     "build": "rimraf ./build && tsc",
-    "test": "jest"
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "jest '.*.unit.test.ts' --passWithNoTests",
+    "test:e2e": "jest '.*.e2e.test.ts' --runInBand"
   },
   "engines": {
     "node": "16.x.x"
@@ -26,7 +28,7 @@
   "dependencies": {
     "@ben-ryder/athena-js-lib": "../athena-js-lib",
     "@kangojs/class-validation": "2.0.0-alpha.1",
-    "@kangojs/core": "2.0.0-alpha.13",
+    "@kangojs/core": "2.0.0-alpha.14",
     "@kangojs/serve-spa": "2.0.0-alpha.1",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",

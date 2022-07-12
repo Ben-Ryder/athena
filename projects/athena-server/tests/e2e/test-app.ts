@@ -9,8 +9,7 @@ import {UsersController} from "../../src/modules/users/users.controller";
 import {AuthValidator} from "../../src/modules/auth/auth.validator";
 import {ConfigService, config, ConfigInterface} from "../../src/services/config/config";
 import {DatabaseService} from "../../src/services/database/database.service";
-import {testEnvironmentVars} from "../test-data";
-import {UserDto} from "@ben-ryder/athena-js-lib";
+import {testEnvironmentVars, testUsers} from "../test-data";
 import {TokenPair, TokenService} from "../../src/services/token/token.service";
 
 
@@ -21,23 +20,23 @@ import {TokenPair, TokenService} from "../../src/services/token/token.service";
  */
 export class TestApplication extends KangoJS {
   /**
-   * Teardown the database to remove all content.
+   * Reset the database to match the predefined test content
    */
-  async databaseTeardown() {
+  async resetDatabase() {
     const databaseService = this.dependencyContainer.useDependency(DatabaseService);
     const sql = await databaseService.getSQL();
 
     // Because "on delete cascade" is present on all relationships
-    // deleting users will automatically delete all their content too.
-    await sql`DELETE FROM users`
-  }
+    // deleting users will automatically delete all content too.
+    await sql`DELETE FROM users`;
 
-  /**
-   * Set up the database with the predefined test content.
-   */
-  async databaseSetup() {
-    const databaseService = this.dependencyContainer.useDependency(DatabaseService);
-    const sql = await databaseService.getSQL();
+    // Add Users
+    for (const user of testUsers) {
+      await sql`
+        INSERT INTO users(id, username, email, password_hash, encryption_secret, is_verified, created_at, updated_at) 
+        VALUES (${user.id}, ${user.username}, ${user.email}, ${user.passwordHash}, ${user.encryptionSecret}, ${user.isVerified}, ${user.createdAt}, ${user.updatedAt})
+       `;
+    }
   }
 
   /**

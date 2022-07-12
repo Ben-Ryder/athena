@@ -7,7 +7,7 @@ let testApplication: TestApplication;
 let testClient: SuperAgentTest;
 
 
-describe('Base Route',() => {
+describe('Base Module',() => {
 
   beforeAll(async () => {
     let apps = await getTestApplication();
@@ -24,11 +24,7 @@ describe('Base Route',() => {
   })
 
   beforeEach(async () => {
-    await testApplication.databaseSetup();
-  })
-
-  afterEach(async () => {
-    await testApplication.databaseTeardown();
+    await testApplication.resetDatabase();
   })
 
   /**

@@ -20,7 +20,13 @@ export class DatabaseService {
       return this.sql
     }
 
-    this.sql = postgres(this.configService.config.database.url);
+    this.sql = postgres(this.configService.config.database.url, {
+      connection: {
+        // This stops timestamps being returned in the server's timezone and leaves
+        // timezone conversion upto API clients.
+        timezone: "UTC"
+      }
+    });
     return this.sql;
   }
 

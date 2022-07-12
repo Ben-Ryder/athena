@@ -41,8 +41,8 @@ create table if not exists users (
     password_hash varchar(100) not null,
     encryption_secret varchar(255) not null,
     is_verified boolean not null default false,
-    created_at timestamp not null default now(),
-    updated_at timestamp not null default now(),
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
     PRIMARY KEY (id)
 );
 create trigger update_user_timestamps before update on users for each row execute procedure update_table_timestamps();
@@ -56,8 +56,8 @@ create table if not exists vaults (
     id uuid not null default uuid_generate_v4(),
     name varchar(50) not null,
     description varchar(255),
-    created_at timestamp not null default now(),
-    updated_at timestamp not null default now(),
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
     owner uuid not null,
     PRIMARY KEY (id),
     constraint vault_owner foreign key (owner) references users(id) on delete cascade
@@ -74,8 +74,8 @@ create table if not exists notes (
     title varchar(50) not null,
     description varchar(255),
     body text not null,
-    created_at timestamp not null default now(),
-    updated_at timestamp not null default now(),
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
     vault uuid not null,
     PRIMARY KEY (id),
     constraint tag_vault foreign key (vault) references vaults(id) on delete cascade
@@ -92,8 +92,8 @@ create table if not exists tags (
     name varchar(50) not null,
     background_colour char(7),
     text_colour char(7),
-    created_at timestamp not null default now(),
-    updated_at timestamp not null default now(),
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
     vault uuid not null,
     PRIMARY KEY (id),
     constraint tag_vault foreign key (vault) references vaults(id) on delete cascade
@@ -124,8 +124,8 @@ create table if not exists queries (
     name varchar(50) not null,
     order_by order_by_fields not null,
     order_direction order_directions not null ,
-    created_at timestamp not null default now(),
-    updated_at timestamp not null default now(),
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
     vault uuid not null,
     PRIMARY KEY (id),
     constraint tag_vault foreign key (vault) references vaults(id) on delete cascade
