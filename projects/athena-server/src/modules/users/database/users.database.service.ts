@@ -6,7 +6,7 @@ import {DatabaseUserDto} from "../dtos/database-user.dto-interface";
 import {InternalDatabaseUserDto} from "../dtos/internal-database-user.dto-interface";
 import {PostgresError, Row, RowList} from "postgres";
 import {PG_UNIQUE_VIOLATION} from "../../../services/database/database-error-codes";
-import {USER_EMAIL_EXISTS, USER_NOT_FOUND, USER_USERNAME_EXISTS} from "../../../error-identifiers";
+import {AthenaErrorIdentifiers} from "../../../error-identifiers";
 
 
 @Injectable()
@@ -50,13 +50,13 @@ export class UsersDatabaseService {
       if (e.code && e.code === PG_UNIQUE_VIOLATION) {
         if (e.constraint_name === 'users_username_key') {
           throw new ResourceRelationshipError({
-            identifier: USER_USERNAME_EXISTS,
+            identifier: AthenaErrorIdentifiers.USER_USERNAME_EXISTS,
             applicationMessage: "The supplied username is already taken by another user."
           })
         }
         else if (e.constraint_name == 'users_email_key') {
           throw new ResourceRelationshipError({
-            identifier: USER_EMAIL_EXISTS,
+            identifier: AthenaErrorIdentifiers.USER_EMAIL_EXISTS,
             applicationMessage: "The supplied email address is already taken by another user."
           })
         }
@@ -88,7 +88,7 @@ export class UsersDatabaseService {
     }
     else {
       throw new ResourceNotFoundError({
-        identifier: USER_NOT_FOUND,
+        identifier: AthenaErrorIdentifiers.USER_NOT_FOUND,
         applicationMessage: "The requested user could not be found."
       })
     }
@@ -113,7 +113,7 @@ export class UsersDatabaseService {
     }
     else {
       throw new ResourceNotFoundError({
-        identifier: USER_NOT_FOUND,
+        identifier: AthenaErrorIdentifiers.USER_NOT_FOUND,
         applicationMessage: "The requested user could not be found."
       })
     }

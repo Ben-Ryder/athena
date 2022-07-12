@@ -1,9 +1,10 @@
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import {IsString, IsEmail, MinLength, MaxLength} from 'class-validator';
 
 
 export class CreateUserRequestSchema {
   @IsString()
-  @MinLength(3)
+  @MinLength(1)
+  @MaxLength(20)
   username!: string;
 
   @IsEmail()

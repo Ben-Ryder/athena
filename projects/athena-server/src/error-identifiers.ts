@@ -3,7 +3,10 @@
  * to specify the exact error that happened.
  */
 
-// User Errors
-export const USER_NOT_FOUND = "user-not-found";
-export const USER_USERNAME_EXISTS = "user-username-exists";
-export const USER_EMAIL_EXISTS = "user-email-exists";
+export enum AthenaErrorIdentifiers {
+  // User Errors
+  USER_NOT_FOUND = "user-not-found",
+  USER_USERNAME_EXISTS = "user-username-exists",
+  USER_EMAIL_EXISTS = "user-email-exists",
+}
+
