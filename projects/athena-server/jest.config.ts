@@ -7,8 +7,7 @@ const config: Config.InitialOptions = {
   },
   "modulePaths": [
     "<rootDir>"
-  ],
-
+  ]
 }
 
 export default config;

@@ -1,42 +1,25 @@
-import { SuperAgentTest } from "supertest";
-import {TestApplication, getTestApplication} from "../../../tests/e2e/test-app";
-import {CacheService} from "../../services/cache/cache.service";
-import {DatabaseService} from "../../services/database/database.service";
+import {TestHelper} from "../../../tests/e2e/test-helper";
 
-let testApplication: TestApplication;
-let testClient: SuperAgentTest;
-
+let testHelper: TestHelper;
 
 describe('Base Module',() => {
 
   beforeAll(async () => {
-    let apps = await getTestApplication();
-    testApplication = apps.testApplication;
-    testClient = apps.testClient;
+    testHelper = new TestHelper();
   })
-
-  afterAll(async () => {
-    // Clean up database and redis connections before exiting
-    const cacheService = testApplication.dependencyContainer.useDependency(CacheService);
-    await cacheService.onKill();
-    const databaseService = testApplication.dependencyContainer.useDependency(DatabaseService);
-    await databaseService.onKill();
-  })
-
-  beforeEach(async () => {
-    await testApplication.resetDatabase();
-  })
+  afterAll(async () => {await testHelper.afterAll()});
+  beforeEach(async () => {await testHelper.beforeEach()});
 
   /**
    * Base Route (/)
    */
   describe('/ [GET]', () => {
     it('When a request is made, Then the responses should have a 200 status code', async () => {
-      await testClient.get('/').expect(200);
+      await testHelper.client.get('/').expect(200);
     })
 
     it('When a request is made, Then the responses should be a string message', async () => {
-      const {body: data} = await testClient.get('/');
+      const {body: data} = await testHelper.client.get('/');
       expect(data).toHaveProperty('message');
       expect(typeof data.message).toEqual('string');
     })
@@ -50,11 +33,11 @@ describe('Base Module',() => {
    */
   describe('/v1 [GET]', () => {
     it('When a request is made, Then the responses should have a 200 status code', async () => {
-      await testClient.get('/').expect(200);
+      await testHelper.client.get('/').expect(200);
     })
 
     it('When a request is made, Then the responses should be a string message', async () => {
-      const {body: data} = await testClient.get('/');
+      const {body: data} = await testHelper.client.get('/');
       expect(data).toHaveProperty('message');
       expect(typeof data.message).toEqual('string');
     })

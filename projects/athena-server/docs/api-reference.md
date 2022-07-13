@@ -16,7 +16,7 @@
       - `/vaults/:vaultId/tags` [GET, POST]
         - `/vaults/:vaultId/tags/:tagId` [GET, PATCH, DELETE]
 
-## Tag
+## Tags
 Content tags are managed via `/tags`.  
 To add tags to content you can pass the `tags` field to POST or PATCH requests with a list of tag IDs.  
 Passing the `tags` field will overwrite existing tags on that content entity.

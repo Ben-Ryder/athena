@@ -69,16 +69,20 @@ export class TokenService {
      * @param secret
      */
     private async validateAndDecodeToken<PayloadType>(token: string, secret: string) {
-        try {
-            // verify will throw an error if it fails
-            const payload = <PayloadType|string> verify(token, secret);
+        let payload: PayloadType|string;
 
-            const isBlacklisted = await this.cacheService.itemExists(token);
-            if (!isBlacklisted && typeof payload !== 'string') {
-                return payload;
-            }
+        try {
+            payload = <PayloadType | string>verify(token, secret);
         }
-        catch (err) {}
+        catch (err) {
+            // verify will throw an error if it fails
+            return null;
+        }
+
+        const isBlacklisted = await this.cacheService.itemExists(token);
+        if (!isBlacklisted && typeof payload !== 'string') {
+            return payload;
+        }
 
         return null;
     }

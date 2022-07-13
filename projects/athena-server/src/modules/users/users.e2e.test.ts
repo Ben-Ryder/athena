@@ -1,44 +1,25 @@
-import { SuperAgentTest } from "supertest";
-import {TestApplication, getTestApplication} from "../../../tests/e2e/test-app";
-import {CacheService} from "../../services/cache/cache.service";
-import {DatabaseService} from "../../services/database/database.service";
-import {TokenPair} from "../../services/token/token.service";
 import {testUsers} from "../../../tests/test-data";
 import {ErrorIdentifiers, HTTPStatusCodes} from "@kangojs/core";
 import {AthenaErrorIdentifiers} from "../../error-identifiers";
+import {TestHelper} from "../../../tests/e2e/test-helper";
 
-let testApplication: TestApplication;
-let testClient: SuperAgentTest;
-let testUser0Credentials: TokenPair;
 
+let testHelper: TestHelper;
 
 describe('Users Module',() => {
 
   beforeAll(async () => {
-    let apps = await getTestApplication();
-    testApplication = apps.testApplication;
-    testClient = apps.testClient;
+    testHelper = new TestHelper();
   })
-
-  afterAll(async () => {
-    // Clean up database and redis connections before exiting
-    const cacheService = testApplication.dependencyContainer.useDependency(CacheService);
-    await cacheService.onKill();
-    const databaseService = testApplication.dependencyContainer.useDependency(DatabaseService);
-    await databaseService.onKill();
-  })
-
-  beforeEach(async () => {
-    await testApplication.resetDatabase();
-    testUser0Credentials = await testApplication.getRequestTokens(testUsers[0].id);
-  })
+  beforeEach(async () => {await testHelper.beforeEach()});
+  afterAll(async () => {await testHelper.afterAll()});
 
   /**
    * Users GET Route (/v1/users/:id [GET])
    */
   describe('/v1/users/:id [GET]', () => {
     it('When fetching a user when unauthorized, Then the response should be 401', async () => {
-      const {body, statusCode} = await testClient.get(`/v1/users/${testUsers[0].id}`);
+      const {body, statusCode} = await testHelper.client.get(`/v1/users/${testUsers[0].id}`);
 
       expect(statusCode).toEqual(HTTPStatusCodes.UNAUTHORIZED);
       expect(body).toHaveProperty('identifier');
@@ -46,9 +27,10 @@ describe('Users Module',() => {
     })
 
     it('When fetching a user as that user, Then the response should return the user', async () => {
-      const {body, statusCode} = await testClient
+      const accessToken = testHelper.getUserAccessToken(testUsers[0].id);
+      const {body, statusCode} = await testHelper.client
         .get(`/v1/users/${testUsers[0].id}`)
-        .set('Authorization', `Bearer ${testUser0Credentials.accessToken}`);
+        .set('Authorization', `Bearer ${accessToken}`);
 
       const {encryptionKey, passwordHash, password, ...expectedUser} = testUsers[0];
 
@@ -57,9 +39,9 @@ describe('Users Module',() => {
     })
 
     it('When fetching a user as a different user, Then the response should be 403', async () => {
-      const {body, statusCode} = await testClient
+      const {body, statusCode} = await testHelper.client
         .get(`/v1/users/${testUsers[1].id}`)
-        .set('Authorization', `Bearer ${testUser0Credentials.accessToken}`);
+        .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
 
       expect(statusCode).toEqual(HTTPStatusCodes.FORBIDDEN);
       expect(body).toHaveProperty('identifier');
@@ -67,9 +49,9 @@ describe('Users Module',() => {
     })
 
     it("When fetching a user that doesn't exist, Then the response should be 403", async () => {
-      const {body, statusCode} = await testClient
+      const {body, statusCode} = await testHelper.client
         .get(`/v1/users/82f7d7a4-e094-4f15-9de0-5b5621376714`)
-        .set('Authorization', `Bearer ${testUser0Credentials.accessToken}`);
+        .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
 
       /**
        * 403 not 404 is on purpose right now as having a 404 response would cost a database query to determine
@@ -81,9 +63,9 @@ describe('Users Module',() => {
     })
 
     it("When fetching a user with an invalid ID, Then the response should be 400", async () => {
-      const {body, statusCode} = await testClient
+      const {body, statusCode} = await testHelper.client
         .get(`/v1/users/invalid`)
-        .set('Authorization', `Bearer ${testUser0Credentials.accessToken}`);
+        .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
 
       expect(statusCode).toEqual(HTTPStatusCodes.BAD_REQUEST);
       expect(body).toHaveProperty('identifier');
@@ -96,7 +78,7 @@ describe('Users Module',() => {
    */
   describe('/v1/users/:id [DELETE]', () => {
     it('When deleting a user when unauthorized, Then the response should be 401', async () => {
-      const {body, statusCode} = await testClient.delete(`/v1/users/${testUsers[0].id}`);
+      const {body, statusCode} = await testHelper.client.delete(`/v1/users/${testUsers[0].id}`);
 
       expect(statusCode).toEqual(HTTPStatusCodes.UNAUTHORIZED);
       expect(body).toHaveProperty('identifier');
@@ -104,17 +86,17 @@ describe('Users Module',() => {
     })
 
     it('When deleting a user as that user, Then the request should succeed', async () => {
-      const {statusCode} = await testClient
+      const {statusCode} = await testHelper.client
         .delete(`/v1/users/${testUsers[0].id}`)
-        .set('Authorization', `Bearer ${testUser0Credentials.accessToken}`);
+        .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
 
       expect(statusCode).toEqual(HTTPStatusCodes.OK);
     })
 
     it('When deleting a user as a different user, Then the response should be 403', async () => {
-      const {body, statusCode} = await testClient
+      const {body, statusCode} = await testHelper.client
         .delete(`/v1/users/82f7d7a4-e094-4f15-9de0-5b5621376714`)
-        .set('Authorization', `Bearer ${testUser0Credentials.accessToken}`);
+        .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
 
       /**
        * 403 not 404 is on purpose right now as having a 404 response would cost a database query to determine
@@ -126,9 +108,9 @@ describe('Users Module',() => {
     })
 
     it("When deleting a user that doesn't exist, Then the response should be 403", async () => {
-      const {body, statusCode} = await testClient
+      const {body, statusCode} = await testHelper.client
         .delete(`/v1/users/82f7d7a4-e094-4f15-9de0-5b5621376714`)
-        .set('Authorization', `Bearer ${testUser0Credentials.accessToken}`);
+        .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
 
       expect(statusCode).toEqual(HTTPStatusCodes.FORBIDDEN);
       expect(body).toHaveProperty('identifier');
@@ -136,9 +118,9 @@ describe('Users Module',() => {
     })
 
     it("When deleting a user with an invalid ID, Then the response should be 400", async () => {
-      const {body, statusCode} = await testClient
+      const {body, statusCode} = await testHelper.client
         .delete(`/v1/users/invalid`)
-        .set('Authorization', `Bearer ${testUser0Credentials.accessToken}`);
+        .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
 
       expect(statusCode).toEqual(HTTPStatusCodes.BAD_REQUEST);
       expect(body).toHaveProperty('identifier');
@@ -159,7 +141,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -183,7 +165,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -207,7 +189,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -231,7 +213,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -257,7 +239,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -275,7 +257,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -295,7 +277,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -313,7 +295,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -331,7 +313,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -349,7 +331,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -368,7 +350,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -385,7 +367,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -402,7 +384,7 @@ describe('Users Module',() => {
           encryptionSecret: "secret"
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -419,7 +401,7 @@ describe('Users Module',() => {
           password: "testpassword",
         }
 
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(newUser);
 
@@ -432,7 +414,7 @@ describe('Users Module',() => {
 
     describe('Invalid Data', () => {
       it("When adding a user with invalid JSON data, Then the response should be 400", async () => {
-        const {body, statusCode} = await testClient
+        const {body, statusCode} = await testHelper.client
           .post(`/v1/users`)
           .send(`{username: "test"[]e}`)
 
@@ -452,7 +434,7 @@ describe('Users Module',() => {
         }
 
         for (const testCase of testCases) {
-          const {body, statusCode} = await testClient
+          const {body, statusCode} = await testHelper.client
             .post(`/v1/users`)
             .send({
               ...newUser,
@@ -476,7 +458,7 @@ describe('Users Module',() => {
         }
 
         for (const testCase of testCases) {
-          const {body, statusCode} = await testClient
+          const {body, statusCode} = await testHelper.client
             .post(`/v1/users`)
             .send({
               ...newUser,
@@ -500,7 +482,7 @@ describe('Users Module',() => {
         }
 
         for (const testCase of testCases) {
-          const {body, statusCode} = await testClient
+          const {body, statusCode} = await testHelper.client
             .post(`/v1/users`)
             .send({
               ...newUser,
