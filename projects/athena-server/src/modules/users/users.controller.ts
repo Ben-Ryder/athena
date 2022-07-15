@@ -7,7 +7,7 @@ import {RequestWithUser} from "../auth/auth.validator";
 import {
     CreateUserRequestSchema,
     CreateUserResponse,
-    GetUserResponse, UpdateUserRequestSchema,
+    GetUserResponse, UpdateUserRequestSchema, UpdateUserResponse, UserDto,
     UsersURLParamsSchema
 } from "@ben-ryder/athena-js-lib";
 
@@ -63,13 +63,16 @@ export class UsersController {
         paramsShape: UsersURLParamsSchema
     })
     async update(req: RequestWithUser, res: Response, next: NextFunction) {
+        let updatedUser: UpdateUserResponse;
+
         try {
-            await this.usersService.update(req.user.id, req.params.userId, req.body);
+            updatedUser = await this.usersService.update(req.user.id, req.params.userId, req.body);
         }
         catch (e) {
             return next(e);
         }
-        return res.send();
+
+        return res.send(updatedUser);
     }
 
     @Route({

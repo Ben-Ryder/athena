@@ -17,7 +17,8 @@ The `tests` folder can then be used for common test functionality designed to be
 Test data is populated in `tests/test-data.ts` and this is used by most tests as the initial state of the application
 database.
 
-## Test Guidelines
-- Every test should be able to be run separately. This can be achieved by making sure each test suite properly resets
-the database before each test.
-- 
+## E2E Test Guidelines
+- Every test should be able to be run separately. In practice this means not relying on things like database content
+outside of individual test setup/teardown functions.
+- Tests should be written against public interfaces not internals where possible. This means that tests are more
+resilient against refactors and internal changes.

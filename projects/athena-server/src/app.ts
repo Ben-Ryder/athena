@@ -28,6 +28,6 @@ export async function createApp() {
     authValidator: AuthValidator,
     bodyValidator: ClassValidator,
     queryValidator: ClassValidator,
-    paramsValidator: ClassValidator
+    paramsValidator: ClassValidator,
   });
 }

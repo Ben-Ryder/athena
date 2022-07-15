@@ -1,27 +1,28 @@
-import {TestHelper} from "../test-helper";
 import {expectBadRequest} from "./expect-bad-request";
-import {testUsers} from "../../test-data";
+import {SuperAgentRequest} from "superagent";
 
 export interface TestInvalidDataTypesConfig {
+  requestFunction: (url: string) => SuperAgentRequest,
   endpoint: string,
-  testHelper: TestHelper,
+  accessToken: string,
   data: object,
   testFieldKey: string,
   testCases: any[]
 }
 
-export async function testInvalidDataTypes(config: TestInvalidDataTypesConfig) {
-  for (const testCase of config.testCases) {
-    let testData = {
-      ...config.data,
-      [config.testFieldKey]: testCase
-    };
+export function testInvalidDataTypes(config: TestInvalidDataTypesConfig) {
+  return () => {
+    test.each(config.testCases)(`When ${config.testFieldKey} is %s, the request should fail`, async testCase => {
+      let testData = {
+        ...config.data,
+        [config.testFieldKey]: testCase
+      };
 
-    const {body, statusCode} = await config.testHelper.client
-      .post(config.endpoint)
-      .set('Authorization', `Bearer ${config.testHelper.getUserAccessToken(testUsers[0].id)}`)
-      .send(testData);
+      const {body, statusCode} = await config.requestFunction(config.endpoint)
+        .set('Authorization', `Bearer ${config.accessToken}`)
+        .send(testData);
 
-    expectBadRequest(body, statusCode);
+      expectBadRequest(body, statusCode);
+    })
   }
 }
