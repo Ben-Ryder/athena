@@ -1,4 +1,5 @@
 import {TestHelper} from "../../../tests/e2e/test-helper";
+import {HTTPStatusCodes} from "@kangojs/core";
 
 let testHelper: TestHelper;
 
@@ -14,14 +15,13 @@ describe('Base Module',() => {
    * Base Route (/)
    */
   describe('/ [GET]', () => {
-    it('When a request is made, Then the responses should have a 200 status code', async () => {
-      await testHelper.client.get('/').expect(200);
-    })
+    it('When a request is made, the response should be a string message', async () => {
+      const {body, statusCode} = await testHelper.client.get('/');
 
-    it('When a request is made, Then the responses should be a string message', async () => {
-      const {body: data} = await testHelper.client.get('/');
-      expect(data).toHaveProperty('message');
-      expect(typeof data.message).toEqual('string');
+      expect(statusCode).toEqual(HTTPStatusCodes.OK);
+      expect(body).toEqual(expect.objectContaining({
+        message: expect.any(String)
+      }));
     })
 
     // When a request is made without authorization, Then the responses should still succeed
@@ -32,14 +32,13 @@ describe('Base Module',() => {
    * Base V1 Route (/v1)
    */
   describe('/v1 [GET]', () => {
-    it('When a request is made, Then the responses should have a 200 status code', async () => {
-      await testHelper.client.get('/').expect(200);
-    })
+    it('When a request is made, the response should be a string message', async () => {
+      const {body, statusCode} = await testHelper.client.get('/');
 
-    it('When a request is made, Then the responses should be a string message', async () => {
-      const {body: data} = await testHelper.client.get('/');
-      expect(data).toHaveProperty('message');
-      expect(typeof data.message).toEqual('string');
+      expect(statusCode).toEqual(HTTPStatusCodes.OK);
+      expect(body).toEqual(expect.objectContaining({
+        message: expect.any(String)
+      }));
     })
 
     // When a request is made without authorization, Then the responses should still succeed

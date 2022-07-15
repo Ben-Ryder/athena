@@ -232,6 +232,60 @@ describe('Add User - /v1/users [POST]',() => {
     })
   })
 
+  describe('Forbidden Fields', () => {
+    it('When passing an ID field, the request should fail', async () => {
+      const newUser = {
+        ...defaultTestUser,
+        id: 'a78a9859-314e-44ec-8701-f0c869cfc07f'
+      }
+
+      const {body, statusCode} = await testHelper.client
+        .post(`/v1/users`)
+        .send(newUser);
+
+      expectBadRequest(body, statusCode);
+    })
+
+    it('When passing a createdAt field, the request should fail', async () => {
+      const newUser = {
+        ...defaultTestUser,
+        createdAt: '2022-07-11T18:20:32.482Z'
+      }
+
+      const {body, statusCode} = await testHelper.client
+        .post(`/v1/users`)
+        .send(newUser);
+
+      expectBadRequest(body, statusCode);
+    })
+
+    it('When passing an updatedAt field, the request should fail', async () => {
+      const newUser = {
+        ...defaultTestUser,
+        updatedAt: '2022-07-11T18:20:32.482Z'
+      }
+
+      const {body, statusCode} = await testHelper.client
+        .post(`/v1/users`)
+        .send(newUser);
+
+      expectBadRequest(body, statusCode);
+    })
+
+    it('When passing an isVerified field, the request should fail', async () => {
+      const newUser = {
+        ...defaultTestUser,
+        isVerified: true
+      }
+
+      const {body, statusCode} = await testHelper.client
+        .post(`/v1/users`)
+        .send(newUser);
+
+      expectBadRequest(body, statusCode);
+    })
+  })
+
   describe('Invalid Data', () => {
     it("When supplying invalid JSON data, the request should fail", async () => {
       await testMalformedData({
