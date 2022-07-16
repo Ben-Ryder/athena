@@ -60,6 +60,10 @@ export class CacheService {
         }
     }
 
+    async purge() {
+        await this.redis.flushall();
+    }
+
     // todo: add @OnKill() decorator or similar to kangojs so services can handle cleanup
     async onKill() {
         this.redis.disconnect();

@@ -104,14 +104,14 @@ export class TokenService {
     }
 
     /**
-     * Validate if the given token was signed with the given secret, ignoring expiry details.
+     * Validate the supplied token.
      *
      * @param token
      * @param secret
      */
-    private static async isSignedToken(token: string, secret: string) {
+    private static async isValidToken(token: string, secret: string) {
         try {
-            verify(token, secret, {ignoreExpiration: true});
+            verify(token, secret);
         }
         catch (e) {
             return false;
@@ -120,12 +120,12 @@ export class TokenService {
     }
 
     /**
-     * Validate if the given access token was signed by the token service at some point.
+     * Validate the supplied access token.
      *
      * @param token
      */
-    async isSignedAccessToken(token: string) {
-        return TokenService.isSignedToken(token, this.configService.config.auth.accessToken.secret);
+    async isValidAccessToken(token: string) {
+        return TokenService.isValidToken(token, this.configService.config.auth.accessToken.secret);
     }
 
     /**
@@ -133,8 +133,8 @@ export class TokenService {
      *
      * @param token
      */
-    async isSignedRefreshToken(token: string) {
-        return TokenService.isSignedToken(token, this.configService.config.auth.refreshToken.secret);
+    async isValidRefreshToken(token: string) {
+        return TokenService.isValidToken(token, this.configService.config.auth.refreshToken.secret);
     }
 
     async addTokenToBlacklist(token: string) {

@@ -1,13 +1,10 @@
 import {TestHelper} from "../../../tests/e2e/test-helper";
 import {HTTPStatusCodes} from "@kangojs/core";
 
-let testHelper: TestHelper;
 
 describe('Base Module',() => {
+  const testHelper = new TestHelper();
 
-  beforeAll(async () => {
-    testHelper = new TestHelper();
-  })
   afterAll(async () => {await testHelper.afterAll()});
   beforeEach(async () => {await testHelper.beforeEach()});
 

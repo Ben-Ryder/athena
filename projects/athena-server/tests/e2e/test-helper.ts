@@ -56,8 +56,17 @@ export class TestHelper {
    * @param userId
    */
   getUserAccessToken(userId: string): string {
+    return this.getUserTokens(userId).accessToken;
+  }
+
+  /**
+   * Return an API access token for the given user
+   *
+   * @param userId
+   */
+  getUserTokens(userId: string): TokenPair {
     const tokenService = this.application.dependencyContainer.useDependency(TokenService);
-    return tokenService.createTokenPair(userId).accessToken;
+    return tokenService.createTokenPair(userId);
   }
 
   /**
@@ -90,6 +99,10 @@ export class TestHelper {
 
   async beforeEach() {
     await this.resetDatabase();
+
+    // Purge the cache service to ensure things like refresh/access tokens aren't persisted
+    const cacheService = this.application.dependencyContainer.useDependency(CacheService);
+    await cacheService.purge();
   }
 
   async afterAll() {

@@ -2,13 +2,13 @@
  * Test users.
  * These can be used to for authentication, access control testing etc.
  */
-export const testUsers = [
+export const testUsers = Object.freeze([
   {
     id: "90938b63-3b14-4b18-8185-b3cfa5de2d6a",
     username: "test1",
     email: "test1@example.com",
     password: "testpassword1234",
-    passwordHash: "$2y$10$3JjQghusIOV7VpUKIRIF8O93uY1ELMGtr0H/OZ0v0xS2R7FJnDNdC",
+    passwordHash: "$2a$12$0Xg2rVxqQp/Ct6Y4caN8..7O47WsQGiDZA/ZxsAN8dJUGEQISd8DG",
     isVerified: true,
     encryptionKey: "todo",
     encryptionSecret: "todo",
@@ -20,7 +20,7 @@ export const testUsers = [
     username: "test2",
     email: "test2@example.com",
     password: "amazingpassword42",
-    passwordHash: "$2y$10$pXetjPNYchEIspz8vvrqAuSoZcZ1.TAw2fOxw66G37KXaxteocxnu",
+    passwordHash: "$2a$12$KrqpaXe52bMrb8jomWxg2ObOjU5s3NIYWsn37JiW4gQN6cuGtpSre",
     isVerified: true,
     encryptionKey: "todo",
     encryptionSecret: "todo",
@@ -32,14 +32,14 @@ export const testUsers = [
     username: "test3",
     email: "test3@example.com",
     password: "amazingpassword42",
-    passwordHash: "$2y$10$pXetjPNYchEIspz8vvrqAuSoZcZ1.TAw2fOxw66G37KXaxteocxnu",
+    passwordHash: "$2a$12$KrqpaXe52bMrb8jomWxg2ObOjU5s3NIYWsn37JiW4gQN6cuGtpSre",
     isVerified: false,
     encryptionKey: "todo",
     encryptionSecret: "todo",
     createdAt: "2022-07-11 20:15:20.301649",
     updatedAt: "2022-07-11 20:34:12.274037"
   }
-];
+]);
 
 
 export const testEnvironmentVars = {

@@ -8,5 +8,9 @@ export enum AthenaErrorIdentifiers {
   USER_NOT_FOUND = "user-not-found",
   USER_USERNAME_EXISTS = "user-username-exists",
   USER_EMAIL_EXISTS = "user-email-exists",
+
+  // Authentication
+  AUTH_CREDENTIALS_INVALID = "auth-credentials-invalid",
+  AUTH_TOKEN_INVALID = "auth-token-invalid"
 }
 

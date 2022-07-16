@@ -1,4 +1,4 @@
-import {Injectable, AccessUnauthorizedError} from '@kangojs/core';
+import {Injectable, AccessForbiddenError, AccessUnauthorizedError} from '@kangojs/core';
 
 import { TokenService } from "../../services/token/token.service";
 import { PasswordService } from "../../services/password/password.service";
@@ -6,6 +6,8 @@ import { PasswordService } from "../../services/password/password.service";
 import { UsersService } from "../users/users.service";
 import {LoginResponse, RefreshResponse} from "@ben-ryder/athena-js-lib";
 import {DatabaseUserDto} from "../users/dtos/database-user.dto-interface";
+import {AthenaErrorIdentifiers} from "../../error-identifiers";
+import {RevokeTokensDto} from "./dtos/revoke-tokens.dto";
 
 
 @Injectable({
@@ -24,15 +26,17 @@ export class AuthService {
            user = await this.usersService.getWithPasswordByUsername(username);
        }
        catch (e) {
-           throw new AccessUnauthorizedError({
+           throw new AccessForbiddenError({
+             identifier: AthenaErrorIdentifiers.AUTH_CREDENTIALS_INVALID,
              message: 'The supplied username & password combination is invalid.',
              applicationMessage: 'The supplied username & password combination is invalid.'
            });
        }
 
-       const passwordValid = PasswordService.checkPassword(password, user.passwordHash);
+       const passwordValid = await PasswordService.checkPassword(password, user.passwordHash);
        if (!passwordValid) {
-         throw new AccessUnauthorizedError({
+         throw new AccessForbiddenError({
+           identifier: AthenaErrorIdentifiers.AUTH_CREDENTIALS_INVALID,
            message: 'The supplied username & password combination is invalid.',
            applicationMessage: 'The supplied username & password combination is invalid.'
          });
@@ -47,20 +51,37 @@ export class AuthService {
        };
     }
 
-    async revokeRefreshToken(refreshToken: string): Promise<void> {
-        const isValid = await this.tokenService.isSignedRefreshToken(refreshToken);
-        if (isValid) {
-            await this.tokenService.addTokenToBlacklist(refreshToken);
-        }
-        // todo: throw an error to the user or fail silently?
-    }
+    async revokeTokens(tokens: RevokeTokensDto) {
+      if (tokens.refreshToken) {
+        let validRefreshToken = await this.tokenService.isValidRefreshToken(tokens.refreshToken);
 
-    async revokeAccessToken(accessToken: string): Promise<void> {
-        const isValid = await this.tokenService.isSignedAccessToken(accessToken);
-        if (isValid) {
-            await this.tokenService.addTokenToBlacklist(accessToken);
+        if (!validRefreshToken) {
+          throw new AccessUnauthorizedError({
+            identifier: AthenaErrorIdentifiers.AUTH_TOKEN_INVALID,
+            applicationMessage: "The supplied refresh token is invalid."
+          })
         }
-        // todo: throw an error to the user or fail silently?
+      }
+
+      if (tokens.accessToken) {
+        let validAccessToken = await this.tokenService.isValidAccessToken(tokens.accessToken);
+
+        if (!validAccessToken) {
+          throw new AccessUnauthorizedError({
+            identifier: AthenaErrorIdentifiers.AUTH_TOKEN_INVALID,
+            applicationMessage: "The supplied access token is invalid."
+          })
+        }
+      }
+
+      // If both tokens are supplied, check they're both valid before adding them to the blacklist
+      // This ensures a predictable behaviour, preventing guesswork in the case that only one of the tokens was invalid.
+      if (tokens.refreshToken) {
+        await this.tokenService.addTokenToBlacklist(tokens.refreshToken);
+      }
+      if (tokens.accessToken) {
+        await this.tokenService.addTokenToBlacklist(tokens.accessToken);
+      }
     }
 
     async refresh(refreshToken: string): Promise<RefreshResponse> {
@@ -68,6 +89,7 @@ export class AuthService {
 
         if (!tokenPayload) {
           throw new AccessUnauthorizedError({
+            identifier: AthenaErrorIdentifiers.AUTH_TOKEN_INVALID,
             message: 'The supplied refresh token is invalid.',
             applicationMessage: 'The supplied refresh token is invalid.'
           });

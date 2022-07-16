@@ -41,12 +41,7 @@ export class AuthController {
         const tokens = <RevokeRequestSchema> req.body;
 
         try {
-            if (tokens.refreshToken) {
-                await this.authService.revokeRefreshToken(tokens.refreshToken);
-            }
-            if (tokens.accessToken) {
-                await this.authService.revokeAccessToken(tokens.accessToken);
-            }
+            await this.authService.revokeTokens(tokens);
             return res.send({});
         }
         catch(e) {
