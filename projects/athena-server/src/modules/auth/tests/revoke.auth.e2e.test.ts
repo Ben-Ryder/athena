@@ -245,7 +245,7 @@ describe('Revoke Auth',() => {
   describe("Invalid Data", () => {
     describe("When not supplying accessToken as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.post.bind(testHelper.client),
+        clientFunction: testHelper.client.post.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/auth/revoke`,
         data: {},
@@ -256,7 +256,7 @@ describe('Revoke Auth',() => {
 
     describe("When not supplying refreshToken as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.post.bind(testHelper.client),
+        clientFunction: testHelper.client.post.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/auth/revoke`,
         data: {},

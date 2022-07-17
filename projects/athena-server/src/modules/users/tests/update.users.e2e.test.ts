@@ -233,7 +233,7 @@ describe('Update User - /v1/users/:id [PATCH]',() => {
 
     describe("When not supplying username as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.patch.bind(testHelper.client),
+        clientFunction: testHelper.client.patch.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/users/${testUsers[0].id}`,
         data: {},
@@ -244,7 +244,7 @@ describe('Update User - /v1/users/:id [PATCH]',() => {
 
     describe("When not supplying email as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.patch.bind(testHelper.client),
+        clientFunction: testHelper.client.patch.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/users/${testUsers[0].id}`,
         data: {},
@@ -255,7 +255,7 @@ describe('Update User - /v1/users/:id [PATCH]',() => {
 
     describe("When not supplying password as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.patch.bind(testHelper.client),
+        clientFunction: testHelper.client.patch.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/users/${testUsers[0].id}`,
         data: {},
@@ -266,7 +266,7 @@ describe('Update User - /v1/users/:id [PATCH]',() => {
 
     describe("When not supplying encryptionSecret as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.patch.bind(testHelper.client),
+        clientFunction: testHelper.client.patch.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/users/${testUsers[0].id}`,
         data: {},

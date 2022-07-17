@@ -106,7 +106,7 @@ describe('Refresh Auth',() => {
 
     describe("When not supplying refreshToken as a string, the request should fail", () => {
       testInvalidDataTypes({
-        requestFunction: testHelper.client.post.bind(testHelper.client),
+        clientFunction: testHelper.client.post.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/auth/refresh`,
         data: {},
