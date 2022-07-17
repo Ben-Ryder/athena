@@ -12,6 +12,7 @@ import {TestConfigService} from "./test-config-service";
 import {KangoJS} from "@kangojs/core";
 import {SuperAgentTest, agent} from "supertest";
 import {CacheService} from "../../src/services/cache/cache.service";
+import {UserDto} from "@ben-ryder/athena-js-lib";
 
 /**
  * This class encapsulates all the test specific application functionality that is required.
@@ -53,20 +54,20 @@ export class TestHelper {
   /**
    * Return an API access token for the given user
    *
-   * @param userId
+   * @param user
    */
-  getUserAccessToken(userId: string): string {
-    return this.getUserTokens(userId).accessToken;
+  getUserAccessToken(user: UserDto): string {
+    return this.getUserTokens(user).accessToken;
   }
 
   /**
    * Return an API access token for the given user
    *
-   * @param userId
+   * @param user
    */
-  getUserTokens(userId: string): TokenPair {
+  getUserTokens(user: UserDto): TokenPair {
     const tokenService = this.application.dependencyContainer.useDependency(TokenService);
-    return tokenService.createTokenPair(userId);
+    return tokenService.createTokenPair(user);
   }
 
   /**

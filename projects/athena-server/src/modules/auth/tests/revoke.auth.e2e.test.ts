@@ -4,7 +4,7 @@ import {testUsers} from "../../../../tests/test-data";
 import {HTTPStatusCodes} from "@kangojs/core";
 import {sign} from "jsonwebtoken";
 import {expectUnauthorized} from "../../../../tests/e2e/common/expect-unauthorized";
-import {AthenaErrorIdentifiers} from "../../../error-identifiers";
+import {AthenaErrorIdentifiers} from "../../../common/error-identifiers";
 import {ConfigService} from "../../../services/config/config";
 import {expectBadRequest} from "../../../../tests/e2e/common/expect-bad-request";
 
@@ -16,7 +16,7 @@ describe('Revoke Auth',() => {
 
   describe("Success Cases", () => {
     test("When a valid refresh & access token a supplied, they should be revoked", async () => {
-      const tokenPair  = testHelper.getUserTokens(testUsers[0].id);
+      const tokenPair  = testHelper.getUserTokens(testUsers[0]);
 
       // Revoke the tokens, check that request succeeded
       const {statusCode: revokeStatusCode, body} = await testHelper.client
@@ -38,7 +38,7 @@ describe('Revoke Auth',() => {
     })
 
     test("When a valid refresh token is supplied, it should be revoked", async () => {
-      const { refreshToken }  = testHelper.getUserTokens(testUsers[0].id);
+      const { refreshToken }  = testHelper.getUserTokens(testUsers[0]);
 
       // Revoke the token, check that request succeeded
       const {statusCode: revokeStatusCode, body} = await testHelper.client
@@ -54,7 +54,7 @@ describe('Revoke Auth',() => {
     })
 
     test("When a valid access token is supplied, it should be revoked", async () => {
-      const { accessToken }  = testHelper.getUserTokens(testUsers[0].id);
+      const { accessToken }  = testHelper.getUserTokens(testUsers[0]);
 
       // Revoke the token, check that request succeeded
       const {statusCode: revokeStatusCode, body} = await testHelper.client
@@ -162,7 +162,7 @@ describe('Revoke Auth',() => {
     })
 
     test("When a valid access token but incorrectly singed refresh token is supplied, the request should fail", async () => {
-      const { accessToken } = testHelper.getUserTokens(testUsers[0].id);
+      const { accessToken } = testHelper.getUserTokens(testUsers[0]);
 
       //  Create a token with the expected payload but signed wrong
       const refreshToken = sign(
@@ -182,7 +182,7 @@ describe('Revoke Auth',() => {
     })
 
     test("When a valid refresh token but incorrectly singed access token is supplied, the request should fail", async () => {
-      const { refreshToken } = testHelper.getUserTokens(testUsers[0].id);
+      const { refreshToken } = testHelper.getUserTokens(testUsers[0]);
 
       //  Create a token with the expected payload but signed wrong
       const accessToken = sign(
@@ -203,7 +203,7 @@ describe('Revoke Auth',() => {
 
     test("When a valid access token but expired refresh token is supplied, the request should fail", async () => {
       const configService = testHelper.application.dependencyContainer.useDependency(ConfigService);
-      const { accessToken } = testHelper.getUserTokens(testUsers[0].id);
+      const { accessToken } = testHelper.getUserTokens(testUsers[0]);
 
       const refreshToken = sign(
         {userId: testUsers[0].id, type: "refreshToken"},
@@ -223,7 +223,7 @@ describe('Revoke Auth',() => {
 
     test("When a valid refresh token but expired access token is supplied, the request should fail", async () => {
       const configService = testHelper.application.dependencyContainer.useDependency(ConfigService);
-      const { refreshToken } = testHelper.getUserTokens(testUsers[0].id);
+      const { refreshToken } = testHelper.getUserTokens(testUsers[0]);
 
       const accessToken = sign(
         {userId: testUsers[0].id, type: "accessToken"},
@@ -246,7 +246,7 @@ describe('Revoke Auth',() => {
     describe("When not supplying accessToken as a string, the request should fail",
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/auth/revoke`,
         data: {},
         testFieldKey: "accessToken",
@@ -257,7 +257,7 @@ describe('Revoke Auth',() => {
     describe("When not supplying refreshToken as a string, the request should fail",
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/auth/revoke`,
         data: {},
         testFieldKey: "refreshToken",

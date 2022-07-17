@@ -4,7 +4,7 @@ import {testUsers} from "../../../../tests/test-data";
 import {testInvalidDataTypes} from "../../../../tests/e2e/common/test-invalid-data-types";
 import {sign} from "jsonwebtoken";
 import {ConfigService} from "../../../services/config/config";
-import {AthenaErrorIdentifiers} from "../../../error-identifiers";
+import {AthenaErrorIdentifiers} from "../../../common/error-identifiers";
 import {expectUnauthorized} from "../../../../tests/e2e/common/expect-unauthorized";
 import {expectBadRequest} from "../../../../tests/e2e/common/expect-bad-request";
 
@@ -16,8 +16,8 @@ describe('Refresh Auth',() => {
   beforeEach(async () => {await testHelper.beforeEach()});
 
   describe("Success Cases", () => {
-    it('When supplying a valid refreshToken, an accessToken and refreshToken should be returned', async () => {
-      const { refreshToken } = testHelper.getUserTokens(testUsers[0].id);
+    test('When supplying a valid refreshToken, an accessToken and refreshToken should be returned', async () => {
+      const { refreshToken } = testHelper.getUserTokens(testUsers[0]);
 
       const {body, statusCode} = await testHelper.client
         .post(`/v1/auth/refresh`)
@@ -34,8 +34,8 @@ describe('Refresh Auth',() => {
   })
 
   describe("Token Revocation", () => {
-    it('After a successful refresh, the previous refreshToken should be invalid', async () => {
-      const { refreshToken } = testHelper.getUserTokens(testUsers[0].id);
+    test('After a successful refresh, the previous refreshToken should be invalid', async () => {
+      const { refreshToken } = testHelper.getUserTokens(testUsers[0]);
 
       // Call a refresh to get new access & refresh token
       const {statusCode} = await testHelper.client
@@ -58,7 +58,7 @@ describe('Refresh Auth',() => {
   })
 
   describe("Invalid Data", () => {
-    it('When supplying an incorrectly signed refreshToken, the request should fail', async () => {
+    test('When supplying an incorrectly signed refreshToken, the request should fail', async () => {
       //  Create a token with the expected payload but signed wrong
       const refreshToken = sign(
         {userId: testUsers[0].id, type: "refreshToken"},
@@ -75,7 +75,7 @@ describe('Refresh Auth',() => {
       expectUnauthorized(body, statusCode, AthenaErrorIdentifiers.AUTH_TOKEN_INVALID);
     })
 
-    it('When supplying an invalid refreshToken, the request should fail', async () => {
+    test('When supplying an invalid refreshToken, the request should fail', async () => {
       const {body, statusCode} = await testHelper.client
         .post(`/v1/auth/refresh`)
         .send({
@@ -85,7 +85,7 @@ describe('Refresh Auth',() => {
       expectBadRequest(body, statusCode);
     })
 
-    it('When supplying an expired refreshToken, the request should fail', async () => {
+    test('When supplying an expired refreshToken, the request should fail', async () => {
       const configService = testHelper.application.dependencyContainer.useDependency(ConfigService);
 
       // Create an expired token with the correct payload & sign it correctly
@@ -107,7 +107,7 @@ describe('Refresh Auth',() => {
     describe("When not supplying refreshToken as a string, the request should fail", () => {
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/auth/refresh`,
         data: {},
         testFieldKey: "refreshToken",

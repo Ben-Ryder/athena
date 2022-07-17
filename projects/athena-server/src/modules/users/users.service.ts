@@ -1,7 +1,13 @@
 import { Injectable } from "@kangojs/core";
 import { AccessForbiddenError } from "@kangojs/core";
 
-import {CreateUserRequestSchema, GetUserResponse, UpdateUserRequestSchema, UserDto} from "@ben-ryder/athena-js-lib";
+import {
+    CreateUserRequestSchema,
+    GetUserResponse,
+    UpdateUserRequestSchema,
+    UpdateUserResponse,
+    UserDto
+} from "@ben-ryder/athena-js-lib";
 
 import { PasswordService } from "../../services/password/password.service";
 import {DatabaseUserDto} from "./dtos/database-user.dto-interface";
@@ -23,11 +29,14 @@ export class UsersService {
         }
     }
 
-    async get(requestUserId: string, userId: string): Promise<GetUserResponse> {
-        this.checkAccess(requestUserId, userId);
-
+    async get(userId: string): Promise<GetUserResponse> {
         const user = await this.usersDatabaseService.get(userId);
         return this.removePasswordFromUser(user);
+    }
+
+    async getWithAccessCheck(requestUserId: string, userId: string): Promise<GetUserResponse> {
+        this.checkAccess(requestUserId, userId);
+        return this.get(userId);
     }
 
     removePasswordFromUser(userWithPassword: DatabaseUserDto): UserDto {
@@ -53,9 +62,7 @@ export class UsersService {
         return this.removePasswordFromUser(resultUser);
     }
 
-    async update(requestUserId: string, userId: string, updateUserDto: UpdateUserRequestSchema): Promise<UserDto> {
-        this.checkAccess(requestUserId, userId);
-
+    async update(userId: string, updateUserDto: UpdateUserRequestSchema): Promise<UserDto> {
         let newPasswordHash: string|null = null;
         if (updateUserDto.password) {
             newPasswordHash = await PasswordService.hashPassword(updateUserDto.password);
@@ -73,8 +80,17 @@ export class UsersService {
         return this.removePasswordFromUser(user);
     }
 
-    async delete(requestUserId: string, userId: string): Promise<void> {
+    async updateWithAccessCheck(requestUserId: string, userId: string, updateUserDto: UpdateUserRequestSchema): Promise<UpdateUserResponse> {
         this.checkAccess(requestUserId, userId);
+        return this.update(userId, updateUserDto);
+    }
+
+    async delete(userId: string): Promise<void> {
         return this.usersDatabaseService.delete(userId);
+    }
+
+    async deleteWithAccessCheck(requestUserId: string, userId: string): Promise<void> {
+        this.checkAccess(requestUserId, userId);
+        return this.delete(userId);
     }
 }

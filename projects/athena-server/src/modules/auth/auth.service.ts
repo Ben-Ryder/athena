@@ -6,7 +6,7 @@ import { PasswordService } from "../../services/password/password.service";
 import { UsersService } from "../users/users.service";
 import {LoginResponse, RefreshResponse} from "@ben-ryder/athena-js-lib";
 import {DatabaseUserDto} from "../users/dtos/database-user.dto-interface";
-import {AthenaErrorIdentifiers} from "../../error-identifiers";
+import {AthenaErrorIdentifiers} from "../../common/error-identifiers";
 import {RevokeTokensDto} from "./dtos/revoke-tokens.dto";
 
 
@@ -43,7 +43,7 @@ export class AuthService {
        }
 
        const userDto = this.usersService.removePasswordFromUser(user);
-       const tokenPair = this.tokenService.createTokenPair(user.id);
+       const tokenPair = this.tokenService.createTokenPair(user);
 
        return {
          user: userDto,
@@ -95,7 +95,10 @@ export class AuthService {
           });
         }
 
+        // As the token has been validated the supplied userId in the token can be trusted
+        const userDto = await this.usersService.get(tokenPayload.userId);
+
         await this.tokenService.addTokenToBlacklist(refreshToken);
-        return this.tokenService.createTokenPair(tokenPayload.userId);
+        return this.tokenService.createTokenPair(userDto);
     }
 }

@@ -8,6 +8,6 @@ export interface QueryDto {
   tags: TagDto[][];
   orderBy: OrderByFields;
   orderDirection: OrderDirections
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }

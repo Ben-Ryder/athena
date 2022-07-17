@@ -11,16 +11,16 @@ describe('Get User - /v1/users/:id [GET]',() => {
   beforeEach(async () => {await testHelper.beforeEach()});
   afterAll(async () => {await testHelper.afterAll()});
 
-  it('When unauthorized, the request should fail', async () => {
+  test('When unauthorized, the request should fail', async () => {
     const {body, statusCode} = await testHelper.client.get(`/v1/users/${testUsers[0].id}`);
 
     expectUnauthorized(body, statusCode);
   })
 
-  it('When authorized as the user to get, the response should succeed and return the user', async () => {
+  test('When authorized as the user to get, the response should succeed and return the user', async () => {
     const {body, statusCode} = await testHelper.client
       .get(`/v1/users/${testUsers[0].id}`)
-      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
+      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0])}`);
 
     const {encryptionKey, passwordHash, password, ...expectedUser} = testUsers[0];
 
@@ -28,26 +28,26 @@ describe('Get User - /v1/users/:id [GET]',() => {
     expect(body).toEqual(expectedUser);
   })
 
-  it('When authorized as a different user to the one to get, the request should fail', async () => {
+  test('When authorized as a different user to the one to get, the request should fail', async () => {
     const {body, statusCode} = await testHelper.client
       .get(`/v1/users/${testUsers[1].id}`)
-      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
+      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0])}`);
 
     expectForbidden(body, statusCode);
   })
 
-  it("When fetching a user that doesn't exist, the request should fail", async () => {
+  test("When fetching a user that doesn't exist, the request should fail", async () => {
     const {body, statusCode} = await testHelper.client
       .get(`/v1/users/82f7d7a4-e094-4f15-9de0-5b5621376714`)
-      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
+      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0])}`);
 
     expectForbidden(body, statusCode);
   })
 
-  it("When passing an invalid ID, the request should fail", async () => {
+  test("When passing an invalid ID, the request should fail", async () => {
     const {body, statusCode} = await testHelper.client
       .get(`/v1/users/invalid`)
-      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
+      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0])}`);
 
     expectBadRequest(body, statusCode, ErrorIdentifiers.USER_REQUEST_INVALID);
   })

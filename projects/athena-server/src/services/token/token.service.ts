@@ -3,9 +3,11 @@ import {decode, JwtPayload, sign, verify} from 'jsonwebtoken';
 import { ConfigService } from '../config/config';
 import { CacheService } from "../cache/cache.service";
 import { Injectable } from "@kangojs/core";
+import {UserDto} from "@ben-ryder/athena-js-lib";
 
 export interface TokenPayload extends JwtPayload {
-    userId: string
+    userId: string;
+    userIsVerified: boolean
 }
 
 export interface AccessTokenPayload extends TokenPayload {
@@ -30,22 +32,22 @@ export class TokenService {
 
     /**
      * Create an access and refresh token for the given user.
-     * @param userId
+     * @param user
      */
-    createTokenPair(userId: string): TokenPair {
+    createTokenPair(user: UserDto): TokenPair {
         return {
-            accessToken: this.createAccessToken(userId),
-            refreshToken: this.createRefreshToken(userId)
+            accessToken: this.createAccessToken(user),
+            refreshToken: this.createRefreshToken(user)
         }
     }
 
     /**
      * Create an access token for the given user.
-     * @param userId
+     * @param user
      */
-    private createAccessToken(userId: string) {
+    private createAccessToken(user: UserDto) {
         return sign(
-          {userId, type: "accessToken"},
+          {type: "accessToken", userId: user.id, userIsVerified: user.isVerified},
           this.configService.config.auth.accessToken.secret,
           {expiresIn: this.configService.config.auth.accessToken.expiry}
         );
@@ -53,11 +55,11 @@ export class TokenService {
 
     /**
      * Create a refresh token for the given user.
-     * @param userId
+     * @param user
      */
-    private createRefreshToken(userId: string) {
+    private createRefreshToken(user: UserDto) {
         return sign(
-          {userId, type: "refreshToken"},
+          {type: "refreshToken", userId: user.id, userIsVerified: user.isVerified},
           this.configService.config.auth.refreshToken.secret,
           {expiresIn: this.configService.config.auth.refreshToken.expiry}
         );

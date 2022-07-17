@@ -3,13 +3,13 @@ import { Request, Response, NextFunction } from 'express';
 import {Controller, Route, HTTPMethods} from '@kangojs/core';
 
 import { UsersService } from './users.service';
-import {RequestWithUser} from "../auth/auth.validator";
 import {
     CreateUserRequestSchema,
     CreateUserResponse,
     GetUserResponse, UpdateUserRequestSchema, UpdateUserResponse, UserDto,
     UsersURLParamsSchema
 } from "@ben-ryder/athena-js-lib";
+import {RequestWithUserContext} from "../../common/request-with-context";
 
 
 @Controller('/v1/users',{
@@ -43,11 +43,11 @@ export class UsersController {
         httpMethod: HTTPMethods.GET,
         paramsShape: UsersURLParamsSchema
     })
-    async get(req: RequestWithUser, res: Response, next: NextFunction) {
+    async get(req: RequestWithUserContext, res: Response, next: NextFunction) {
         let user: GetUserResponse | null;
 
         try {
-            user = await this.usersService.get(req.user.id, req.params.userId);
+            user = await this.usersService.getWithAccessCheck(req.context.user.id, req.params.userId);
         }
         catch (e) {
             return next(e);
@@ -62,11 +62,11 @@ export class UsersController {
         bodyShape: UpdateUserRequestSchema,
         paramsShape: UsersURLParamsSchema
     })
-    async update(req: RequestWithUser, res: Response, next: NextFunction) {
+    async update(req: RequestWithUserContext, res: Response, next: NextFunction) {
         let updatedUser: UpdateUserResponse;
 
         try {
-            updatedUser = await this.usersService.update(req.user.id, req.params.userId, req.body);
+            updatedUser = await this.usersService.updateWithAccessCheck(req.context.user.id, req.params.userId, req.body);
         }
         catch (e) {
             return next(e);
@@ -80,9 +80,9 @@ export class UsersController {
         httpMethod: HTTPMethods.DELETE,
         paramsShape: UsersURLParamsSchema
     })
-    async delete(req: RequestWithUser, res: Response, next: NextFunction) {
+    async delete(req: RequestWithUserContext, res: Response, next: NextFunction) {
         try {
-            await this.usersService.delete(req.user.id, req.params.userId);
+            await this.usersService.deleteWithAccessCheck(req.context.user.id, req.params.userId);
         }
         catch (e) {
             return next(e);

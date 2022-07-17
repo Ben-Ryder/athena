@@ -4,13 +4,6 @@ import {AccessUnauthorizedError, Middleware} from '@kangojs/core';
 import { TokenService } from '../../services/token/token.service';
 import  {MiddlewareFactory } from "@kangojs/core";
 
-export interface RequestUser {
-  id: string
-}
-
-export interface RequestWithUser extends Request {
-  user: RequestUser
-}
 
 @Middleware({
   identifier: "auth-validator-middleware"
@@ -32,8 +25,11 @@ export class AuthValidator implements MiddlewareFactory {
         if (accessTokenPayload) {
           // todo: better way to handle req spec and adding new attribute?
           // @ts-ignore
-          req.user = {
-            id: accessTokenPayload.userId
+          req.context = {
+            user: {
+              id: accessTokenPayload.userId,
+              isVerified: accessTokenPayload.userIsVerified
+            }
           }
           return next();
         }

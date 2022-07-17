@@ -3,6 +3,6 @@ export interface TagDto {
   name: string;
   backgroundColour: string;
   textColour: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }

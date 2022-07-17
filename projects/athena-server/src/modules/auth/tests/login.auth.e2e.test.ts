@@ -5,7 +5,7 @@ import {testInvalidDataTypes} from "../../../../tests/e2e/common/test-invalid-da
 import {testMissingField} from "../../../../tests/e2e/common/test-missing-field";
 import {HTTPStatusCodes} from "@kangojs/core";
 import {expectForbidden} from "../../../../tests/e2e/common/expect-forbidden";
-import {AthenaErrorIdentifiers} from "../../../error-identifiers";
+import {AthenaErrorIdentifiers} from "../../../common/error-identifiers";
 
 
 describe('Login Auth',() => {
@@ -15,7 +15,7 @@ describe('Login Auth',() => {
   beforeEach(async () => {await testHelper.beforeEach()});
 
   describe("Success Cases", () => {
-    it('When supplying valid credentials, the user data and tokens should be returned', async () => {
+    test('When supplying valid credentials, the user data and tokens should be returned', async () => {
       const {body, statusCode} = await testHelper.client
         .post(`/v1/auth/login`)
         .send({
@@ -41,7 +41,7 @@ describe('Login Auth',() => {
   })
 
   describe("Fail Cases", () => {
-    it('When supplying completely invalid credentials, the request should fail', async () => {
+    test('When supplying completely invalid credentials, the request should fail', async () => {
       const {body, statusCode} = await testHelper.client
         .post(`/v1/auth/login`)
         .send({
@@ -52,7 +52,7 @@ describe('Login Auth',() => {
       expectForbidden(body, statusCode, AthenaErrorIdentifiers.AUTH_CREDENTIALS_INVALID)
     })
 
-    it('When supplying the wrong password, the request should fail', async () => {
+    test('When supplying the wrong password, the request should fail', async () => {
       const {body, statusCode} = await testHelper.client
         .post(`/v1/auth/login`)
         .send({
@@ -63,7 +63,7 @@ describe('Login Auth',() => {
       expectForbidden(body, statusCode, AthenaErrorIdentifiers.AUTH_CREDENTIALS_INVALID)
     })
 
-    it('When supplying a correct password but wrong username, the request should fail', async () => {
+    test('When supplying a correct password but wrong username, the request should fail', async () => {
       const {body, statusCode} = await testHelper.client
         .post(`/v1/auth/login`)
         .send({
@@ -76,10 +76,10 @@ describe('Login Auth',() => {
   })
 
   describe("Required Fields", () => {
-    it("When not supplying a username, the request should fail", async () => {
+    test("When not supplying a username, the request should fail", async () => {
       await testMissingField({
         clientFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/auth/login",
         data: {
           username: testUsers[0].username,
@@ -89,10 +89,10 @@ describe('Login Auth',() => {
       })
     })
 
-    it("When not supplying a password, the request should fail", async () => {
+    test("When not supplying a password, the request should fail", async () => {
       await testMissingField({
         clientFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/auth/login",
         data: {
           username: testUsers[0].username,
@@ -104,18 +104,18 @@ describe('Login Auth',() => {
   })
 
   describe("Invalid Data", () => {
-    it("When supplying invalid JSON data, the request should fail", async () => {
+    test("When supplying invalid JSON data, the request should fail", async () => {
       await testMalformedData({
         clientFunction: testHelper.client.post.bind(testHelper.client),
         endpoint: `/v1/auth/login`,
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id)
+        accessToken: testHelper.getUserAccessToken(testUsers[0])
       })
     })
 
     describe("When not supplying username as a string, the request should fail",
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/auth/login`,
         data: {
           password: "test-password"
@@ -128,7 +128,7 @@ describe('Login Auth',() => {
     describe("When not supplying password as a string, the request should fail",
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: `/v1/auth/login`,
         data: {
           username: "testuser"

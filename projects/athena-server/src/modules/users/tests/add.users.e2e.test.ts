@@ -2,7 +2,7 @@ import {TestHelper} from "../../../../tests/e2e/test-helper";
 import {HTTPStatusCodes} from "@kangojs/core";
 import {testUsers} from "../../../../tests/test-data";
 import {expectBadRequest} from "../../../../tests/e2e/common/expect-bad-request";
-import {AthenaErrorIdentifiers} from "../../../error-identifiers";
+import {AthenaErrorIdentifiers} from "../../../common/error-identifiers";
 import {testMissingField} from "../../../../tests/e2e/common/test-missing-field";
 import {testMalformedData} from "../../../../tests/e2e/common/test-malformed-data";
 import {testInvalidDataTypes} from "../../../../tests/e2e/common/test-invalid-data-types";
@@ -24,7 +24,7 @@ describe('Add User - /v1/users [POST]',() => {
   afterAll(async () => {await testHelper.afterAll()});
 
   describe('Success Cases', () => {
-    it('When adding a valid new user, the new user should be added & returned', async () => {
+    test('When adding a valid new user, the new user should be added & returned', async () => {
       const {body, statusCode} = await testHelper.client
         .post(`/v1/users`)
         .send(defaultTestUser);
@@ -41,7 +41,7 @@ describe('Add User - /v1/users [POST]',() => {
       }))
     })
 
-    it("When using a password that's 8 characters, the new user should be added & returned", async () => {
+    test("When using a password that's 8 characters, the new user should be added & returned", async () => {
       const newUser = {
         ...defaultTestUser,
         password: "qwertyui",
@@ -63,7 +63,7 @@ describe('Add User - /v1/users [POST]',() => {
       }))
     })
 
-    it("When using a username that's 1 character, the new user should be added & returned", async () => {
+    test("When using a username that's 1 character, the new user should be added & returned", async () => {
       const newUser = {
         ...defaultTestUser,
         username: "a"
@@ -85,7 +85,7 @@ describe('Add User - /v1/users [POST]',() => {
       }))
     })
 
-    it("When using a username that's 20 characters, the new user should be added & returned", async () => {
+    test("When using a username that's 20 characters, the new user should be added & returned", async () => {
       const newUser = {
         ...defaultTestUser,
         username: "qwertyuiopasdfghjklz"
@@ -109,7 +109,7 @@ describe('Add User - /v1/users [POST]',() => {
   })
 
   describe('None Unique Data', () => {
-    it('When using an existing username, the request should fail', async () => {
+    test('When using an existing username, the request should fail', async () => {
       const newUser = {
         ...defaultTestUser,
         username: testUsers[0].username
@@ -122,7 +122,7 @@ describe('Add User - /v1/users [POST]',() => {
       expectBadRequest(body, statusCode, AthenaErrorIdentifiers.USER_USERNAME_EXISTS);
     })
 
-    it('When using an existing email, the request should fail', async () => {
+    test('When using an existing email, the request should fail', async () => {
       const newUser = {
         ...defaultTestUser,
         email: testUsers[0].email,
@@ -137,7 +137,7 @@ describe('Add User - /v1/users [POST]',() => {
   })
 
   describe('Data Validation', () => {
-    it('When using an invalid email, the request should fail', async () => {
+    test('When using an invalid email, the request should fail', async () => {
       const newUser = {
         ...defaultTestUser,
         email: "invalid-email"
@@ -150,7 +150,7 @@ describe('Add User - /v1/users [POST]',() => {
       expectBadRequest(body, statusCode)
     })
 
-    it("When using a password that's too short, the request should fail", async () => {
+    test("When using a password that's too short, the request should fail", async () => {
       const newUser = {
         ...defaultTestUser,
         password: "hi"
@@ -163,7 +163,7 @@ describe('Add User - /v1/users [POST]',() => {
       expectBadRequest(body, statusCode)
     })
 
-    it("When supplying an empty username, the request should fail", async () => {
+    test("When supplying an empty username, the request should fail", async () => {
       const newUser = {
         ...defaultTestUser,
         username: ""
@@ -176,7 +176,7 @@ describe('Add User - /v1/users [POST]',() => {
       expectBadRequest(body, statusCode)
     })
 
-    it("When using a username that's too long, the request should fail", async () => {
+    test("When using a username that's too long, the request should fail", async () => {
       const newUser = {
         ...defaultTestUser,
         username: "this-is-a-username-which-is-over-the-maximum"
@@ -191,40 +191,40 @@ describe('Add User - /v1/users [POST]',() => {
   })
 
   describe('Required Fields', () => {
-    it("When not supplying a username, the request should fail", async () => {
+    test("When not supplying a username, the request should fail", async () => {
       await testMissingField({
         clientFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
         testFieldKey: "username"
       })
     })
 
-    it("When not supplying an email, the request should fail", async () => {
+    test("When not supplying an email, the request should fail", async () => {
       await testMissingField({
         clientFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
         testFieldKey: "email"
       })
     })
 
-    it("When not supplying a password, the request should fail", async () => {
+    test("When not supplying a password, the request should fail", async () => {
       await testMissingField({
         clientFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
         testFieldKey: "password"
       })
     })
 
-    it("When not supplying an encryptionSecret, the request should fail", async () => {
+    test("When not supplying an encryptionSecret, the request should fail", async () => {
       await testMissingField({
         clientFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
         testFieldKey: "encryptionSecret"
@@ -233,7 +233,7 @@ describe('Add User - /v1/users [POST]',() => {
   })
 
   describe('Forbidden Fields', () => {
-    it('When passing an ID field, the request should fail', async () => {
+    test('When passing an ID field, the request should fail', async () => {
       const newUser = {
         ...defaultTestUser,
         id: 'a78a9859-314e-44ec-8701-f0c869cfc07f'
@@ -246,7 +246,7 @@ describe('Add User - /v1/users [POST]',() => {
       expectBadRequest(body, statusCode);
     })
 
-    it('When passing a createdAt field, the request should fail', async () => {
+    test('When passing a createdAt field, the request should fail', async () => {
       const newUser = {
         ...defaultTestUser,
         createdAt: '2022-07-11T18:20:32.482Z'
@@ -259,7 +259,7 @@ describe('Add User - /v1/users [POST]',() => {
       expectBadRequest(body, statusCode);
     })
 
-    it('When passing an updatedAt field, the request should fail', async () => {
+    test('When passing an updatedAt field, the request should fail', async () => {
       const newUser = {
         ...defaultTestUser,
         updatedAt: '2022-07-11T18:20:32.482Z'
@@ -272,7 +272,7 @@ describe('Add User - /v1/users [POST]',() => {
       expectBadRequest(body, statusCode);
     })
 
-    it('When passing an isVerified field, the request should fail', async () => {
+    test('When passing an isVerified field, the request should fail', async () => {
       const newUser = {
         ...defaultTestUser,
         isVerified: true
@@ -287,10 +287,10 @@ describe('Add User - /v1/users [POST]',() => {
   })
 
   describe('Invalid Data', () => {
-    it("When supplying invalid JSON data, the request should fail", async () => {
+    test("When supplying invalid JSON data, the request should fail", async () => {
       await testMalformedData({
         clientFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users"
       })
     })
@@ -298,7 +298,7 @@ describe('Add User - /v1/users [POST]',() => {
     describe("When not supplying username as a string, the request should fail",
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
         testFieldKey: "username",
@@ -309,7 +309,7 @@ describe('Add User - /v1/users [POST]',() => {
     describe("When not supplying email as a string, the request should fail",
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
         testFieldKey: "email",
@@ -320,7 +320,7 @@ describe('Add User - /v1/users [POST]',() => {
     describe("When not supplying password as a string, the request should fail",
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
         testFieldKey: "password",
@@ -331,7 +331,7 @@ describe('Add User - /v1/users [POST]',() => {
     describe("When not supplying encryptionSecret as a string, the request should fail",
       testInvalidDataTypes({
         requestFunction: testHelper.client.post.bind(testHelper.client),
-        accessToken: testHelper.getUserAccessToken(testUsers[0].id),
+        accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
         testFieldKey: "encryptionSecret",

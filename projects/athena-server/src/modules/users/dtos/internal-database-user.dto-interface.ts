@@ -7,6 +7,6 @@ export interface InternalDatabaseUserDto extends UserDto {
   encryption_secret: string;
   password_hash: string
   is_verified: boolean;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 }

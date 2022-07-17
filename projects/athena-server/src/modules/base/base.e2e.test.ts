@@ -12,7 +12,7 @@ describe('Base Module',() => {
    * Base Route (/)
    */
   describe('/ [GET]', () => {
-    it('When a request is made, the response should be a string message', async () => {
+    test('When a request is made, the response should be a string message', async () => {
       const {body, statusCode} = await testHelper.client.get('/');
 
       expect(statusCode).toEqual(HTTPStatusCodes.OK);
@@ -29,7 +29,7 @@ describe('Base Module',() => {
    * Base V1 Route (/v1)
    */
   describe('/v1 [GET]', () => {
-    it('When a request is made, the response should be a string message', async () => {
+    test('When a request is made, the response should be a string message', async () => {
       const {body, statusCode} = await testHelper.client.get('/');
 
       expect(statusCode).toEqual(HTTPStatusCodes.OK);

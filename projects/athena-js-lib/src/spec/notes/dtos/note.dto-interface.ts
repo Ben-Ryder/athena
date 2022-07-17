@@ -4,6 +4,6 @@ import {NoteContentDto} from "./note-content.dto-interface";
 export interface NoteDto extends NoteContentDto {
   id: string;
   tags: TagDto[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }

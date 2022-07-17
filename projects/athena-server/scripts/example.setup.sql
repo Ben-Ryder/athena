@@ -1,19 +1,19 @@
 -- Cleaning up existing database if present
-drop database if exists athena;
+DROP DATABASE IF EXISTS athena;
 
 -- Cleaning up existing user if present
-drop user if exists athena;
+DROP USER IF EXISTS athena;
 
 -- Create athena user and database
-create user athena with password 'password' login;
-create database athena;
-grant connect on database athena to athena;
+CREATE USER athena WITH PASSWORD 'password' LOGIN;
+CREATE DATABASE athena;
+GRANT CONNECT ON DATABASE athena TO athena;
 
 -- Switch to new database
 \c athena
 
 -- Create UUID extension for uuid_generate_v4 support
-create extension if not exists "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Functions for automatically managing created_at and updated_at timestamps
 CREATE OR REPLACE FUNCTION update_table_timestamps()
@@ -22,11 +22,11 @@ BEGIN
     NEW.updated_at = now();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE 'plpgsql';
 
 -- Enums used in the database
-create type order_by_fields as enum ('created_at', 'updated_at');
-create type order_directions as enum ('ASC', 'DESC');
+CREATE TYPE order_by_fields AS ENUM ('created_at', 'updated_at');
+CREATE TYPE order_directions AS ENUM ('ASC', 'DESC');
 
 
 /**
@@ -34,84 +34,86 @@ create type order_directions as enum ('ASC', 'DESC');
     -----------
     Used to store user accounts that are required to access the application.
  */
-create table if not exists users (
-    id uuid not null default uuid_generate_v4(),
-    username varchar(20) not null unique,
-    email varchar(100) not null unique,
-    password_hash varchar(100) not null,
-    encryption_secret varchar(255) not null,
-    is_verified boolean not null default false,
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
+CREATE TABLE IF NOT EXISTS users (
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),
+    username VARCHAR(20) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(100) NOT NULL,
+    encryption_secret VARCHAR(255) NOT NULL,
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
 );
-create trigger update_user_timestamps before update on users for each row execute procedure update_table_timestamps();
+CREATE TRIGGER update_user_timestamps BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE update_table_timestamps();
 
 /**
   Vaults Table
   -----------
   Used to store user vaults which then contain notes, tags, queries etc
  */
-create table if not exists vaults (
-    id uuid not null default uuid_generate_v4(),
-    name varchar(50) not null,
-    description varchar(255),
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
-    owner uuid not null,
+CREATE TABLE IF NOT EXISTS vaults (
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(255),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    owner UUID NOT NULL,
     PRIMARY KEY (id),
-    constraint vault_owner foreign key (owner) references users(id) on delete cascade
+    CONSTRAINT vault_owner FOREIGN KEY (owner) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT unique_user_vault_name UNIQUE(name, owner)
 );
-create trigger update_vault_timestamps before update on vaults for each row execute procedure update_table_timestamps();
+CREATE TRIGGER update_vault_timestamps BEFORE UPDATE ON vaults FOR EACH ROW EXECUTE PROCEDURE update_table_timestamps();
 
 /**
   Notes Table
   -----------
   Used to store notes.
  */
-create table if not exists notes (
-    id uuid not null default uuid_generate_v4(),
-    title varchar(50) not null,
-    description varchar(255),
-    body text not null,
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
-    vault uuid not null,
+CREATE TABLE IF NOT EXISTS notes (
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),
+    title VARCHAR(100) NOT NULL,
+    description VARCHAR(255),
+    body TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    vault UUID NOT NULL,
     PRIMARY KEY (id),
-    constraint tag_vault foreign key (vault) references vaults(id) on delete cascade
+    CONSTRAINT tag_vault FOREIGN KEY (vault) REFERENCES vaults(id) ON DELETE CASCADE
 );
-create trigger update_note_timestamps before update on notes for each row execute procedure update_table_timestamps();
+CREATE TRIGGER update_note_timestamps BEFORE UPDATE ON notes FOR EACH ROW EXECUTE PROCEDURE update_table_timestamps();
 
 /**
   Tags Table
   -----------
   Used to store tags which can be used to categorise notes.
  */
-create table if not exists tags (
-    id uuid not null default uuid_generate_v4(),
-    name varchar(50) not null,
+CREATE TABLE IF NOT EXISTS tags (
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL,
     background_colour char(7),
     text_colour char(7),
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
-    vault uuid not null,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    vault UUID NOT NULL,
     PRIMARY KEY (id),
-    constraint tag_vault foreign key (vault) references vaults(id) on delete cascade
+    CONSTRAINT tag_vault FOREIGN KEY (vault) REFERENCES vaults(id) ON DELETE CASCADE,
+    CONSTRAINT unique_vault_tag_name UNIQUE(name, vault)
 );
-create trigger update_tag_timestamps before update on tags for each row execute procedure update_table_timestamps();
+CREATE TRIGGER update_tag_timestamps BEFORE UPDATE ON tags FOR EACH ROW EXECUTE PROCEDURE update_table_timestamps();
 
 /**
   Note Tags Table
   -----------
   Used to store tags that have been applied to notes
  */
-create table if not exists note_tags (
-    id uuid not null default uuid_generate_v4(),
-    note uuid not null,
-    tag uuid not null,
+CREATE TABLE IF NOT EXISTS note_tags (
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),
+    note UUID NOT NULL,
+    tag UUID NOT NULL,
     PRIMARY KEY (id),
-    constraint note_tag_note foreign key (note) references notes(id) on delete cascade,
-    constraint note_tag_tag foreign key (tag) references tags(id) on delete cascade
+    CONSTRAINT note_tag_note FOREIGN KEY (note) REFERENCES notes(id) ON DELETE CASCADE,
+    CONSTRAINT note_tag_tag FOREIGN KEY (tag) REFERENCES tags(id) ON DELETE CASCADE
 );
 
 /**
@@ -119,34 +121,35 @@ create table if not exists note_tags (
   -----------
   Used to store tags which can be used to categorise notes.
  */
-create table if not exists queries (
-    id uuid not null default uuid_generate_v4(),
-    name varchar(50) not null,
-    order_by order_by_fields not null,
-    order_direction order_directions not null ,
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
-    vault uuid not null,
+CREATE TABLE IF NOT EXISTS queries (
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL,
+    order_by order_by_fields NOT NULL,
+    order_direction order_directions NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    vault UUID NOT NULL,
     PRIMARY KEY (id),
-    constraint tag_vault foreign key (vault) references vaults(id) on delete cascade
+    CONSTRAINT tag_vault FOREIGN KEY (vault) REFERENCES vaults(id) ON DELETE CASCADE,
+    CONSTRAINT unique_vault_query_name UNIQUE(name, vault)
 );
-create trigger update_queries_timestamps before update on queries for each row execute procedure update_table_timestamps();
+CREATE TRIGGER update_queries_timestamps BEFORE UPDATE ON queries FOR EACH ROW EXECUTE PROCEDURE update_table_timestamps();
 
 /**
   Query Tags Table
   -----------
   Used to store query tags which are used when filtering.
  */
-create table if not exists query_tags (
-     id uuid not null default uuid_generate_v4(),
-     query uuid not null,
-     tag uuid not null,
-     or_group int not null,
+CREATE TABLE IF NOT EXISTS query_tags (
+     id UUID NOT NULL DEFAULT uuid_generate_v4(),
+     query UUID NOT NULL,
+     tag UUID NOT NULL,
+     or_group INT NOT NULL,
      PRIMARY KEY (id),
-     constraint query_tag_query foreign key (query) references queries(id) on delete cascade,
-     constraint query_tag_tag foreign key (tag) references tags(id) on delete cascade
+     CONSTRAINT query_tag_query FOREIGN KEY (query) REFERENCES queries(id) ON DELETE CASCADE,
+     CONSTRAINT query_tag_tag FOREIGN KEY (tag) REFERENCES tags(id) ON DELETE CASCADE
 );
 
 -- Grant privileges to athena user after everything is created
-grant all privileges on all tables in schema public to athena;
-grant all privileges on all sequences in schema public to athena;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO athena;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO athena;

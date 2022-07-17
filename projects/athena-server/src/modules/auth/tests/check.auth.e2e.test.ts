@@ -12,22 +12,22 @@ describe('Check Auth',() => {
   afterAll(async () => {await testHelper.afterAll()});
   beforeEach(async () => {await testHelper.beforeEach()});
 
-  it('When authenticated, the request should succeed', async () => {
+  test('When authenticated, the request should succeed', async () => {
     const {statusCode} = await testHelper.client
       .get('/v1/auth/check')
-      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0].id)}`);
+      .set('Authorization', `Bearer ${testHelper.getUserAccessToken(testUsers[0])}`);
 
     expect(statusCode).toEqual(HTTPStatusCodes.OK);
   })
 
-  it('When not authenticated, the request should fail', async () => {
+  test('When not authenticated, the request should fail', async () => {
     const {body, statusCode} = await testHelper.client
       .get('/v1/auth/check')
 
     expectUnauthorized(body, statusCode);
   })
 
-  it('When supplying an incorrectly signed accessToken, the request should fail', async () => {
+  test('When supplying an incorrectly signed accessToken, the request should fail', async () => {
     const accessToken = sign(
       {userId: testUsers[0].id, type: "accessToken"},
       "qethwrthwrthr",
@@ -41,7 +41,7 @@ describe('Check Auth',() => {
     expectUnauthorized(body, statusCode);
   })
 
-  it('When supplying an invalid accessToken, the request should fail', async () => {
+  test('When supplying an invalid accessToken, the request should fail', async () => {
     const {body, statusCode} = await testHelper.client
       .get(`/v1/auth/check`)
       .set('Authorization', `Bearer SWFubawgrlkx`)
@@ -49,7 +49,7 @@ describe('Check Auth',() => {
     expectUnauthorized(body, statusCode);
   })
 
-  it('When supplying an expired accessToken, the request should fail', async () => {
+  test('When supplying an expired accessToken, the request should fail', async () => {
     const configService = testHelper.application.dependencyContainer.useDependency(ConfigService);
 
     const accessToken = sign(

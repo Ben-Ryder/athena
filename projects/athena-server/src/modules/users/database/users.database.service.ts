@@ -6,7 +6,7 @@ import {DatabaseUserDto} from "../dtos/database-user.dto-interface";
 import {InternalDatabaseUserDto} from "../dtos/internal-database-user.dto-interface";
 import {PostgresError, Row, RowList} from "postgres";
 import {PG_UNIQUE_VIOLATION} from "../../../services/database/database-error-codes";
-import {AthenaErrorIdentifiers} from "../../../error-identifiers";
+import {AthenaErrorIdentifiers} from "../../../common/error-identifiers";
 
 
 @Injectable()
