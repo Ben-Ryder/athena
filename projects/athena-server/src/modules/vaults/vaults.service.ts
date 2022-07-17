@@ -12,14 +12,11 @@ export class VaultsService {
   ) {}
 
   async checkAccess(requestUserId: string, vaultId: string): Promise<void> {
-    try {
-      const vault = await this.vaultsDatabaseService.getWithUser(vaultId);
+    const vault = await this.vaultsDatabaseService.getWithUser(vaultId);
 
-      if (vault.owner === requestUserId) {
-        return;
-      }
+    if (vault.owner === requestUserId) {
+      return;
     }
-    catch (e) {}
 
     throw new AccessForbiddenError({
       message: "Access forbidden to vault"

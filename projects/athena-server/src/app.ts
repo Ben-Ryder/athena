@@ -5,8 +5,8 @@ import { createServeSPAMiddleware } from "@kangojs/serve-spa";
 
 import {AuthController} from "./modules/auth/auth.controller";
 import {BaseController} from "./modules/base/base.controller";
-// import {NotesController} from "./modules/notes/notes.controller";
 import {UsersController} from "./modules/users/users.controller";
+import {VaultsController} from "./modules/vaults/vaults.controller";
 
 
 export async function createApp() {
@@ -19,8 +19,8 @@ export async function createApp() {
     controllers: [
       BaseController,
       AuthController,
-      // NotesController,
-      UsersController
+      UsersController,
+      VaultsController
     ],
     middleware: [
       serveSpaMiddleware

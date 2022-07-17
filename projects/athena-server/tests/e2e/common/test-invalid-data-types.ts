@@ -2,7 +2,7 @@ import {expectBadRequest} from "./expect-bad-request";
 import {SuperAgentRequest} from "superagent";
 
 export interface TestInvalidDataTypesConfig {
-  requestFunction: (url: string) => SuperAgentRequest,
+  clientFunction: (url: string) => SuperAgentRequest,
   endpoint: string,
   accessToken: string,
   data: object,
@@ -18,7 +18,7 @@ export function testInvalidDataTypes(config: TestInvalidDataTypesConfig) {
         [config.testFieldKey]: testCase
       };
 
-      const {body, statusCode} = await config.requestFunction(config.endpoint)
+      const {body, statusCode} = await config.clientFunction(config.endpoint)
         .set('Authorization', `Bearer ${config.accessToken}`)
         .send(testData);
 

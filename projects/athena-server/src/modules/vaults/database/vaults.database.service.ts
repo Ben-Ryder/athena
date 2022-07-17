@@ -38,9 +38,9 @@ export class VaultsDatabaseService {
   private static handleDatabaseError(e: any) {
     if (e instanceof PostgresError) {
       if (e.code && e.code === PG_UNIQUE_VIOLATION) {
-        if (e.constraint_name === 'vaults_name_key') {
+        if (e.constraint_name === 'unique_user_vault_name') {
           throw new ResourceRelationshipError({
-            identifier: AthenaErrorIdentifiers.USER_USERNAME_EXISTS,
+            identifier: AthenaErrorIdentifiers.VAULT_NAME_EXISTS,
             applicationMessage: "The supplied vault name already exists."
           })
         }
@@ -58,7 +58,7 @@ export class VaultsDatabaseService {
 
     let result: InternalDatabaseVaultDto[] = [];
     try {
-      result = await sql<InternalDatabaseVaultDto[]>`SELECT * FROM users WHERE id = ${vaultId}`;
+      result = await sql<InternalDatabaseVaultDto[]>`SELECT * FROM vaults WHERE id = ${vaultId}`;
     }
     catch (e: any) {
       throw new SystemError({
@@ -83,7 +83,7 @@ export class VaultsDatabaseService {
 
     let result: InternalDatabaseVaultDto[] = [];
     try {
-      result = await sql<InternalDatabaseVaultDto[]>`SELECT * FROM users WHERE id = ${vaultId}`;
+      result = await sql<InternalDatabaseVaultDto[]>`SELECT * FROM vaults WHERE id = ${vaultId}`;
     }
     catch (e: any) {
       throw new SystemError({
@@ -113,7 +113,7 @@ export class VaultsDatabaseService {
     try {
       result = await sql<InternalDatabaseVaultDto[]>`
         INSERT INTO vaults(id, name, description, created_at, updated_at, owner) 
-        VALUES (DEFAULT, ${vault.name}, ${vault.description}, DEFAULT, DEFAULT, ${ownerId})
+        VALUES (DEFAULT, ${vault.name}, ${vault.description || null}, DEFAULT, DEFAULT, ${ownerId})
         RETURNING *;
        `;
     }

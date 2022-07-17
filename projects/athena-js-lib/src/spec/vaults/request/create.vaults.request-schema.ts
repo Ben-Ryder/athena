@@ -9,5 +9,6 @@ export class CreateVaultRequestSchema {
 
   @IsString()
   @IsOptional()
+  @MaxLength(255)
   description!: string;
 }

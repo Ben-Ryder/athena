@@ -297,7 +297,7 @@ describe('Add User - /v1/users [POST]',() => {
 
     describe("When not supplying username as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.post.bind(testHelper.client),
+        clientFunction: testHelper.client.post.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
@@ -308,7 +308,7 @@ describe('Add User - /v1/users [POST]',() => {
 
     describe("When not supplying email as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.post.bind(testHelper.client),
+        clientFunction: testHelper.client.post.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
@@ -319,7 +319,7 @@ describe('Add User - /v1/users [POST]',() => {
 
     describe("When not supplying password as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.post.bind(testHelper.client),
+        clientFunction: testHelper.client.post.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,
@@ -330,7 +330,7 @@ describe('Add User - /v1/users [POST]',() => {
 
     describe("When not supplying encryptionSecret as a string, the request should fail",
       testInvalidDataTypes({
-        requestFunction: testHelper.client.post.bind(testHelper.client),
+        clientFunction: testHelper.client.post.bind(testHelper.client),
         accessToken: testHelper.getUserAccessToken(testUsers[0]),
         endpoint: "/v1/users",
         data: defaultTestUser,

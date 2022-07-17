@@ -1,6 +1,6 @@
 import {TokenPair, TokenService} from "../../src/services/token/token.service";
 import {DatabaseService} from "../../src/services/database/database.service";
-import {testUsers} from "../test-data";
+import {testData, testUsers} from "../test-data";
 import {createServeSPAMiddleware} from "@kangojs/serve-spa";
 import {ConfigService} from "../../src/services/config/config";
 import {BaseController} from "../../src/modules/base/base.controller";
@@ -13,6 +13,7 @@ import {KangoJS} from "@kangojs/core";
 import {SuperAgentTest, agent} from "supertest";
 import {CacheService} from "../../src/services/cache/cache.service";
 import {UserDto} from "@ben-ryder/athena-js-lib";
+import {VaultsController} from "../../src/modules/vaults/vaults.controller";
 
 /**
  * This class encapsulates all the test specific application functionality that is required.
@@ -36,7 +37,8 @@ export class TestHelper {
       controllers: [
         BaseController,
         AuthController,
-        UsersController
+        UsersController,
+        VaultsController
       ],
       middleware: [
         serveSpaMiddleware
@@ -81,12 +83,21 @@ export class TestHelper {
     // deleting users will automatically delete all content too.
     await sql`DELETE FROM users`;
 
-    // Add Users
+    // Add all test data
     for (const user of testUsers) {
+      // Add user
       await sql`
         INSERT INTO users(id, username, email, password_hash, encryption_secret, is_verified, created_at, updated_at) 
         VALUES (${user.id}, ${user.username}, ${user.email}, ${user.passwordHash}, ${user.encryptionSecret}, ${user.isVerified}, ${user.createdAt}, ${user.updatedAt})
        `;
+
+      // Add users vaults
+      for (const vault of testData[user.id].vaults) {
+        await sql`
+        INSERT INTO vaults(id, name, description, created_at, updated_at, owner) 
+        VALUES (${vault.id}, ${vault.name}, ${vault.description}, ${vault.createdAt}, ${vault.updatedAt}, ${vault.owner})
+       `;
+      }
     }
   }
 

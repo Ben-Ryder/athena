@@ -11,6 +11,9 @@ export enum AthenaErrorIdentifiers {
 
   // Authentication
   AUTH_CREDENTIALS_INVALID = "auth-credentials-invalid",
-  AUTH_TOKEN_INVALID = "auth-token-invalid"
+  AUTH_TOKEN_INVALID = "auth-token-invalid",
+
+  // Vault Errors
+  VAULT_NAME_EXISTS = "vault-name-exists"
 }
 
