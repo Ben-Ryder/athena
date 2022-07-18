@@ -1,6 +1,14 @@
 import {AccessForbiddenError, Injectable} from "@kangojs/core";
 import {VaultsDatabaseService} from "./database/vaults.database.service";
-import {CreateVaultRequestSchema, GetVaultResponse, UpdateVaultRequestSchema, VaultDto} from "@ben-ryder/athena-js-lib";
+import {
+  CreateVaultRequestSchema,
+  GetVaultResponse,
+  GetVaultsResponse,
+  UpdateVaultRequestSchema,
+  VaultDto, VaultsQueryParamsSchema
+} from "@ben-ryder/athena-js-lib";
+import {DefaultVaultsListOptions} from "@ben-ryder/athena-js-lib/build/src/default-list-options";
+import {DatabaseListOptions} from "../../common/database-list-options";
 
 
 @Injectable({
@@ -52,5 +60,22 @@ export class VaultsService {
   async deleteWithAccessCheck(requestUserId: string, vaultId: string): Promise<void> {
     await this.checkAccess(requestUserId, vaultId);
     return this.delete(vaultId);
+  }
+
+  async list(ownerId: string, options: VaultsQueryParamsSchema): Promise<GetVaultsResponse> {
+    const processedOptions: DatabaseListOptions = {
+      skip: options.skip || DefaultVaultsListOptions.skip,
+      take: options.take || DefaultVaultsListOptions.take,
+      orderBy: options.orderBy || DefaultVaultsListOptions.orderBy,
+      orderDirection: options.orderDirection || DefaultVaultsListOptions.orderDirection
+    };
+
+    const vaults = await this.vaultsDatabaseService.list(ownerId, processedOptions);
+    const meta = await this.vaultsDatabaseService.getListMetadata(ownerId, processedOptions);
+
+    return {
+      vaults,
+      meta
+    }
   }
 }

@@ -1,11 +1,17 @@
 import {Injectable, ResourceNotFoundError, ResourceRelationshipError, SystemError} from "@kangojs/core";
 import {DatabaseService} from "../../../services/database/database.service";
-import {PostgresError, Row, RowList} from "postgres";
+import {PostgresError, Row, RowList, Sql} from "postgres";
 import {PG_UNIQUE_VIOLATION} from "../../../services/database/database-error-codes";
 import {AthenaErrorIdentifiers} from "../../../common/error-identifiers";
-import {CreateVaultRequestSchema, UpdateVaultRequestSchema, VaultDto} from "@ben-ryder/athena-js-lib";
+import {
+  CreateVaultRequestSchema, MetaPaginationResponseSchema,
+  UpdateVaultRequestSchema,
+  VaultDto,
+  VaultsQueryParamsSchema
+} from "@ben-ryder/athena-js-lib";
 import {InternalDatabaseVaultDto} from "../dto/internal-database-vault.dto-interface";
 import {VaultWithOwnerDto} from "../dto/vault-with-owner.dto-interface";
+import {DatabaseListOptions} from "../../../common/database-list-options";
 
 
 @Injectable()
@@ -191,6 +197,45 @@ export class VaultsDatabaseService {
     else {
       throw new ResourceNotFoundError({
         applicationMessage: "The requested vault could not be found."
+      })
+    }
+  }
+
+  async list(ownerId: string, options: DatabaseListOptions): Promise<VaultDto[]> {
+    const sql = await this.databaseService.getSQL();
+
+    // todo: this assumes that options.orderBy/options.orderDirection will always be validated etc
+    let result: InternalDatabaseVaultDto[] = [];
+    try {
+      result = await sql<InternalDatabaseVaultDto[]>`SELECT * FROM vaults WHERE owner = ${ownerId} ORDER BY ${sql(options.orderBy)} ${options.orderDirection === "ASC" ? sql`ASC` : sql`DESC` } LIMIT ${options.take} OFFSET ${options.skip}`;
+    }
+    catch (e: any) {
+      throw new SystemError({
+        message: "Unexpected error while fetching vaults",
+        originalError: e
+      })
+    }
+
+    return result.map(VaultsDatabaseService.mapDatabaseEntity);
+  }
+
+  async getListMetadata(ownerId: string, options: DatabaseListOptions): Promise<MetaPaginationResponseSchema> {
+    const sql = await this.databaseService.getSQL();
+
+    // todo: this assumes that options.orderBy/options.orderDirection will always be validated etc
+    try {
+      // Offset and order don't matter for fetching the total count, so we can ignore these for the query.
+      const result = await sql`SELECT count(*) FROM vaults WHERE owner = ${ownerId}`;
+      return {
+        total: parseInt(result[0].count),
+        take: options.take,
+        skip: options.skip,
+      };
+    }
+    catch (e: any) {
+      throw new SystemError({
+        message: "Unexpected error while fetching vault list metadata",
+        originalError: e
       })
     }
   }

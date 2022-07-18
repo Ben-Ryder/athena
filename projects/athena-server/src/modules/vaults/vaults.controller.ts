@@ -5,7 +5,7 @@ import {Controller, Route, HTTPMethods} from '@kangojs/core';
 import {
     CreateVaultRequestSchema, CreateVaultResponse,
     GetVaultResponse,
-    UpdateVaultRequestSchema, UpdateVaultResponse,
+    UpdateVaultRequestSchema, UpdateVaultResponse, VaultsQueryParamsSchema,
     VaultsURLParamsSchema
 } from "@ben-ryder/athena-js-lib";
 import {VaultsService} from "./vaults.service";
@@ -87,5 +87,19 @@ export class VaultsController {
             return next(e);
         }
         return res.send();
+    }
+
+    @Route({
+        httpMethod: HTTPMethods.GET,
+        queryShape: VaultsQueryParamsSchema
+    })
+    async list(req: RequestWithUserContext, res: Response, next: NextFunction) {
+        try {
+            const response =  await this.vaultsService.list(req.context.user.id, req.params);
+            return res.send(response);
+        }
+        catch (e) {
+            return next(e);
+        }
     }
 }
